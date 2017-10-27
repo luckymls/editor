@@ -61,12 +61,12 @@ def toggle_highlight(event=None):
 
 def fullscreen(event=None):
     
-    if fullscreenln.get() == 0:
-        state = 1
-        fullscreenln.set(1)
-    else:
+    if fullscreenln.get():
         state = 0
         fullscreenln.set(0)
+    else:
+        state = 1
+        fullscreenln.set(1)
     #screen_w = root.winfo_screenwidth()
     #screen_h = root.winfo_screenheight()
     
@@ -380,7 +380,7 @@ textPad.bind("<Button-3>", popup)
 
 #################################################
 '''Rilevo evento tastiera, chiamo funzione'''
-#Non capisco perchè ma per qualche strano motivo non rileva F11
+
 
 root.bind('<Any-KeyPress>', anykey)
 root.bind('<Control-N>', new_file)
