@@ -61,7 +61,7 @@ def toggle_highlight(event=None):
 
 def fullscreen(event=None):
     
-    if fullscreenln.get():
+    if fullscreenln.get() == 0:
         state = 1
         fullscreenln.set(1)
     else:
@@ -308,7 +308,7 @@ themesmenu = Menu(viewmenu, tearoff=0)
 viewmenu.add_cascade(label="Themes", menu=themesmenu)
 viewmenu.add_separator()
 fullscreenln = IntVar()
-viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln,accelerator='F11', command=fullscreen)
+viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accelerator='F11', command=fullscreen)
 
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
