@@ -119,10 +119,10 @@ def show_info_bar():
     elif not val:
         infobar.pack_forget()
 
-def update_line_number(event=None):
+def update_line_number(load=False, event=None):
 
      
-     if load == False:
+    if load == False:
         if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
             lnlabel.config(state='normal')
             line = int(textPad.index('end').split('.')[0]) - 1
@@ -136,7 +136,7 @@ def update_line_number(event=None):
                 lnlabel.delete(textPad.index('end'), 'end')
             lnlabel.config(state= 'disabled')
             lnlabel.see(textPad.index('current-1c'))
-    else:
+   else:
         lnlabel.config(state = 'normal')
         lines = int(textPad.index('end').split('.')[0])
         lnlabel.delete('end')
