@@ -5,6 +5,9 @@ from tkinter.messagebox import *
 from tkinter import filedialog
 import os
 import sys
+import time
+import random
+
 
 root = Tk()
 root.geometry('800x500')
@@ -22,38 +25,6 @@ else:
     isLinux = 0
 ##################
 
-class ToolTip(object):
-    def __init__(self, widget):
-        self.widget = widget
-        self.tipwindow = None
-        self.id = None
-        self.x = self.y = 0
-    def showtip(self, text):
-        self.text = text
-        if self.tipwindow or not self.text: return
-        x,y,cx,cy = self.widget.bbox("insert")
-        x = x + self.widget.winfo_rootx() +15
-        y = y + cy + self.widget.winfo_rooty() +65
-        self.tipwindow = tw = Toplevel(self.widget)
-        tw.wm_overrideredirect(1)
-        tw.wm_geometry("+%d+%d"%(x,y))
-        label = Label(tw, text=self.text, justify=LEFT,background="#ffffe0", relief=SOLID, borderwidth=1,font=("tahoma", "8", "normal"))
-        label.pack(ipadx=1)
-    def hidetip(self):
-        tw = self.tipwindow
-        self.tipwindow = None
-        if tw: tw.destroy()
-
-def createToolTip(self,widget,text):
-    toolTip = self.ToolTip(widget)
-    def enter(event): root.after(500,show,event)
-    def show(event): toolTip.showtip(text)
-    def leave(event): toolTip.hidetip()
-    widget.bind('<Enter>', enter)
-    widget.bind('<Leave>', leave)
-
-
-##################
 
 '''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
 
@@ -143,7 +114,7 @@ def update_line_number(load=False, event=None):
             for i in range (2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state= 'disabled')
-	
+
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
     textPad.tag_add("active_line", "insert linestart", "insert lineend+1c")
@@ -331,19 +302,23 @@ def save_as():
         pass
 
 def update_file(event=None):
-
-    try:
-        f = 'Unsaved.txt'
-        fh = open(f, 'w')           
-        global filename
-        filename = f
-        textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)              
-        fh.close()
-        '''Imposto il titolo della finestra principale'''
-        root.title(os.path.basename(f) + " - TindyEditor") 
-    except:
-     pass
+    
+    if autoSave.get():
+        try:
+            rand = random.randint(1, 3)
+            if rand is 3:
+                print('salvo')
+                f = 'Unsaved.txt'
+                fh = open(f, 'w')           
+                global filename
+                filename = f
+                textoutput = textPad.get(1.0, END)
+                fh.write(textoutput)              
+                fh.close()
+                '''Imposto il titolo della finestra principale'''
+                root.title(os.path.basename(f) + " - TindyEditor") 
+        except:
+         pass
     
 ######################################################################
 '''Icone del menù'''
@@ -375,7 +350,12 @@ filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, image=new_fileicon, underline=0, command=new_file)
 filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=open_fileicon, underline=0, command=open_file)
 filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
+filemenu.add_separator()
 filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_as)
+autoSave = IntVar()
+autoSave.set(1)
+filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
+filemenu.add_separator()
 filemenu.add_command(label="Exit", accelerator='Alt+F4', command=exit_editor)
 menubar.add_cascade(label="File", menu=filemenu) 
 
@@ -532,39 +512,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-	
-
-
-'''
-
-       '   /            .       `          '                \
-  `       /__________________________________________________\   `
-           |           `      |    Can you        Maybe.    |'
-     `   . |  ___  '  ______  |  believe it?!  `   , _____  |      '
-   '       | |   |   |      | |'   |   | `~..    OO |     | |   `
-      .    | |  o| . |_||||_| |  . |  o|   >>   ((  |_____| |_      `
-        ___|_|___|____________|____|___|__ |\ _ b b ________|_`._ '
-       ----------------------------------------------------------
- ________
-         \                 `   .
- _________\  '
-         |     That's not          It is if you're
-  _____  |      an answer.         ,  a skepticist.
- |     | | `             `~..    OO
- |_____| |     .    '      >>   ((
- ________|________________ |\ _ b b ___________
-
-
-                Hold on.            I believe a certain amount
-              "Skepticist"?         ,  of skepticism is healthy.
-                         `~..     OO
-                          .>>.   ((
-                  ________ || __ b b _________
-
-
-                    Really?         Maybe.
-                          `         ,
-                          ~..     OO
-                          .>>.   .||.
-                jg________ || ___ dd _________
-'''
