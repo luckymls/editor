@@ -303,7 +303,7 @@ def open_file(event=None):
         fh = open(filename,"r")        
         textPad.insert(1.0,fh.read()) 
         fh.close()
-    update_line_number()
+    update_line_number(load=True)
 
 def save(event=None):
     global filename
