@@ -48,17 +48,16 @@ def popup(event):
     cmenu.tk_popup(event.x_root, event.y_root, 0)
 
 '''Scelta tema'''
-def theme(val=None):
+def theme(x=None):
         global bgc,fgc
-       
-        if val:
+
+
+        if config.get('theme') and x is None:
+            val = config.get('theme')
+        else:
             val = themechoice.get()
             config.set('theme', val)
-        else:
-            if config.get('theme'):
-                val = config.get('theme')
-            else:
-                val = themechoice.get()
+        
         
         clrs = clrschms.get(val) #000000.FFFFFF
         
@@ -126,7 +125,7 @@ def anykey(event=None):
     
 def about(event=None):
     
-    showinfo("About", "Developed by @Luckymls & Francesco, penso dovrei scrivere altro forse")
+    showinfo("About", "Developed by @Luckymls, penso dovrei scrivere altro forse")
 
 def help_box(event=None):
 
@@ -373,7 +372,7 @@ if config.get('theme'):
    
     
     themechoice.set(config.get('theme'))
-    lambda: theme(config.get('theme'))
+    
     
 else:
     themechoice.set('1. Default White')
@@ -381,7 +380,7 @@ else:
     
     
 for k in sorted(clrschms):
-    themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(k))
+    themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(1))
 
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
@@ -434,6 +433,10 @@ for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
 cmenu.add_separator()
 cmenu.add_command(label='Select All', underline=7, command=select_all)
 textPad.bind("<Button-3>", popup)
+
+
+'''Imposto tema'''
+theme(1)
 
 #################################################
 '''Rilevo evento tastiera, chiamo funzione'''
