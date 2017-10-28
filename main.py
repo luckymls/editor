@@ -263,15 +263,7 @@ def update_file(event=None):
 
 '''Spiegazione rapida: label = testo, accelerator= testo per scorciatoia combinazione tasti, compund=posizione, command=comando da richiamare se si spunta/clicca l'opzione'''
 
-newicon = PhotoImage(file='/home/fra/editor-master/icons/new_file.gif')
-openicon = PhotoImage(file='/home/fra/editor-master/icons/open_file.gif')
-saveicon = PhotoImage(file='/home/fra/editor-master/icons/save.gif')
-cuticon = PhotoImage(file='/home/fra/editor-master/icons/cut.gif')
-copyicon = PhotoImage(file='/home/fra/editor-master/icons/copy.gif')
-pasteicon = PhotoImage(file='/home/fra/editor-master/icons/paste.gif')
-undoicon = PhotoImage(file='/home/fra/editor-master/icons/undo.gif')
-redoicon = PhotoImage(file='/home/fra/editor-master/icons/redo.gif')
-on_findicon = PhotoImage(file='/home/fra/editor-master/icons/on_find.gif')
+
 
 '''Menù'''
 menubar = Menu(root)
