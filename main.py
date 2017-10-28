@@ -343,7 +343,8 @@ if isLinux:
     completePath = os.getcwd()+'/'
 else:
     completePath = ''
-root.iconbitmap(completePath+'icons/pypad.ico')    
+if not isLinux:
+	root.iconbitmap(completePath+'icons/pypad.ico')    
 new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
 open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
