@@ -34,10 +34,8 @@ def show_info_bar():
 
 def update_line_number(load=False, event=None):
 
-    print("update")
     if load == False:
         if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
-            print(lnlabel.index('end'), textPad.index('end'))
             lnlabel.config(state='normal')
             line = int(textPad.index('end').split('.')[0]) - 1
             lnlabel.insert('end', "\n" + str(line))
@@ -45,13 +43,9 @@ def update_line_number(load=False, event=None):
             lnlabel.config(state='disabled')
             lnlabel.see(textPad.index('end-1c'))
         else:
-            print("no", lnlabel.index('end'), textPad.index('end'))
             lnlabel.config(state = 'normal')
             if int(lnlabel.index('end').split('.')[0]) > int(textPad.index('end').split('.')[0]):
-                print("del")
-                #while int(lnlabel.index('end').split('.')[0]) - 1 > int(textPad.index('end').split('.')[0]):
                 lnlabel.delete(textPad.index('end'), 'end')
-                print(lnlabel.index('end'), textPad.index('end'))
             lnlabel.config(state= 'disabled')
             lnlabel.see(textPad.index('current-1c'))
     else:
@@ -460,4 +454,6 @@ root.mainloop() #luup#
                           ~..     OO
                           .>>.   .||.
                 jg________ || ___ dd _________
+'''
+_
 '''
