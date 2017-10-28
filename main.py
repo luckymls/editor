@@ -45,7 +45,7 @@ class config:
 ##################
 
 def popup(event):
-    cmenu.tk_popup(event.x_root, event.y_root, 0)
+    cmenu.tk_popup(event.x_root, event.y_root)
 
 '''Scelta tema'''
 def theme(x=None):
