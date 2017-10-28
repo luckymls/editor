@@ -121,29 +121,29 @@ def show_info_bar():
 
 def update_line_number(load=False, event=None):
 
-    if showln.get(): 
-	    if load == False:
-		if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
-		    lnlabel.config(state='normal')
-		    line = int(textPad.index('end').split('.')[0]) - 1
-		    lnlabel.insert('end', "\n" + str(line))
+    if showln.get():
+        if load == False:
+            if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
+                lnlabel.config(state='normal')
+                line = int(textPad.index('end').split('.')[0]) - 1
+                lnlabel.insert('end', "\n" + str(line))
 
-		    lnlabel.config(state='disabled')
-		    lnlabel.see(textPad.index('end-1c'))
-		else:
-		    lnlabel.config(state = 'normal')
-		    if int(lnlabel.index('end').split('.')[0]) > int(textPad.index('end').split('.')[0]):
-			lnlabel.delete(textPad.index('end'), 'end')
-		    lnlabel.config(state= 'disabled')
-		    lnlabel.see(textPad.index('current-1c'))
-	    else:
-		lnlabel.config(state = 'normal')
-		lines = int(textPad.index('end').split('.')[0])
-		lnlabel.delete('end')
-		for i in range (2, lines):
-		    lnlabel.insert('end', '\n' + str(i))
-		lnlabel.config(state= 'disabled')
-
+                lnlabel.config(state='disabled')
+                lnlabel.see(textPad.index('end-1c'))
+            else:
+                lnlabel.config(state = 'normal')
+                if int(lnlabel.index('end').split('.')[0]) > int(textPad.index('end').split('.')[0]):
+                    lnlabel.delete(textPad.index('end'), 'end')
+                lnlabel.config(state= 'disabled')
+                lnlabel.see(textPad.index('current-1c'))
+        else:
+            lnlabel.config(state = 'normal')
+            lines = int(textPad.index('end').split('.')[0])
+            lnlabel.delete('end')
+            for i in range (2, lines):
+                lnlabel.insert('end', '\n' + str(i))
+            lnlabel.config(state= 'disabled')
+	
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
     textPad.tag_add("active_line", "insert linestart", "insert lineend+1c")
