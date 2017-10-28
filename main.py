@@ -121,8 +121,7 @@ def show_info_bar():
 
 def update_line_number(event=None):
 
-     if event.lower() == 'reset':
-         lnlabel.delete(1.0,END)
+     
      if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
 
         lnlabel.config(state = 'normal')
