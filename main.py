@@ -528,7 +528,9 @@ root.bind('<KeyPress-F11>', fullscreen)
 
 textPad.tag_configure("active_line", background="ivory2")
 
-
+lnlabel.config(state='normal')
+lnlabel.insert('current', '1')
+lnlabel.config(state='disable')
 root.mainloop() #luup#
 	
 
