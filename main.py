@@ -136,7 +136,7 @@ def update_line_number(load=False, event=None):
                 lnlabel.delete(textPad.index('end'), 'end')
             lnlabel.config(state= 'disabled')
             lnlabel.see(textPad.index('current-1c'))
-   else:
+    else:
         lnlabel.config(state = 'normal')
         lines = int(textPad.index('end').split('.')[0])
         lnlabel.delete('end')
