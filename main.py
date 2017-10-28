@@ -122,16 +122,27 @@ def show_info_bar():
 def update_line_number(event=None):
 
      
-     if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
+     if load == False:
+        if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
+            lnlabel.config(state='normal')
+            line = int(textPad.index('end').split('.')[0]) - 1
+            lnlabel.insert('end', "\n" + str(line))
 
+            lnlabel.config(state='disabled')
+            lnlabel.see(textPad.index('end-1c'))
+        else:
+            lnlabel.config(state = 'normal')
+            if int(lnlabel.index('end').split('.')[0]) > int(textPad.index('end').split('.')[0]):
+                lnlabel.delete(textPad.index('end'), 'end')
+            lnlabel.config(state= 'disabled')
+            lnlabel.see(textPad.index('current-1c'))
+    else:
         lnlabel.config(state = 'normal')
-        line = int(textPad.index('end').split('.')[0]) - 1
-        lnlabel.insert('end', str(line) + "\n")
- 
+        lines = int(textPad.index('end').split('.')[0])
+        lnlabel.delete('end')
+        for i in range (2, lines):
+            lnlabel.insert('end', '\n' + str(i))
         lnlabel.config(state= 'disabled')
-        lnlabel.see(textPad.index('end-1c'))
-     else:
-         lnlabel.see(textPad.index('current-1c'))
 
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
@@ -250,23 +261,23 @@ def highlight_word(search=None, event=None):
 
 def undo():
     textPad.event_generate("<<Undo>>")
-    update_line_number()
+    
     
 def redo():
     textPad.event_generate("<<Redo>>")
-    update_line_number()
+   
 
 def cut():
     textPad.event_generate("<<Cut>>")
-    update_line_number()
+    
     
 def copy():
     textPad.event_generate("<<Copy>>")
-    update_line_number()
+    
 
 def paste():
     textPad.event_generate("<<Paste>>")
-    update_line_number()
+    
 
 
 ######################################################################
@@ -333,7 +344,7 @@ def update_file(event=None):
         root.title(os.path.basename(f) + " - TindyEditor") 
     except:
      pass
-    update_line_number()
+    
 ######################################################################
 '''Icone del menù'''
 
