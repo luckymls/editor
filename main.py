@@ -1,15 +1,27 @@
 
+
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
 import os
-
+import sys
 
 root = Tk()
 root.geometry('800x500')
 root.title('Untitled - TindyEditor')
 root.iconbitmap('icons/pypad.ico')
 root.resizable(width=1,height=1)
+
+##################
+
+'''Checking S.O.'''
+
+if sys.platform[:5].lower() == 'linux':
+    isLinux = 1
+else:
+    isLinux = 0
+
+
 ##################
 
 '''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
@@ -45,7 +57,7 @@ class config:
 ##################
 
 def popup(event):
-    cmenu.tk_popup(event.x_root, event.y_root)
+    cmenu.tk_popup(event.x_root, event.y_root, 0)
 
 '''Scelta tema'''
 def theme(x=None):
@@ -77,16 +89,16 @@ def show_info_bar():
         infobar.pack_forget()
 
 def update_line_number(event=None):
-	
-    if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
+    
+     if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
 
         lnlabel.config(state = 'normal')
         line = int(textPad.index('end').split('.')[0]) - 1
         lnlabel.insert('end', str(line) + "\n")
-
+ 
         lnlabel.config(state= 'disabled')
         lnlabel.see(textPad.index('end-1c'))
-    else: lnlabel.see(textPad.index('current-1c'))
+     else: lnlabel.see(textPad.index('current-1c'))
 
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
@@ -294,15 +306,20 @@ def update_file(event=None):
 
 '''Spiegazione rapida: label = testo, accelerator= testo per scorciatoia combinazione tasti, compund=posizione, command=comando da richiamare se si spunta/clicca l'opzione'''
 
-newicon = PhotoImage(file='icons/new_file.gif')
-openicon = PhotoImage(file='icons/open_file.gif')
-saveicon = PhotoImage(file='icons/Save.gif')
-cuticon = PhotoImage(file='icons/Cut.gif')
-copyicon = PhotoImage(file='icons/Copy.gif')
-pasteicon = PhotoImage(file='icons/Paste.gif')
-undoicon = PhotoImage(file='icons/Undo.gif')
-redoicon = PhotoImage(file='icons/Redo.gif')
-on_findicon = PhotoImage(file='icons/on_find.gif')
+if isLinux:
+    completePath = os.getcwd()+'/'
+else:
+    completePath = ''
+    
+newicon = PhotoImage(file=completePath+'icons/new_file.gif')
+openicon = PhotoImage(file=completePath+'icons/open_file.gif')
+saveicon = PhotoImage(file=completePath+'icons/save.gif')
+cuticon = PhotoImage(file=completePath+'icons/cut.gif')
+copyicon = PhotoImage(file=completePath+'icons/copy.gif')
+pasteicon = PhotoImage(file=completePath+'icons/paste.gif')
+undoicon = PhotoImage(file=completePath+'icons/undo.gif')
+redoicon = PhotoImage(file=completePath+'icons/redo.gif')
+on_findicon = PhotoImage(file=completePath+'icons/on_find.gif')
 
 '''Menù'''
 menubar = Menu(root)
