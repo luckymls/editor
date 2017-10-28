@@ -20,6 +20,37 @@ if sys.platform[:5].lower() == 'linux':
     isLinux = 1
 else:
     isLinux = 0
+##################
+
+class ToolTip(object):
+    def __init__(self, widget):
+        self.widget = widget
+        self.tipwindow = None
+        self.id = None
+        self.x = self.y = 0
+    def showtip(self, text):
+        self.text = text
+        if self.tipwindow or not self.text: return
+        x,y,cx,cy = self.widget.bbox("insert")
+        x = x + self.widget.winfo_rootx() +15
+        y = y + cy + self.widget.winfo_rooty() +65
+        self.tipwindow = tw = Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.wm_geometry("+%d+%d"%(x,y))
+        label = Label(tw, text=self.text, justify=LEFT,background="#ffffe0", relief=SOLID, borderwidth=1,font=("tahoma", "8", "normal"))
+        label.pack(ipadx=1)
+    def hidetip(self):
+        tw = self.tipwindow
+        self.tipwindow = None
+        if tw: tw.destroy()
+
+def createToolTip(self,widget,text):
+    toolTip = self.ToolTip(widget)
+    def enter(event): root.after(500,show,event)
+    def show(event): toolTip.showtip(text)
+    def leave(event): toolTip.hidetip()
+    widget.bind('<Enter>', enter)
+    widget.bind('<Leave>', leave)
 
 
 ##################
@@ -89,7 +120,9 @@ def show_info_bar():
         infobar.pack_forget()
 
 def update_line_number(event=None):
-    
+
+     if event.lower() == 'reset':
+         lnlabel.delete(1.0,END)
      if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
 
         lnlabel.config(state = 'normal')
@@ -98,7 +131,8 @@ def update_line_number(event=None):
  
         lnlabel.config(state= 'disabled')
         lnlabel.see(textPad.index('end-1c'))
-     else: lnlabel.see(textPad.index('current-1c'))
+     else:
+         lnlabel.see(textPad.index('current-1c'))
 
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
@@ -134,7 +168,7 @@ def anykey(event=None):
     
 def about(event=None):
     
-    showinfo("About", "Developed by @Luckymls, penso dovrei scrivere altro forse")
+    showinfo("About", "Developed by @Luckymls & Francesco, penso dovrei scrivere altro forse")
 
 def help_box(event=None):
 
@@ -311,8 +345,8 @@ if isLinux:
 else:
     completePath = ''
 root.iconbitmap(completePath+'icons/pypad.ico')    
-newicon = PhotoImage(file=completePath+'icons/new_file.gif')
-openicon = PhotoImage(file=completePath+'icons/open_file.gif')
+new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
+open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
 cuticon = PhotoImage(file=completePath+'icons/cut.gif')
 copyicon = PhotoImage(file=completePath+'icons/copy.gif')
@@ -320,14 +354,15 @@ pasteicon = PhotoImage(file=completePath+'icons/paste.gif')
 undoicon = PhotoImage(file=completePath+'icons/undo.gif')
 redoicon = PhotoImage(file=completePath+'icons/redo.gif')
 on_findicon = PhotoImage(file=completePath+'icons/on_find.gif')
+abouticon = PhotoImage(file=completePath+'icons/about.gif')
 
 '''Menù'''
 menubar = Menu(root)
 
 '''File menù'''
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, image=newicon, underline=0, command=new_file)
-filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=openicon, underline=0, command=open_file)
+filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, image=new_fileicon, underline=0, command=new_file)
+filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=open_fileicon, underline=0, command=open_file)
 filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
 filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_as)
 filemenu.add_command(label="Exit", accelerator='Alt+F4', command=exit_editor)
@@ -406,17 +441,23 @@ root.config(menu=menubar)
 
 '''Menù Scorciatoie e numero linea'''
 shortcutbar = Frame(root, height=25)
-icons = ['new_file', 'open_file', 'save', 'cut', 'copy', 'paste', 'undo', 'redo', 'on_find', 'about']
+
+
+icons = ['new_fileicon', 'open_fileicon', 'saveicon', 'cuticon', 'copyicon', 'pasteicon', 'undoicon', 'redoicon', 'on_findicon', 'abouticon']
 for i, icon in enumerate(icons):
-    tbicon = PhotoImage(file='icons/'+icon+'.gif')
-    cmd = eval(icon)
+    tbicon = eval(icon)
+    cmd = eval(icon[:-4])
     toolbar = Button(shortcutbar, image=tbicon,  command=cmd)
     toolbar.image = tbicon  
     toolbar.pack(side=LEFT)
+
 shortcutbar.pack(expand=NO, fill=X)
 
 lnlabel = Text(root,  width=4,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
+
+
+
 
 
 
