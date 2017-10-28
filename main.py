@@ -9,7 +9,7 @@ import sys
 root = Tk()
 root.geometry('800x500')
 root.title('Untitled - TindyEditor')
-root.iconbitmap('icons/pypad.ico')
+
 root.resizable(width=1,height=1)
 
 ##################
@@ -310,7 +310,7 @@ if isLinux:
     completePath = os.getcwd()+'/'
 else:
     completePath = ''
-    
+root.iconbitmap(completePath+'icons/pypad.ico')    
 newicon = PhotoImage(file=completePath+'icons/new_file.gif')
 openicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
