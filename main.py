@@ -307,7 +307,7 @@ def update_file(event=None):
         try:
             rand = random.randint(1, 3)
             if rand is 3:
-                print('salvo')
+               
                 f = 'Unsaved.txt'
                 fh = open(f, 'w')           
                 global filename
