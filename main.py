@@ -277,7 +277,7 @@ def copy():
 
 def paste():
     textPad.event_generate("<<Paste>>")
-    
+    update_line_number(load=True)
 
 
 ######################################################################
