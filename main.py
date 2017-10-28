@@ -1,3 +1,4 @@
+
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
@@ -9,6 +10,36 @@ root.geometry('800x500')
 root.title('Untitled - TindyEditor')
 root.iconbitmap('icons/pypad.ico')
 root.resizable(width=1,height=1)
+##################
+
+'''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
+
+class config:
+
+    '''Uso: config.get(nome_variabile)
+    config.set(nome_variabile, valore_variabile)'''
+    
+    def get(variabile=None):
+        
+        var_path = 'config/'+variabile
+        if os.path.exists(var_path):
+            return open(var_path).read(os.path.getsize(var_path))
+        else:
+            return None
+    
+        
+    def set(*args):
+        try:
+            os.mkdir('config')
+        except:
+            pass
+
+        variabile = args[0]
+        value = args[1]
+        var_path = 'config/'+variabile
+        f = open(var_path, 'w')
+        f.write(value)
+        f.close()
 
 
 ##################
@@ -17,14 +48,28 @@ def popup(event):
     cmenu.tk_popup(event.x_root, event.y_root, 0)
 
 '''Scelta tema'''
-def theme():
+def theme(val=None):
         global bgc,fgc
-        val = themechoice.get()
-        clrs = clrschms.get(val)
+       
+        if val:
+            val = themechoice.get()
+            config.set('theme', val)
+        else:
+            if config.get('theme'):
+                val = config.get('theme')
+            else:
+                val = themechoice.get()
+        
+        clrs = clrschms.get(val) #000000.FFFFFF
+        
         fgc, bgc = clrs.split('.')
         fgc, bgc = '#'+fgc, '#'+bgc
+        
         textPad.config(bg=bgc, fg=fgc)
-
+        config.set('theme', val)
+        
+        
+        
 def show_info_bar():
     val = showinbar.get()
     if val:
@@ -81,7 +126,7 @@ def anykey(event=None):
     
 def about(event=None):
     
-    showinfo("About", "Developed by @Luckymls, penso dovrei scrivere altro forse")
+    showinfo("About", "Developed by @Luckymls & Francesco, penso dovrei scrivere altro forse")
 
 def help_box(event=None):
 
@@ -322,9 +367,21 @@ clrschms = {
 '7. Olive Green': 'D1E7E0.5B8340',
 }
 themechoice= StringVar()
-themechoice.set('1. Default White')
+
+'''Imposto tema se salvato altrimenti default'''
+if config.get('theme'):
+   
+    
+    themechoice.set(config.get('theme'))
+    lambda: theme(config.get('theme'))
+    
+else:
+    themechoice.set('1. Default White')
+    
+    
+    
 for k in sorted(clrschms):
-    themesmenu.add_radiobutton(label=k, variable=themechoice, command=theme)
+    themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(k))
 
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
@@ -404,6 +461,7 @@ textPad.tag_configure("active_line", background="ivory2")
 
 
 root.mainloop() #luup#
+	
 
 
 '''
