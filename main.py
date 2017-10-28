@@ -77,19 +77,16 @@ def show_info_bar():
         infobar.pack_forget()
 
 def update_line_number(event=None):
-    txt = ''
-    
-    if showln.get(): 
-        endline, endcolumn = textPad.index('end-1c').split('.')
-        txt = '\n'.join(map(str, range(1, int(endline))))
-        if int(endline) <= 30:
-        
-            anchor = 'nw'
-        else:
-            anchor = 'sw'
-        lnlabel.config(text=txt, anchor=anchor)
-    currline, curcolumn = textPad.index("insert").split('.')
-    infobar.config(text='Line: %s | Column: %s'  %(currline,curcolumn) )
+	
+    if int(lnlabel.index('end').split('.')[0]) - 1 < int(textPad.index('end').split('.')[0]):
+
+        lnlabel.config(state = 'normal')
+        line = int(textPad.index('end').split('.')[0]) - 1
+        lnlabel.insert('end', str(line) + "\n")
+
+        lnlabel.config(state= 'disabled')
+        lnlabel.see(textPad.index('end-1c'))
+    else: lnlabel.see(textPad.index('current-1c'))
 
 def highlight_line(interval=100):
     textPad.tag_remove("active_line", 1.0, "end")
@@ -401,7 +398,7 @@ for i, icon in enumerate(icons):
     toolbar.pack(side=LEFT)
 shortcutbar.pack(expand=NO, fill=X)
 
-lnlabel = Label(root,  width=2,  bg = 'antique white')
+lnlabel = Text(root,  width=4,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
 
 
