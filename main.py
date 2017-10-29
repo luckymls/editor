@@ -1,5 +1,3 @@
-
-
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
@@ -460,12 +458,21 @@ lnlabel.pack(side=LEFT, fill=Y)
 #####################################
 
 #BUG da fixare: scrollbar numero riga difettosa, offset numero righe sbagliato
-textPad = Text(root, undo=True, takefocus=True)
+
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE)
 textPad.pack(expand=YES, fill=BOTH)
-scroll=Scrollbar(textPad)
-textPad.configure(yscrollcommand=scroll.set)
-scroll.config(command=textPad.yview)
-scroll.pack(side=RIGHT, fill=Y)
+
+scroll_y = Scrollbar(textPad)
+textPad.configure(yscrollcommand=scroll_y.set)
+scroll_y.config(command=textPad.yview)
+scroll_y.pack(side=RIGHT, fill=Y)
+
+
+scroll_x = Scrollbar(textPad, orient=HORIZONTAL)
+textPad.configure(xscrollcommand=scroll_x.set)
+scroll_x.config(command=textPad.xview)
+scroll_x.pack(side=BOTTOM, fill=X, expand=0)
+
 
 '''Info Bar'''
 
