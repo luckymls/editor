@@ -90,6 +90,7 @@ def theme(x=None):
         
 def night_mode(event=None):
     current_theme = themechoice.get()
+    objects=((menubar, filemenu, editmenu, viewmenu, aboutmenu, themesmenu, recentFiles))
     if nightmodeln.get():
         nightmodeln.set(0)
         themechoice.set(current_theme)
@@ -97,27 +98,21 @@ def night_mode(event=None):
         lnlabel.config(bg='antique white', fg='#000000')
         infobar.config(fg="#515151", bg="#F0F0F0")
         scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
+	scroll_x.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
         shortcutbar.config(bg="#F0F0F0")
-        menubar.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
-        filemenu.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
-        editmenu.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
-        viewmenu.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
-        aboutmenu.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
-        themesmenu.config(fg="#515151", bg="#F0F0F0", activebackground="#F0F0F0", activeforeground="#515151")
+        for i in objects:
+	    i.config(fg="#515151", bg="#F0F0F0", activebackground="#729FCF", activeforeground="#FFFFFF")
+        
     else:
         nightmodeln.set(1)
         textPad.config(fg="#ABB2BF", bg="#282C34")
         lnlabel.config(fg="#ABB2BF", bg="#282C34")
         infobar.config(fg="#9DA5B4", bg="#31363F")
         scroll_y.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
+	scroll_x.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
         shortcutbar.config(bg="#31363F")
-        menubar.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-        filemenu.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-        editmenu.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-        viewmenu.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-        aboutmenu.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-        themesmenu.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
-
+        for i in objects:
+	    i.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
 
 def show_info_bar():
     val = showinbar.get()
@@ -415,6 +410,7 @@ filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=op
 recentFiles = Menu(filemenu, tearoff=0)
 filemenu.add_cascade(label="Recent Files", menu=recentFiles)
 themechoice = IntVar()
+filemenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Add Recent Files'''
 
@@ -436,7 +432,7 @@ filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=
 filemenu.add_separator()
 filemenu.add_command(label="Exit", accelerator='Alt+F4', command=exit_editor)
 menubar.add_cascade(label="File", menu=filemenu)
-
+recentFiles.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 '''Edit menù'''
 editmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Edit", menu=editmenu)
@@ -450,7 +446,7 @@ editmenu.add_separator()
 editmenu.add_command(label="Find", compound=LEFT, image=on_findicon, accelerator='Ctrl+F', command=on_find)
 editmenu.add_separator()
 editmenu.add_command(label="Select All", compound=LEFT, accelerator='Ctrl+A', underline=7, command=select_all)
-
+editmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 '''View menu'''
 
 viewmenu = Menu(menubar, tearoff=0)
@@ -473,7 +469,7 @@ fullscreenln = IntVar()
 nightmodeln = IntVar()
 viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F10', command=night_mode)
 viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accelerator='F11', command=fullscreen)
-
+viewmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
 clrschms = {
@@ -501,13 +497,13 @@ else:
 
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(1))
-
+themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
 aboutmenu.add_command(label="About", compound=LEFT, command=about)
 aboutmenu.add_command(label="Help", command=help_box)
-
+aboutmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 root.config(menu=menubar)
 
 '''Menù Scorciatoie e numero linea'''
