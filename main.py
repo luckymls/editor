@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
+
 import os
 import sys
 import time
@@ -21,6 +22,7 @@ if sys.platform[:5].lower() == 'linux':
     isLinux = 1
 else:
     isLinux = 0
+    
 ##################
 
 
@@ -45,11 +47,18 @@ class config:
             os.mkdir('config')
         except:
             pass
-
+        
         variabile = args[0]
         value = args[1]
+        try:
+            overwrite = args[2]
+        except:
+            overwrite = False
+        '''Mode -> w = Sovrascrivo Mode -> a = Sposta puntatore a fine file e scrive'''
+        mode = 'w'
+        if overwrite: mode = 'a'
         var_path = 'config/'+variabile
-        f = open(var_path, 'w')
+        f = open(var_path, mode)
         f.write(value)
         f.close()
 
@@ -262,10 +271,21 @@ def new_file(event=None):
 def open_file(event=None):
     global filename
 
-    filename = filedialog.askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    filename = filedialog.askopenfilename(defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
     if filename == "":
         filename = None
     else:
+
+        pathAlreadyExists = 0
+        checkConf = config.get('recent files')
+        if checkConf: checkConf = checkConf.split('\n')
+        else: checkConf = []
+        for testPath in checkConf:
+            if testPath == filename:
+                pathAlreadyExists = 1
+        if pathAlreadyExists is 0:
+            config.set('recent files', '\n'+filename, 1)
+        
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
         textPad.delete(1.0,END)
@@ -273,6 +293,15 @@ def open_file(event=None):
         textPad.insert(1.0,fh.read())
         fh.close()
     update_line_number(load=True)
+
+def open_recent_file(filename=None):
+    
+    root.title(os.path.basename(filename) + " - Tkeditor")
+    textPad.delete(1.0,END)
+    fh = open(filename,"r")
+    textPad.insert(1.0,fh.read())
+    fh.close()
+    update_line_number(load=True)    
 
 def save(event=None):
     global filename
@@ -287,7 +316,7 @@ def save(event=None):
 def save_as():
     try:
         '''Apro finestra wn per salvare file con nome'''
-        f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+        f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
         fh = open(f, 'w')
         global filename
         filename = f
@@ -296,8 +325,8 @@ def save_as():
         fh.close()
         '''Imposto il titolo della finestra principale'''
         root.title(os.path.basename(f) + " - Tkeditor")
-    except:
-        pass
+    except Exception as e:
+        print('Exception: '+ str(e))
 
 def update_file(event=None):
 
@@ -322,6 +351,7 @@ def update_info_bar():
     total = int(textPad.index('end').split('.')[0]) - 1
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
+    
 ######################################################################
 '''Icone del menù'''
 
@@ -331,8 +361,9 @@ if isLinux:
     completePath = os.getcwd()+'/'
 else:
     completePath = ''
-if not isLinux:
-	root.iconbitmap(completePath+'icons/pypad.ico')
+    root.iconbitmap('icons/pypad.ico')
+
+	
 new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
 open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
@@ -350,9 +381,25 @@ menubar = Menu(root)
 '''File menù'''
 filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, image=new_fileicon, underline=0, command=new_file)
-filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=open_fileicon, underline=0, command=open_file)
-filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
 filemenu.add_separator()
+filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=open_fileicon, underline=0, command=open_file)
+recentFiles = Menu(filemenu, tearoff=0)
+filemenu.add_cascade(label="Recent Files", menu=recentFiles)
+themechoice = IntVar()
+
+'''Add Recent Files'''
+
+try:
+    recentOpen = config.get('recent files').split('\n')
+    for filePaths in recentOpen:
+        if len(filePaths) > 3:
+            fileName = os.path.basename(filePaths)[0].upper()+os.path.basename(filePaths)[1:]
+            recentFiles.add_command(label=fileName, compound = LEFT, underline = 0, command= lambda: open_recent_file(filePaths))
+except Exception as e:
+    print('Exception: '+ str(e))
+
+filemenu.add_separator()
+filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
 filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_as)
 autoSave = IntVar()
 autoSave.set(1)
@@ -446,11 +493,13 @@ for i, icon in enumerate(icons):
 
 shortcutbar.pack(expand=NO, fill=X)
 
+
+
+
+'''Row Bar'''
+
 lnlabel = Text(root,  width=4,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
-
-
-
 
 
 
@@ -472,6 +521,8 @@ scroll_x = Scrollbar(textPad, orient=HORIZONTAL)
 textPad.configure(xscrollcommand=scroll_x.set)
 scroll_x.config(command=textPad.xview)
 scroll_x.pack(side=BOTTOM, fill=X, expand=0)
+
+
 
 
 '''Info Bar'''
