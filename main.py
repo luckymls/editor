@@ -105,8 +105,8 @@ def night_mode(event=None):
         nightmodeln.set(0)
         themechoice.set(current_theme)
         theme(1)
-	textPad.config(insertbackground="#000000")
-      
+        textPad.config(insertbackground="#000000")
+
         lnlabel.config(bg='antique white', fg='#000000')
         infobar.config(fg=colour['black'], bg=colour['white'])
         scroll_x.config(bg=colour['white'], activebackground=colour['white'], troughcolor=colour['grey'],highlightbackground=colour['white2'])
