@@ -22,7 +22,7 @@ if sys.platform[:5].lower() == 'linux':
     isLinux = 1
 else:
     isLinux = 0
-    
+
 ##################
 
 
@@ -47,7 +47,7 @@ class config:
             os.mkdir('config')
         except:
             pass
-        
+
         variabile = args[0]
         value = args[1]
         try:
@@ -87,7 +87,7 @@ def theme(x=None):
 
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
-        
+
 def night_mode(event=None):
     current_theme = themechoice.get()
     objects=((menubar, filemenu, editmenu, viewmenu, aboutmenu, themesmenu, recentFiles))
@@ -97,19 +97,19 @@ def night_mode(event=None):
         theme(1)
         lnlabel.config(bg='antique white', fg='#000000')
         infobar.config(fg="#515151", bg="#F0F0F0")
-        scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
-	scroll_x.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
+        scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")s
+        scroll_x.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
         shortcutbar.config(bg="#F0F0F0")
         for i in objects:
-	    i.config(fg="#515151", bg="#F0F0F0", activebackground="#729FCF", activeforeground="#FFFFFF")
-        
+            i.config(fg="#515151", bg="#F0F0F0", activebackground="#729FCF", activeforeground="#FFFFFF")
+
     else:
         nightmodeln.set(1)
         textPad.config(fg="#ABB2BF", bg="#282C34")
         lnlabel.config(fg="#ABB2BF", bg="#282C34")
         infobar.config(fg="#9DA5B4", bg="#31363F")
         scroll_y.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
-	scroll_x.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
+        scroll_x.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
         shortcutbar.config(bg="#31363F")
         for i in objects:
 	    i.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
@@ -309,7 +309,7 @@ def open_file(event=None):
                 pathAlreadyExists = 1
         if pathAlreadyExists is 0:
             config.set('recent files', '\n'+filename, 1)
-        
+
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
         textPad.delete(1.0,END)
@@ -319,13 +319,13 @@ def open_file(event=None):
     update_line_number(load=True)
 
 def open_recent_file(filename=None):
-    
+
     root.title(os.path.basename(filename) + " - Tkeditor")
     textPad.delete(1.0,END)
     fh = open(filename,"r")
     textPad.insert(1.0,fh.read())
     fh.close()
-    update_line_number(load=True)    
+    update_line_number(load=True)
 
 def save(event=None):
     global filename
@@ -375,7 +375,7 @@ def update_info_bar():
     total = int(textPad.index('end').split('.')[0]) - 1
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
-    
+
 ######################################################################
 '''Icone del menù'''
 
@@ -387,7 +387,7 @@ else:
     completePath = ''
     root.iconbitmap('icons/pypad.ico')
 
-	
+
 new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
 open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
