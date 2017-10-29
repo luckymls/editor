@@ -477,7 +477,7 @@ viewmenu.add_cascade(label="Themes", menu=themesmenu)
 viewmenu.add_separator()
 fullscreenln = IntVar()
 nightmodeln = IntVar()
-viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F10', command=night_mode)
+viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F9', command=night_mode)
 viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accelerator='F11', command=fullscreen)
 viewmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
@@ -603,7 +603,7 @@ textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
-root.bind('<KeyPress-F10>', night_mode)
+root.bind('<KeyPress-F9>', night_mode)
 root.bind('<KeyPress-F11>', fullscreen)
 
 
