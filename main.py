@@ -294,6 +294,26 @@ def paste():
 
 ######################################################################
 
+def wSetting():
+    
+    t3 = Toplevel(root)
+    t3.title('Settings')
+    t3.geometry('500x300')
+    t3.resizable(width=0,height=0)
+    t3.transient(root)
+
+    '''Menu'''
+
+    menuBar = Menu(t3)
+    t3.config(menu=menuBar)
+    
+    nightMenu = Menu(menuBar, tearoff=0)
+    menuBar.add_cascade(label="Help", menu=nightMenu)
+    nightMenu.add_command(label="About", compound=LEFT, command=about)
+    menuBar.add_command(label="Close", compound=LEFT, command=t3.destroy)
+    
+    
+######################################################################
 def new_file(event=None):
     global filename
     filename = None
@@ -508,6 +528,16 @@ else:
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(1))
 themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+
+
+
+'''Settings menu'''
+
+settingsMenu = Menu(menubar,tearoff=0)
+menubar.add_cascade(label='Settings', menu=settingsMenu)
+settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
+
+
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
@@ -613,3 +643,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
