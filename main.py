@@ -97,7 +97,7 @@ def night_mode(event=None):
         theme(1)
         lnlabel.config(bg='antique white', fg='#000000')
         infobar.config(fg="#515151", bg="#F0F0F0")
-        scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")s
+        scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
         scroll_x.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
         shortcutbar.config(bg="#F0F0F0")
         for i in objects:
@@ -112,7 +112,7 @@ def night_mode(event=None):
         scroll_x.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
         shortcutbar.config(bg="#31363F")
         for i in objects:
-	    i.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
+            i.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
 
 def show_info_bar():
     val = showinbar.get()
