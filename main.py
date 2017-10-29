@@ -90,29 +90,47 @@ def theme(x=None):
 
 def night_mode(event=None):
     current_theme = themechoice.get()
-    objects=((menubar, filemenu, editmenu, viewmenu, aboutmenu, themesmenu, recentFiles))
+    colour = {
+        'black': '#515151',
+        'black2': '#282C34',
+        'black3': '#31363F',
+        'black4': '#444447',
+        'white': '#F0F0F0',
+        'white2': '#F7F7F7',
+        'grey':  '#B3B3B3',
+        'grey2': '#ABB2BF',
+        'grey3': '#9DA5B4',
+        }
     if nightmodeln.get():
         nightmodeln.set(0)
         themechoice.set(current_theme)
         theme(1)
+      
         lnlabel.config(bg='antique white', fg='#000000')
-        infobar.config(fg="#515151", bg="#F0F0F0")
-        scroll_y.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
-        scroll_x.config(bg="#F0F0F0", activebackground="#F0F0F0", troughcolor="#B3B3B3",highlightbackground="#F7F7F7")
-        shortcutbar.config(bg="#F0F0F0")
-        for i in objects:
-            i.config(fg="#515151", bg="#F0F0F0", activebackground="#729FCF", activeforeground="#FFFFFF")
-
+        infobar.config(fg=colour['black'], bg=colour['white'])
+        scroll_x.config(bg=colour['white'], activebackground=colour['white'], troughcolor=colour['grey'],highlightbackground=colour['white2'])
+        scroll_y.config(bg=colour['white'], activebackground=colour['white'], troughcolor=colour['grey'],highlightbackground=colour['white2'])
+        shortcutbar.config(bg=colour['white'])
+        menubar.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
+        filemenu.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
+        editmenu.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
+        viewmenu.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
+        aboutmenu.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
+        themesmenu.config(fg=colour['black'], bg=colour['white'], activebackground=colour['white'], activeforeground=colour['black'])
     else:
         nightmodeln.set(1)
-        textPad.config(fg="#ABB2BF", bg="#282C34")
-        lnlabel.config(fg="#ABB2BF", bg="#282C34")
-        infobar.config(fg="#9DA5B4", bg="#31363F")
-        scroll_y.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
-        scroll_x.config(bg="#31363F", activebackground="#31363F", troughcolor="#282C34",highlightbackground="#282C34")
-        shortcutbar.config(bg="#31363F")
-        for i in objects:
-            i.config(fg="#9DA5B4", bg="#31363F", activebackground="#444447", activeforeground="#9DA5B4")
+        textPad.config(fg=colour['grey2'], bg=colour['black2'])
+        lnlabel.config(fg=colour['grey2'], bg=colour['black2'])
+        infobar.config(fg=colour['grey3'], bg=colour['black3'])
+        scroll_x.config(bg=colour['black3'], activebackground=colour['black3'], troughcolor=colour['black2'],highlightbackground=colour['black2'])
+        scroll_y.config(bg=colour['black3'], activebackground=colour['black3'], troughcolor=colour['black2'],highlightbackground=colour['black2'])
+        shortcutbar.config(bg=colour['black3'])
+        menubar.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
+        filemenu.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
+        editmenu.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
+        viewmenu.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
+        aboutmenu.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
+        themesmenu.config(fg=colour['grey3'], bg=colour['black3'], activebackground=colour['black4'], activeforeground=colour['grey3'])
 
 def show_info_bar():
     val = showinbar.get()
