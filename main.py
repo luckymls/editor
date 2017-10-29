@@ -32,16 +32,16 @@ class config:
 
     '''Uso: config.get(nome_variabile)
     config.set(nome_variabile, valore_variabile)'''
-    
+
     def get(variabile=None):
-        
+
         var_path = 'config/'+variabile
         if os.path.exists(var_path):
             return open(var_path).read(os.path.getsize(var_path))
         else:
             return None
-    
-        
+
+
     def set(*args):
         try:
             os.mkdir('config')
@@ -71,18 +71,18 @@ def theme(x=None):
         else:
             val = themechoice.get()
             config.set('theme', val)
-        
-        
+
+
         clrs = clrschms.get(val) #000000.FFFFFF
-        
+
         fgc, bgc = clrs.split('.')
         fgc, bgc = '#'+fgc, '#'+bgc
-        
+
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
-        
-        
-        
+
+
+
 def show_info_bar():
     val = showinbar.get()
     if val:
@@ -91,7 +91,7 @@ def show_info_bar():
         infobar.pack_forget()
 
 def update_line_number(load=False, event=None):
-
+    update_info_bar()
     if showln.get():
         if load == False:
             if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
@@ -128,7 +128,7 @@ def toggle_highlight(event=None):
     undo_highlight() if not val else highlight_line()
 
 def fullscreen(event=None):
-    
+
     if fullscreenln.get():
         state = 0
         fullscreenln.set(0)
@@ -137,18 +137,18 @@ def fullscreen(event=None):
         fullscreenln.set(1)
     #screen_w = root.winfo_screenwidth()
     #screen_h = root.winfo_screenheight()
-    
+
     root.attributes('-fullscreen', state)
-    
+
 def anykey(event=None):
     update_line_number()
     update_file()
     highlight_word()
 
 ####################
-    
+
 def about(event=None):
-    
+
     showinfo("About", "Developed by @Luckymls & Francesco, penso dovrei scrivere altro forse")
 
 def help_box(event=None):
@@ -166,7 +166,7 @@ root.protocol('WM_DELETE_WINDOW',exit_editor)
 
 
 '''Index e tags'''
-def select_all(event=None):   
+def select_all(event=None):
 	textPad.tag_add('sel', '1.0', 'end')
 
 def on_find(event=None):
@@ -207,7 +207,7 @@ def search_for(needle,cssnstv, textPad, t2,e) :
 #Qualcosa non mi convince riguardo al ciclo while e tag_config
 
 def highlight_word(search=None, event=None):
-    if highlight_wordln.get(): 
+    if highlight_wordln.get():
         textPad.tag_remove('code', '1.0', END)
         pos = '1.0'
         count = 0
@@ -216,7 +216,7 @@ def highlight_word(search=None, event=None):
             pos = '1.0'
             count = 0
             while True:
-                
+
                 pos = textPad.search(search, pos, nocase=True, stopindex=END)
                 if not pos: break
                 lastpos = '%s+%dc' % (pos, len(search))
@@ -232,19 +232,19 @@ def highlight_word(search=None, event=None):
 
 def undo():
     textPad.event_generate("<<Undo>>")
-    
-    
+
+
 def redo():
     textPad.event_generate("<<Redo>>")
-   
+
 
 def cut():
     textPad.event_generate("<<Cut>>")
-    
-    
+
+
 def copy():
     textPad.event_generate("<<Copy>>")
-    
+
 
 def paste():
     textPad.event_generate("<<Paste>>")
@@ -252,7 +252,7 @@ def paste():
 
 
 ######################################################################
-    
+
 def new_file(event=None):
     global filename
     filename = None
@@ -263,16 +263,16 @@ def new_file(event=None):
 
 def open_file(event=None):
     global filename
-    
+
     filename = filedialog.askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
     if filename == "":
         filename = None
     else:
         '''Ritorna il nome del file senza estensione'''
-        root.title(os.path.basename(filename) + " - Tkeditor") 
-        textPad.delete(1.0,END)         
-        fh = open(filename,"r")        
-        textPad.insert(1.0,fh.read()) 
+        root.title(os.path.basename(filename) + " - Tkeditor")
+        textPad.delete(1.0,END)
+        fh = open(filename,"r")
+        textPad.insert(1.0,fh.read())
         fh.close()
     update_line_number(load=True)
 
@@ -290,36 +290,40 @@ def save_as():
     try:
         '''Apro finestra wn per salvare file con nome'''
         f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
-        fh = open(f, 'w')           
+        fh = open(f, 'w')
         global filename
         filename = f
         textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)              
+        fh.write(textoutput)
         fh.close()
         '''Imposto il titolo della finestra principale'''
-        root.title(os.path.basename(f) + " - Tkeditor") 
+        root.title(os.path.basename(f) + " - Tkeditor")
     except:
         pass
 
 def update_file(event=None):
-    
+
     if autoSave.get():
         try:
             rand = random.randint(1, 3)
             if rand is 3:
-               
+
                 f = 'Unsaved.txt'
-                fh = open(f, 'w')           
+                fh = open(f, 'w')
                 global filename
                 filename = f
                 textoutput = textPad.get(1.0, END)
-                fh.write(textoutput)              
+                fh.write(textoutput)
                 fh.close()
                 '''Imposto il titolo della finestra principale'''
-                root.title(os.path.basename(f) + " - TindyEditor") 
+                root.title(os.path.basename(f) + " - TindyEditor")
         except:
          pass
-    
+def update_info_bar():
+    line = int(textPad.index('insert').split('.')[0])
+    total = int(textPad.index('end').split('.')[0]) - 1
+    column = int(textPad.index('insert').split('.')[1]) + 1
+    infobar.config(text=f'Line {line}/{total} | Column {column}')
 ######################################################################
 '''Icone del menù'''
 
@@ -330,7 +334,7 @@ if isLinux:
 else:
     completePath = ''
 if not isLinux:
-	root.iconbitmap(completePath+'icons/pypad.ico')    
+	root.iconbitmap(completePath+'icons/pypad.ico')
 new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
 open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
 saveicon = PhotoImage(file=completePath+'icons/save.gif')
@@ -357,7 +361,7 @@ autoSave.set(1)
 filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", accelerator='Alt+F4', command=exit_editor)
-menubar.add_cascade(label="File", menu=filemenu) 
+menubar.add_cascade(label="File", menu=filemenu)
 
 '''Edit menù'''
 editmenu = Menu(menubar, tearoff=0)
@@ -399,7 +403,7 @@ viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accele
 clrschms = {
 '1. Default White': '000000.FFFFFF',
 '2. Greygarious Grey':'83406A.D1D4D1',
-'3. Lovely Lavender':'202B4B.E1E1FF' , 
+'3. Lovely Lavender':'202B4B.E1E1FF' ,
 '4. Aquamarine': '5B8340.D1E7E0',
 '5. Bold Beige': '4B4620.FFF0E1',
 '6. Cobalt Blue':'ffffBB.3333aa',
@@ -409,16 +413,16 @@ themechoice= StringVar()
 
 '''Imposto tema se salvato altrimenti default'''
 if config.get('theme'):
-   
-    
+
+
     themechoice.set(config.get('theme'))
-    
-    
+
+
 else:
     themechoice.set('1. Default White')
-    
-    
-    
+
+
+
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(1))
 
@@ -439,7 +443,7 @@ for i, icon in enumerate(icons):
     tbicon = eval(icon)
     cmd = eval(icon[:-4])
     toolbar = Button(shortcutbar, image=tbicon,  command=cmd)
-    toolbar.image = tbicon  
+    toolbar.image = tbicon
     toolbar.pack(side=LEFT)
 
 shortcutbar.pack(expand=NO, fill=X)
@@ -464,7 +468,8 @@ scroll.config(command=textPad.yview)
 scroll.pack(side=RIGHT, fill=Y)
 
 '''Info Bar'''
-infobar = Label(textPad, text='Line: 1 | Column:0')
+
+infobar = Label(textPad, text=f'Line:1 | Column:0')
 infobar.pack(expand=NO, fill=None, side=RIGHT, anchor='se')
 
 
@@ -474,8 +479,8 @@ for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
     cmd = eval(i)
     '''Aggiunto da poco, mette maiuscola nel menù cut => Cut'''
     i = i[0].upper()+i[1:]
-   
-    cmenu.add_command(label=i, compound=LEFT, command=cmd)  
+
+    cmenu.add_command(label=i, compound=LEFT, command=cmd)
 cmenu.add_separator()
 cmenu.add_command(label='Select All', underline=7, command=select_all)
 textPad.bind("<Button-3>", popup)
