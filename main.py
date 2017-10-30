@@ -35,7 +35,8 @@ class config:
 
     def get(variabile=None):
 
-        var_path = 'config/'+variabile
+        var_path = '.config/'+variabile
+        
         if os.path.exists(var_path):
             return open(var_path).read(os.path.getsize(var_path))
         else:
@@ -44,9 +45,12 @@ class config:
 
     def set(*args):
         try:
-            os.mkdir('config')
-        except:
-            pass
+            os.mkdir('.config')
+            if isLinux is 0:
+                folderPath = os.getcwd()+'/.config'
+                os.popen('attrib +S +H '+folderPath)
+        except Exception as e:
+            print(e)
 
         variabile = args[0]
         value = args[1]
@@ -57,7 +61,7 @@ class config:
         '''Mode -> w = Sovrascrivo Mode -> a = Sposta puntatore a fine file e scrive'''
         mode = 'w'
         if overwrite: mode = 'a'
-        var_path = 'config/'+variabile
+        var_path = '.config/'+variabile
         f = open(var_path, mode)
         f.write(value)
         f.close()
@@ -130,8 +134,8 @@ def show_info_bar():
     val = showinbar.get()
     if val:
         infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
-	scroll_x-pack_forget()
-	scroll_x.pack(side=BOTTOM, fill=X)
+        scroll_x.pack_forget()
+        scroll_x.pack(side=BOTTOM, fill=X)
     elif not val:
         infobar.pack_forget()
 
@@ -573,6 +577,7 @@ infobar = Label(root, text=f'Line:1 | Column:0')
 infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
 
 '''Scrollbars drawing'''
+
 scroll_y = Scrollbar(root)
 scroll_y.pack(side=RIGHT, fill=Y)
 
@@ -619,6 +624,7 @@ theme(1)
 
 #################################################
 '''Rilevo evento tastiera, chiamo funzione'''
+
 
 
 root.bind('<Any-KeyPress>', anykey)
