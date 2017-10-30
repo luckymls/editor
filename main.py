@@ -294,6 +294,26 @@ def paste():
 
 ######################################################################
 
+def wSetting():
+    
+    t3 = Toplevel(root)
+    t3.title('Settings')
+    t3.geometry('500x300')
+    t3.resizable(width=0,height=0)
+    t3.transient(root)
+
+    '''Menu'''
+
+    menuBar = Menu(t3)
+    t3.config(menu=menuBar)
+    
+    nightMenu = Menu(menuBar, tearoff=0)
+    menuBar.add_cascade(label="Help", menu=nightMenu)
+    nightMenu.add_command(label="About", compound=LEFT, command=about)
+    menuBar.add_command(label="Close", compound=LEFT, command=t3.destroy)
+    
+    
+######################################################################
 def new_file(event=None):
     global filename
     filename = None
@@ -477,7 +497,7 @@ viewmenu.add_cascade(label="Themes", menu=themesmenu)
 viewmenu.add_separator()
 fullscreenln = IntVar()
 nightmodeln = IntVar()
-viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F10', command=night_mode)
+viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F9', command=night_mode)
 viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accelerator='F11', command=fullscreen)
 viewmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
@@ -508,6 +528,16 @@ else:
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command= lambda: theme(1))
 themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+
+
+
+'''Settings menu'''
+
+settingsMenu = Menu(menubar,tearoff=0)
+menubar.add_cascade(label='Settings', menu=settingsMenu)
+settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
+
+
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
@@ -531,43 +561,41 @@ for i, icon in enumerate(icons):
 shortcutbar.pack(expand=NO, fill=X)
 
 
-#####################################
 
-#BUG da fixare: scrollbar numero riga difettosa, offset numero righe sbagliato
-
-'''Info Bar'''
-
-infobar = Label(root, text=f'Line:1 | Column:0')
-infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
-
-'''Scrollbars drawing'''
-scroll_y = Scrollbar(root)
-scroll_y.pack(side=RIGHT, fill=Y)
-
-scroll_x = Scrollbar(root, orient=HORIZONTAL)
-scroll_x.pack(side=BOTTOM, fill=X)
 
 '''Row Bar'''
 
 lnlabel = Text(root,  width=4,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
 
-'''Text widget'''
+
+
+'''Text widget and scrollbar widget'''
+#####################################
+
+#BUG da fixare: scrollbar numero riga difettosa, offset numero righe sbagliato
 
 textPad = Text(root, undo=True, takefocus=True, wrap=NONE)
 textPad.pack(expand=YES, fill=BOTH)
 
-
-'''Scrollbar functiont'''
-
+scroll_y = Scrollbar(textPad)
 textPad.configure(yscrollcommand=scroll_y.set)
 scroll_y.config(command=textPad.yview)
+scroll_y.pack(side=RIGHT, fill=Y)
 
 
+scroll_x = Scrollbar(textPad, orient=HORIZONTAL)
 textPad.configure(xscrollcommand=scroll_x.set)
 scroll_x.config(command=textPad.xview)
+scroll_x.pack(side=BOTTOM, fill=X, expand=0)
 
 
+
+
+'''Info Bar'''
+
+infobar = Label(textPad, text=f'Line:1 | Column:0')
+infobar.pack(expand=NO, fill=None, side=RIGHT, anchor='se')
 
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
@@ -605,7 +633,7 @@ textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
-root.bind('<KeyPress-F10>', night_mode)
+root.bind('<KeyPress-F9>', night_mode)
 root.bind('<KeyPress-F11>', fullscreen)
 
 
