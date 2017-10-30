@@ -99,7 +99,7 @@ def night_mode(event=None):
     grey = '#B3B3B3'
     grey2 = '#ABB2BF'
     grey3 = '#9DA5B4'
-    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles))
+    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
     if nightmodeln.get():
         nightmodeln.set(0)
         themechoice.set(current_theme)
@@ -111,6 +111,7 @@ def night_mode(event=None):
         scroll_x.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
         scroll_y.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
         shortcutbar.config(bg=white)
+        root.config(bg=white)
         for i in objects:
             i.config(fg=black, bg=white, activebackground=white, activeforeground=black)
     else:
@@ -121,6 +122,7 @@ def night_mode(event=None):
         scroll_x.config(bg=black3, activebackground=black3, troughcolor=black2,highlightbackground=black2)
         scroll_y.config(bg=black3, activebackground=black3, troughcolor=black2,highlightbackground=black2)
         shortcutbar.config(bg=black3)
+        root.config(bg=black3)
         for i in objects:
             i.config(fg=grey3, bg=black3, activebackground=black4, activeforeground=grey3)
 
@@ -536,7 +538,7 @@ themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 settingsMenu = Menu(menubar,tearoff=0)
 menubar.add_cascade(label='Settings', menu=settingsMenu)
 settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
-
+settingsMenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
@@ -563,39 +565,38 @@ shortcutbar.pack(expand=NO, fill=X)
 
 
 
+'''Info Bar'''
+
+infobar = Label(root, text=f'Line:1 | Column:0')
+infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
+
+'''Scrollbars drawing'''
+scroll_y = Scrollbar(root)
+scroll_y.pack(side=RIGHT, fill=Y)
+
+scroll_x = Scrollbar(root, orient=HORIZONTAL)
+scroll_x.pack(side=BOTTOM, fill=X)
+
 '''Row Bar'''
 
 lnlabel = Text(root,  width=4,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
 
-
-
-'''Text widget and scrollbar widget'''
-#####################################
-
-#BUG da fixare: scrollbar numero riga difettosa, offset numero righe sbagliato
+'''Text widget'''
 
 textPad = Text(root, undo=True, takefocus=True, wrap=NONE)
 textPad.pack(expand=YES, fill=BOTH)
 
-scroll_y = Scrollbar(textPad)
+
+'''Scrollbar function'''
+
 textPad.configure(yscrollcommand=scroll_y.set)
 scroll_y.config(command=textPad.yview)
-scroll_y.pack(side=RIGHT, fill=Y)
 
 
-scroll_x = Scrollbar(textPad, orient=HORIZONTAL)
 textPad.configure(xscrollcommand=scroll_x.set)
 scroll_x.config(command=textPad.xview)
-scroll_x.pack(side=BOTTOM, fill=X, expand=0)
 
-
-
-
-'''Info Bar'''
-
-infobar = Label(textPad, text=f'Line:1 | Column:0')
-infobar.pack(expand=NO, fill=None, side=RIGHT, anchor='se')
 
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
