@@ -36,7 +36,7 @@ class config:
     def get(variabile=None):
 
         var_path = '.config/'+variabile
-        
+
         if os.path.exists(var_path):
             return open(var_path).read(os.path.getsize(var_path))
         else:
@@ -197,7 +197,7 @@ def anykey(event=None):
     update_line_number()
     update_info_bar()
     highlight_word()
-
+    update_info_bar()
 ####################
 
 def about(event=None):
@@ -622,7 +622,9 @@ def mousewheel(event):
         lnlabel.yview_scroll(1, 'units')
         textPad.yview_moveto(lnlabel.yview()[0])
 
-
+def select(event):
+    lnlabel.yview_moveto(textPad.yview()[0])
+    update_info_bar()
 textPad.configure(yscrollcommand=scroll_y.set)
 lnlabel.config(yscrollcommand=scroll_y.set)
 scroll_y.config(command=yscroll)
@@ -671,6 +673,7 @@ textPad.bind('<Control-e>', highlight_word)
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
+textPad.bind_all('<B1-Motion>', select)
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
@@ -683,4 +686,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-
