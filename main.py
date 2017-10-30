@@ -342,16 +342,6 @@ def open_file(event=None):
         filename = None
     else:
 
-        pathAlreadyExists = 0
-        checkConf = config.get('recent files')
-        if checkConf: checkConf = checkConf.split('\n')
-        else: checkConf = []
-        for testPath in checkConf:
-            if testPath == filename:
-                pathAlreadyExists = 1
-        if pathAlreadyExists is 0:
-            config.set('recent files', '\n'+filename, 1)
-
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
         textPad.delete(1.0,END)
@@ -372,6 +362,16 @@ def open_recent_file(filename=None):
 def save(event=None):
     global filename
     try:
+
+        pathAlreadyExists = 0
+        checkConf = config.get('recent files')
+        if checkConf: checkConf = checkConf.split('\n')
+        else: checkConf = []
+        for testPath in checkConf:
+            if testPath == filename:
+                pathAlreadyExists = 1
+        if pathAlreadyExists is 0:
+            config.set('recent files', '\n'+filename, 1)
         f = open(filename, 'w')
         letter = textPad.get(1.0, 'end')
         f.write(letter)
@@ -380,19 +380,34 @@ def save(event=None):
         save_as()
 
 def save_as():
+    global filename
     try:
+
+        
         '''Apro finestra wn per salvare file con nome'''
         f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
         fh = open(f, 'w')
-        global filename
         filename = f
+
+        pathAlreadyExists = 0
+        checkConf = config.get('recent files')
+        if checkConf: checkConf = checkConf.split('\n')
+        else: checkConf = []
+        for testPath in checkConf:
+            if testPath == filename:
+                pathAlreadyExists = 1
+        if pathAlreadyExists is 0:
+            config.set('recent files', '\n'+filename, 1)
+        
         textoutput = textPad.get(1.0, END)
         fh.write(textoutput)
         fh.close()
-        '''Imposto il titolo della finestra principale'''
         root.title(os.path.basename(f) + " - Tkeditor")
+
+
+        
     except Exception as e:
-        print('Exception: '+ str(e))
+        print('Exception: '+ e)
 
 def update_file(event=None):
     update_line_number()
@@ -686,3 +701,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
