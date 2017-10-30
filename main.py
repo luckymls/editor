@@ -129,7 +129,9 @@ def night_mode(event=None):
 def show_info_bar():
     val = showinbar.get()
     if val:
-        infobar.pack(expand=NO, fill=None, side=RIGHT, anchor='se')
+        infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
+	scroll_x-pack_forget()
+	scroll_x.pack(side=BOTTOM, fill=X)
     elif not val:
         infobar.pack_forget()
 
