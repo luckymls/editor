@@ -554,6 +554,9 @@ aboutmenu.add_command(label="Help", command=help_box)
 aboutmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 root.config(menu=menubar)
 
+'''Exit menu'''
+menubar.add_command(label='Exit', command=exit_editor)
+
 '''Menù Scorciatoie e numero linea'''
 shortcutbar = Frame(root, height=25)
 
