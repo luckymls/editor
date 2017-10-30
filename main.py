@@ -161,8 +161,10 @@ def update_line_number(load=False, event=None):
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
             lnlabel.config(state = 'normal')
+
             lines = int(textPad.index('end').split('.')[0])
-            lnlabel.delete('end')
+            lnlabel.delete(2.0, 'end')
+            print(lines)
             for i in range (2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state= 'disabled')
@@ -285,7 +287,7 @@ def highlight_word(search=None, event=None):
 
 def undo():
     textPad.event_generate("<<Undo>>")
-
+    update_line_number()
 
 def redo():
     textPad.event_generate("<<Redo>>")
@@ -298,10 +300,13 @@ def cut():
 def copy():
     textPad.event_generate("<<Copy>>")
 
-
-def paste():
+    
+def paste(event=None):
     textPad.event_generate("<<Paste>>")
     update_line_number(load=True)
+
+
+
 
 
 ######################################################################
@@ -342,6 +347,7 @@ def open_file(event=None):
         filename = None
     else:
 
+
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
         textPad.delete(1.0,END)
@@ -362,7 +368,6 @@ def open_recent_file(filename=None):
 def save(event=None):
     global filename
     try:
-
         pathAlreadyExists = 0
         checkConf = config.get('recent files')
         if checkConf: checkConf = checkConf.split('\n')
@@ -383,29 +388,27 @@ def save_as():
     global filename
     try:
 
-        
+
         '''Apro finestra wn per salvare file con nome'''
-        f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
-        fh = open(f, 'w')
-        filename = f
+            f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
+            fh = open(f, 'w')
+            filename = f
 
-        pathAlreadyExists = 0
-        checkConf = config.get('recent files')
-        if checkConf: checkConf = checkConf.split('\n')
-        else: checkConf = []
-        for testPath in checkConf:
-            if testPath == filename:
-                pathAlreadyExists = 1
-        if pathAlreadyExists is 0:
-            config.set('recent files', '\n'+filename, 1)
-        
-        textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)
-        fh.close()
-        root.title(os.path.basename(f) + " - Tkeditor")
+            pathAlreadyExists = 0
+            checkConf = config.get('recent files')
+            if checkConf: checkConf = checkConf.split('\n')
+            else: checkConf = []
+            for testPath in checkConf:
+                if testPath == filename:
+                    pathAlreadyExists = 1
+            if pathAlreadyExists is 0:
+                config.set('recent files', '\n'+filename, 1)
+            
+            textoutput = textPad.get(1.0, END)
+            fh.write(textoutput)
+            fh.close()
+            root.title(os.path.basename(f) + " - Tkeditor")
 
-
-        
     except Exception as e:
         print('Exception: '+ e)
 
@@ -637,7 +640,7 @@ def mousewheel(event):
         lnlabel.yview_scroll(1, 'units')
         textPad.yview_moveto(lnlabel.yview()[0])
 
-def select(event):
+def select(event=None, state='active'):
     lnlabel.yview_moveto(textPad.yview()[0])
     update_info_bar()
 textPad.configure(yscrollcommand=scroll_y.set)
@@ -685,10 +688,14 @@ textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
 textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
+#textPad.bind_all('<Control-V>', paste(ctrl_v=True))
+textPad.bind_all('<Control-v>', update_line_number)
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
+textPad.bind_all('<Button-1>', select)
 textPad.bind_all('<B1-Motion>', select)
+textPad.bind_all('<ButtonRelease-1>', select)
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
@@ -701,4 +708,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-
