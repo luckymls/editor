@@ -103,6 +103,7 @@ def night_mode(event=None):
     grey = '#B3B3B3'
     grey2 = '#ABB2BF'
     grey3 = '#9DA5B4'
+    blue = "#729FCF"
     objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
     if nightmodeln.get():
         nightmodeln.set(0)
@@ -117,7 +118,7 @@ def night_mode(event=None):
         shortcutbar.config(bg=white)
         root.config(bg=white)
         for i in objects:
-            i.config(fg=black, bg=white, activebackground=white, activeforeground=black)
+            i.config(fg=black, bg=white, activebackground=blue, activeforeground=black)
     else:
         nightmodeln.set(1)
         textPad.config(fg=grey2, bg=black2, insertbackground="#5386E9")
@@ -139,6 +140,7 @@ def show_info_bar():
     elif not val:
         infobar.pack_forget()
 
+
 def update_line_number(load=False, event=None):
     update_info_bar()
     if showln.get():
@@ -149,13 +151,14 @@ def update_line_number(load=False, event=None):
                 lnlabel.insert('end', "\n" + str(line))
 
                 lnlabel.config(state='disabled')
-                lnlabel.see(textPad.index('end-1c'))
+                if textPad.index('insert').split('.')[0] == textPad.index('end-1c').split('.')[0]:
+                    lnlabel.see(textPad.index('end'))
             else:
                 lnlabel.config(state = 'normal')
                 if int(lnlabel.index('end').split('.')[0]) > int(textPad.index('end').split('.')[0]):
                     lnlabel.delete(textPad.index('end'), 'end')
                 lnlabel.config(state= 'disabled')
-                lnlabel.see(textPad.index('current-1c'))
+                lnlabel.yview_moveto(textPad.yview()[0])
         else:
             lnlabel.config(state = 'normal')
             lines = int(textPad.index('end').split('.')[0])
@@ -190,8 +193,9 @@ def fullscreen(event=None):
     root.attributes('-fullscreen', state)
 
 def anykey(event=None):
-    update_line_number()
     update_file()
+    update_line_number()
+    update_info_bar()
     highlight_word()
 
 ####################
@@ -303,7 +307,7 @@ def paste():
 ######################################################################
 
 def wSetting():
-    
+
     t3 = Toplevel(root)
     t3.title('Settings')
     t3.geometry('500x300')
@@ -314,13 +318,13 @@ def wSetting():
 
     menuBar = Menu(t3)
     t3.config(menu=menuBar)
-    
+
     nightMenu = Menu(menuBar, tearoff=0)
     menuBar.add_cascade(label="Help", menu=nightMenu)
     nightMenu.add_command(label="About", compound=LEFT, command=about)
     menuBar.add_command(label="Close", compound=LEFT, command=t3.destroy)
-    
-    
+
+
 ######################################################################
 def new_file(event=None):
     global filename
@@ -391,7 +395,7 @@ def save_as():
         print('Exception: '+ str(e))
 
 def update_file(event=None):
-
+    update_line_number()
     if autoSave.get():
         try:
             rand = random.randint(1, 3)
@@ -408,7 +412,7 @@ def update_file(event=None):
                 root.title(os.path.basename(f) + " - TindyEditor")
         except:
          pass
-def update_info_bar():
+def update_info_bar(event=None):
     line = int(textPad.index('insert').split('.')[0])
     total = int(textPad.index('end').split('.')[0]) - 1
     column = int(textPad.index('insert').split('.')[1]) + 1
@@ -580,7 +584,6 @@ infobar = Label(root, text=f'Line:1 | Column:0')
 infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
 
 '''Scrollbars drawing'''
-
 scroll_y = Scrollbar(root)
 scroll_y.pack(side=RIGHT, fill=Y)
 
@@ -599,9 +602,31 @@ textPad.pack(expand=YES, fill=BOTH)
 
 
 '''Scrollbar function'''
+def yscroll(*args):
+    textPad.yview(*args)
+    lnlabel.yview(*args)
+
+
+def mousewheel(event):
+    #lnlabel.yview_moveto(textPad.yview()[0])
+    if event.num == 4:
+        lnlabel.yview_scroll(-1, 'units')
+        textPad.yview_moveto(lnlabel.yview()[0])
+    elif event.num == 5:
+        lnlabel.yview_scroll(1, 'units')
+        textPad.yview_moveto(lnlabel.yview()[0])
+    elif event.delta >1:
+        lnlabel.yview_scroll(-1, 'units')
+        textPad.yview_moveto(lnlabel.yview()[0])
+    elif event.delta < 1:
+        lnlabel.yview_scroll(1, 'units')
+        textPad.yview_moveto(lnlabel.yview()[0])
+
 
 textPad.configure(yscrollcommand=scroll_y.set)
-scroll_y.config(command=textPad.yview)
+lnlabel.config(yscrollcommand=scroll_y.set)
+scroll_y.config(command=yscroll)
+
 
 
 textPad.configure(xscrollcommand=scroll_x.set)
@@ -629,7 +654,6 @@ theme(1)
 '''Rilevo evento tastiera, chiamo funzione'''
 
 
-
 root.bind('<Any-KeyPress>', anykey)
 root.bind('<Control-N>', new_file)
 root.bind('<Control-n>', new_file)
@@ -637,12 +661,16 @@ root.bind('<Control-O>', open_file)
 root.bind('<Control-o>', open_file)
 root.bind('<Control-S>', save)
 root.bind('<Control-s>', save)
+root.bind('<Button-1>', update_info_bar)
 textPad.bind('<Control-A>', select_all)
 textPad.bind('<Control-a>', select_all)
 textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
 textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
+textPad.bind_all('<Button-4>', mousewheel)
+textPad.bind_all('<Button-5>', mousewheel)
+textPad.bind_all('<MouseWheel>', mousewheel)
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
@@ -655,3 +683,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
