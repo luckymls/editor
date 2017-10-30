@@ -461,7 +461,7 @@ try:
     for filePaths in recentOpen:
         if len(filePaths) > 3:
             fileName = os.path.basename(filePaths)[0].upper()+os.path.basename(filePaths)[1:]
-            recentFiles.add_command(label=fileName, compound = LEFT, underline = 0, command= lambda: open_recent_file(filePaths))
+            recentFiles.add_command(label=fileName, compound = LEFT, underline = 0, command= lambda x=filePaths:open_recent_file(x))
 except Exception as e:
     print('Exception: '+ str(e))
 
