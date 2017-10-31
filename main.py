@@ -56,7 +56,8 @@ class config:
         value = args[1]
         try:
             overwrite = args[2]
-        except:
+        except Exception as e:
+            print('Exception in config.set details: '+e)
             overwrite = False
         '''Mode -> w = Sovrascrivo Mode -> a = Sposta puntatore a fine file e scrive'''
         mode = 'w'
@@ -164,7 +165,7 @@ def update_line_number(load=False, event=None):
 
             lines = int(textPad.index('end').split('.')[0])
             lnlabel.delete(2.0, 'end')
-            print(lines)
+            
             for i in range (2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state= 'disabled')
@@ -422,7 +423,8 @@ def save(event=None):
         letter = textPad.get(1.0, 'end')
         f.write(letter)
         f.close()
-    except:
+    except Exception as e:
+        print('Must save new file!, details: '+e)
         save_as()
 
 def save_as():
@@ -469,8 +471,8 @@ def update_file(event=None):
                 fh.close()
                 '''Imposto il titolo della finestra principale'''
                 root.title(os.path.basename(f) + " - TindyEditor")
-        except:
-         pass
+        except Exception as e:
+         print(e)
 def update_info_bar(event=None):
     line = int(textPad.index('insert').split('.')[0])
     total = int(textPad.index('end').split('.')[0]) - 1
@@ -757,4 +759,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-
