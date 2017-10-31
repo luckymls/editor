@@ -281,7 +281,48 @@ def highlight_word(search=None, event=None):
                 textPad.tag_config('code'+search, foreground=code[search])
     else:
         textPad.tag_remove('code', '1.0', END)
+#######################################################################
+insertln = IntVar()
+gTL=StringVar()
+def goToLine(event=None):
+    insertln.set(1)
+    global gTL
 
+    t4 = Toplevel(root)
+    t4.focus_set()
+    t4.title('Go to...')
+    t4.geometry('300x65')
+    t4.resizable(width=0,height=0)
+    t4.transient(root)
+    Label(t4,text="Line:").grid(row=0, column=0, pady=4, sticky='e')
+
+
+    pos = gTL.get()+'.0'
+    e = Entry(t4, width=25, textvariable=gTL, takefocus='active')
+    e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
+    e.focus_set()
+    b = Button(t4, text='Go!', command=lineSearch, default='active')
+    b.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+
+    def close_goto(event=None):
+        textPad.tag_remove('lineSearch', 1.0, "end")
+
+        t4.destroy()
+    pos = gTL.get()+'.1'
+    t4.protocol("WM_DELETE_WINDOW", close_goto)
+    t4.bind('<Return>', lineSearch)
+    e.bind('<FocusOut>', close_goto)
+
+def lineSearch(event=None):
+
+    textPad.tag_remove('lineSearch', 1.0, "end")
+    pos = gTL.get()+'.0'
+    lastpos = int(gTL.get()) + 1
+    lastpos = str(lastpos)+'.0'
+    textPad.tag_add('lineSearch', pos, lastpos)
+    textPad.tag_config('lineSearch', foreground='white', background='blue')
+    textPad.see([pos])
+    lnlabel.yview_moveto(textPad.yview()[0])
 ########################################################################
 '''Funzioni preesistenti di tkinter'''
 
@@ -300,7 +341,7 @@ def cut():
 def copy():
     textPad.event_generate("<<Copy>>")
 
-    
+
 def paste(event=None):
     textPad.event_generate("<<Paste>>")
     update_line_number(load=True)
@@ -390,24 +431,24 @@ def save_as():
 
 
         '''Apro finestra wn per salvare file con nome'''
-            f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
-            fh = open(f, 'w')
-            filename = f
+        f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
+        fh = open(f, 'w')
+        filename = f
 
-            pathAlreadyExists = 0
-            checkConf = config.get('recent files')
-            if checkConf: checkConf = checkConf.split('\n')
-            else: checkConf = []
-            for testPath in checkConf:
-                if testPath == filename:
-                    pathAlreadyExists = 1
-            if pathAlreadyExists is 0:
-                config.set('recent files', '\n'+filename, 1)
-            
-            textoutput = textPad.get(1.0, END)
-            fh.write(textoutput)
-            fh.close()
-            root.title(os.path.basename(f) + " - Tkeditor")
+        pathAlreadyExists = 0
+        checkConf = config.get('recent files')
+        if checkConf: checkConf = checkConf.split('\n')
+        else: checkConf = []
+        for testPath in checkConf:
+            if testPath == filename:
+                pathAlreadyExists = 1
+        if pathAlreadyExists is 0:
+            config.set('recent files', '\n'+filename, 1)
+
+        textoutput = textPad.get(1.0, END)
+        fh.write(textoutput)
+        fh.close()
+        root.title(os.path.basename(f) + " - Tkeditor")
 
     except Exception as e:
         print('Exception: '+ e)
@@ -521,6 +562,8 @@ hltln = IntVar()
 viewmenu.add_checkbutton(label="Highlight Current Line", variable=hltln, command=toggle_highlight)
 highlight_wordln = IntVar()
 viewmenu.add_checkbutton(label="Highlight Informatic Words", variable=highlight_wordln, command=highlight_word)
+viewmenu.add_separator()
+viewmenu.add_command(label='Go to...', accelerator='Ctrl+G', command=goToLine)
 viewmenu.add_separator()
 themesmenu = Menu(viewmenu, tearoff=0)
 viewmenu.add_cascade(label="Themes", menu=themesmenu)
@@ -641,6 +684,10 @@ def mousewheel(event):
         textPad.yview_moveto(lnlabel.yview()[0])
 
 def select(event=None, state='active'):
+
+    if insertln.get() == 1:
+        textPad.mark_set('insert', gTL.get() + '.0')
+        insertln.set(0)
     lnlabel.yview_moveto(textPad.yview()[0])
     update_info_bar()
 textPad.configure(yscrollcommand=scroll_y.set)
@@ -688,6 +735,8 @@ textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
 textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
+textPad.bind('<Control-g>', goToLine)
+textPad.bind('<Control-G>', goToLine)
 #textPad.bind_all('<Control-V>', paste(ctrl_v=True))
 textPad.bind_all('<Control-v>', update_line_number)
 textPad.bind_all('<Button-4>', mousewheel)
@@ -708,3 +757,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
