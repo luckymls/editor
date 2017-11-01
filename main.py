@@ -73,22 +73,24 @@ class config:
         if overWriteFirst and os.path.exists(var_path):
             toRead = str(open(var_path, 'r').read(os.path.getsize(var_path)))
             list1 = toRead.split('\n')
-            print('Lista 1: \n'+str(list1))
+            
             list2 = []
             for element in list1:
                 if len(element) > 3:
                     list2.append(str(element))
             list3 = []
-            print('Lista 2: \n'+str(list2))
-            list3.append (str(list2[0]))
+          
+	  
             list3.append (str(list2[1]))
             list3.append (str(list2[2]))
             list3.append (str(list2[3]))
-            list3.append( str(value) )
-            print('Lista 3: \n'+str(list3))
+            list3.append (str(list2[4]))
+            list3.append (str(value))
+            
             txt = ''
             for element in list3:
                 txt += str(element)+'\n'
+	    txt = txt[:-2]
             isOverWriteFirst = 1
             value = txt
             mode = 'w'
@@ -457,7 +459,7 @@ def save(event=None):
                 config.set('recent files',filename+'\n', 1)
 
             else:
-                print(str(len(checkConf)))
+                
                 config.set('recent files', filename+'\n', 1, 1)
 
 
