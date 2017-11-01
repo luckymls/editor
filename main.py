@@ -9,7 +9,7 @@ import random
 
 
 root = Tk()
-root.geometry('800x500')
+root.geometry('900x560')
 root.title('Untitled - TindyEditor')
 
 root.resizable(width=1,height=1)
@@ -44,25 +44,56 @@ class config:
 
 
     def set(*args):
+
         try:
             os.mkdir('.config')
             if isLinux is 0:
                 folderPath = os.getcwd()+'/.config'
                 os.popen('attrib +S +H '+folderPath)
-        except Exception as e:
-            print(e)
+        except:
+            pass
 
         variabile = args[0]
+        var_path = '.config/'+variabile
         value = args[1]
         try:
             overwrite = args[2]
-        except Exception as e:
-            print('Exception in config.set details: '+e)
+        except:
             overwrite = False
         '''Mode -> w = Sovrascrivo Mode -> a = Sposta puntatore a fine file e scrive'''
         mode = 'w'
-        if overwrite: mode = 'a'
-        var_path = '.config/'+variabile
+        if overwrite:
+            mode = 'a'
+
+        try:          
+            overWriteFirst = args[3]
+        except:
+            overWriteFirst = 0
+        isOverWriteFirst = 0
+        if overWriteFirst and os.path.exists(var_path):
+            toRead = str(open(var_path, 'r').read(os.path.getsize(var_path)))
+            list1 = toRead.split('\n')
+            print('Lista 1: \n'+str(list1))
+            list2 = []
+            for element in list1:
+                if len(element) > 3:
+                    list2.append(str(element))
+            list3 = []
+            print('Lista 2: \n'+str(list2))
+            list3.append (str(list2[0]))
+            list3.append (str(list2[1]))
+            list3.append (str(list2[2]))
+            list3.append (str(list2[3]))
+            list3.append( str(value) )
+            print('Lista 3: \n'+str(list3))
+            txt = ''
+            for element in list3:
+                txt += str(element)+'\n'
+            isOverWriteFirst = 1
+            value = txt
+            mode = 'w'
+
+        
         f = open(var_path, mode)
         f.write(value)
         f.close()
@@ -165,12 +196,12 @@ def update_line_number(load=False, event=None):
 
             lines = int(textPad.index('end').split('.')[0])
             lnlabel.delete(2.0, 'end')
-            
+            print(lines)
             for i in range (2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state= 'disabled')
 
-def highlight_line(interval=100):
+def highlight_line(interval=1):
     textPad.tag_remove("active_line", 1.0, "end")
     textPad.tag_add("active_line", "insert linestart", "insert lineend+1c")
     textPad.after(interval, toggle_highlight)
@@ -299,6 +330,7 @@ def goToLine(event=None):
 
 
     pos = gTL.get()+'.0'
+    gTL.set(gTL.get()+'.0')
     e = Entry(t4, width=25, textvariable=gTL, takefocus='active')
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     e.focus_set()
@@ -324,6 +356,7 @@ def lineSearch(event=None):
     textPad.tag_config('lineSearch', foreground='white', background='blue')
     textPad.see([pos])
     lnlabel.yview_moveto(textPad.yview()[0])
+
 ########################################################################
 '''Funzioni preesistenti di tkinter'''
 
@@ -372,7 +405,8 @@ def wSetting():
     menuBar.add_command(label="Close", compound=LEFT, command=t3.destroy)
 
 
-######################################################################
+############################################
+
 def new_file(event=None):
     global filename
     filename = None
@@ -418,13 +452,21 @@ def save(event=None):
             if testPath == filename:
                 pathAlreadyExists = 1
         if pathAlreadyExists is 0:
-            config.set('recent files', '\n'+filename, 1)
+            if len(checkConf) < 5:
+
+                config.set('recent files',filename+'\n', 1)
+
+            else:
+                print(str(len(checkConf)))
+                config.set('recent files', filename+'\n', 1, 1)
+
+
+
         f = open(filename, 'w')
         letter = textPad.get(1.0, 'end')
         f.write(letter)
         f.close()
-    except Exception as e:
-        print('Must save new file!, details: '+e)
+    except:
         save_as()
 
 def save_as():
@@ -445,15 +487,20 @@ def save_as():
             if testPath == filename:
                 pathAlreadyExists = 1
         if pathAlreadyExists is 0:
-            config.set('recent files', '\n'+filename, 1)
+            if len(checkConf) < 5:
 
-        textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)
-        fh.close()
-        root.title(os.path.basename(f) + " - Tkeditor")
+                config.set('recent files', filename+'\n', 1)
 
+            else:
+                config.set('recent files', filename+'\n', 1, 1)
     except Exception as e:
-        print('Exception: '+ e)
+        print('Errore in save_as: \n'+str(e))
+    textoutput = textPad.get(1.0, END)
+    fh.write(textoutput)
+    fh.close()
+    root.title(os.path.basename(f) + " - Tkeditor")
+
+    
 
 def update_file(event=None):
     update_line_number()
@@ -471,8 +518,8 @@ def update_file(event=None):
                 fh.close()
                 '''Imposto il titolo della finestra principale'''
                 root.title(os.path.basename(f) + " - TindyEditor")
-        except Exception as e:
-         print(e)
+        except:
+         pass
 def update_info_bar(event=None):
     line = int(textPad.index('insert').split('.')[0])
     total = int(textPad.index('end').split('.')[0]) - 1
@@ -635,9 +682,7 @@ for i, icon in enumerate(icons):
     toolbar = Button(shortcutbar, image=tbicon,  command=cmd)
     toolbar.image = tbicon
     toolbar.pack(side=LEFT)
-
 shortcutbar.pack(expand=NO, fill=X)
-
 
 
 
@@ -702,6 +747,78 @@ textPad.configure(xscrollcommand=scroll_x.set)
 scroll_x.config(command=textPad.xview)
 
 
+''' Bookmark Bar ''' #ctrl b per impostare alla riga corrente, ctrl shift b per aprire pannello, doppio click sulla barra per impostare, doppio click sui segnalibri per configurare, ctrl numero per selezionare un segnalibro, ctrl freccia per andare avanti e indietro (funzione search)
+bookmarks = {}
+bm_name = StringVar()
+def bookmark_go(line):
+    endline = str(int(line.split('.')[0]) + 1) + '.0'
+
+    #print(line, endline)
+    textPad.tag_add('bookmark', line, endline)
+    textPad.tag_config('bookmark', background='yellow')
+    textPad.mark_set('insert', line)
+    textPad.see('insert')
+    def highlight_stop(event=None):
+        textPad.tag_remove('bookmark', '1.0', 'end')
+    textPad.bind('<Any-KeyPress>', highlight_stop)
+    textPad.bind('<Button-1>', highlight_stop)
+
+
+def draw_bookmarks():
+    global bookmarks
+    bookmarks_keys = bookmarks.keys()
+    for i in bookmarks_keys:
+        bm_txt = bookmarks[i].split('.')[0]
+        bm_line = i
+        bookmark = Button(bookmarkbar, text=bm_txt, command=lambda: bookmark_go(bm_line))
+    bookmark.pack(side=LEFT)
+    #bookmark_window = canvas.create_window(10,10, window=bookmark)
+
+def select_bookmark_name():
+
+    t5 = Toplevel(root)
+    t5.focus_set()
+    t5.title('Bookmark...')
+    t5.geometry('300x65')
+    t5.resizable(width=0,height=0)
+    t5.transient(root)
+    Label(t5,text="Line:").grid(row=0, column=0, pady=4, sticky='e')
+
+    bname = Entry(t5, width=25, takefocus='active')
+    bname.grid(row=0, column=1, padx=2, pady=4, sticky='we')
+    bname.focus_set()
+    closeb = Button(t5, text='Ok', command=t5.destroy, default='active')
+    closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+    def close_select(event):
+        global nline
+        a = str(bname.get())
+        bm_name.set(a)
+        bookmarks[nline] = bm_name.get()
+        draw_bookmarks()
+        t5.destroy()
+
+    t5.protocol("WM_DELETE_WINDOW", close_select)
+    t5.bind('<Return>', close_select)
+def bookmark_add(line):
+    global bookmarks
+    global nline
+    nline = line + '.0'
+    if not nline in bookmarks:
+        select_bookmark_name()
+
+        textPad.mark_set('bookmark', nline)
+        textPad.mark_gravity('bookmark', direction='left')
+
+
+
+
+bookmarkbar = Frame(shortcutbar, height=25, bd=2, relief='ridge')
+#canvas = Canvas(bookmarkbar, height=25)
+#canvas.config(scrollregion=canvas.bbox(ALL))
+if bookmarks:
+    draw_bookmarks()
+bookmarkbar.pack(expand='no', fill=X)
+#canvas.pack(expand='no', fill=BOTH)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
 cmenu = Menu(textPad,tearoff=0)
@@ -747,6 +864,7 @@ textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
 textPad.bind_all('<B1-Motion>', select)
 textPad.bind_all('<ButtonRelease-1>', select)
+lnlabel.bind('<Double-Button-1>', lambda event: bookmark_add(lnlabel.index('current').split('.')[0]))
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
