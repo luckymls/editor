@@ -574,10 +574,13 @@ filemenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 try:
     recentOpen = config.get('recent files').split('\n')
+    i = 0
     for filePaths in recentOpen:
         if len(filePaths) > 3:
+            i += 1
             fileName = os.path.basename(filePaths)[0].upper()+os.path.basename(filePaths)[1:]
-            recentFiles.add_command(label=fileName, compound = LEFT, underline = 0, command= lambda x=filePaths:open_recent_file(x))
+            recentFiles.add_command(label=str(i)+'. '+fileName, compound = LEFT, underline = 0, command= lambda x=filePaths:open_recent_file(x))
+            
 except Exception as e:
     print('Exception: '+ str(e))
 
@@ -587,6 +590,12 @@ filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_a
 autoSave = IntVar()
 autoSave.set(1)
 filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
+if not isLinux:
+    def printSheet():
+        print('ToDo')
+    filemenu.add_separator()
+
+    filemenu.add_command(label="Print", command=printSheet)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", accelerator='Alt+F4', command=exit_editor)
 menubar.add_cascade(label="File", menu=filemenu)
