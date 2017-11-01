@@ -50,8 +50,8 @@ class config:
             if isLinux is 0:
                 folderPath = os.getcwd()+'/.config'
                 os.popen('attrib +S +H '+folderPath)
-        except Exception as e:
-            print(e)
+        except:
+            pass
 
         variabile = args[0]
         var_path = '.config/'+variabile
@@ -65,35 +65,35 @@ class config:
         if overwrite:
             mode = 'a'
 
-        try:
+        try:          
             overWriteFirst = args[3]
         except:
             overWriteFirst = 0
         isOverWriteFirst = 0
-        if overWriteFirst is 1 and os.path.exists(var_path):
-            toRead = open(var_path, 'r')
+        if overWriteFirst and os.path.exists(var_path):
+            toRead = str(open(var_path, 'r').read(os.path.getsize(var_path)))
             list1 = toRead.split('\n')
+            print('Lista 1: \n'+str(list1))
             list2 = []
             for element in list1:
                 if len(element) > 3:
-                    list2 += str(element)
+                    list2.append(str(element))
             list3 = []
-
-            list3 += str(list2[1])
-            list3 += str(list2[2])
-            list3 += str(list2[3])
-            list3 += str(list2[4])
-            list3 += str(var_path)
+            print('Lista 2: \n'+str(list2))
+            list3.append (str(list2[0]))
+            list3.append (str(list2[1]))
+            list3.append (str(list2[2]))
+            list3.append (str(list2[3]))
+            list3.append( str(value) )
+            print('Lista 3: \n'+str(list3))
             txt = ''
             for element in list3:
                 txt += str(element)+'\n'
             isOverWriteFirst = 1
-        elif os.path.exists(var_path):
-            return 0
-
-        if isOverWriteFirst is 1:
             value = txt
             mode = 'w'
+
+        
         f = open(var_path, mode)
         f.write(value)
         f.close()
@@ -452,12 +452,13 @@ def save(event=None):
             if testPath == filename:
                 pathAlreadyExists = 1
         if pathAlreadyExists is 0:
-            if len(checkConf.split('\n')) < 5:
+            if len(checkConf) < 5:
 
-                config.set('recent files', '\n'+filename, 1)
+                config.set('recent files',filename+'\n', 1)
 
             else:
-                config.set('recent files', '\n'+filename, 1, 1)
+                print(str(len(checkConf)))
+                config.set('recent files', filename+'\n', 1, 1)
 
 
 
@@ -488,18 +489,18 @@ def save_as():
         if pathAlreadyExists is 0:
             if len(checkConf) < 5:
 
-                config.set('recent files', '\n'+filename, 1)
+                config.set('recent files', filename+'\n', 1)
 
             else:
-                config.set('recent files', '\n'+filename, 1, 1)
-
-        textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)
-        fh.close()
-        root.title(os.path.basename(f) + " - Tkeditor")
-
+                config.set('recent files', filename+'\n', 1, 1)
     except Exception as e:
-        print('Exception: '+ e)
+        print('Errore in save_as: \n'+str(e))
+    textoutput = textPad.get(1.0, END)
+    fh.write(textoutput)
+    fh.close()
+    root.title(os.path.basename(f) + " - Tkeditor")
+
+    
 
 def update_file(event=None):
     update_line_number()
