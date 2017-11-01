@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
+from tkinter import messagebox
 
 import os
 import sys
@@ -90,7 +91,7 @@ class config:
             txt = ''
             for element in list3:
                 txt += str(element)+'\n'
-	    txt = txt[:-2]
+            txt = txt[:-2]
             isOverWriteFirst = 1
             value = txt
             mode = 'w'
@@ -436,12 +437,17 @@ def open_file(event=None):
 
 def open_recent_file(filename=None):
 
-    root.title(os.path.basename(filename) + " - Tkeditor")
-    textPad.delete(1.0,END)
-    fh = open(filename,"r")
-    textPad.insert(1.0,fh.read())
-    fh.close()
-    update_line_number(load=True)
+    nBase = os.path.basename(filename)
+    try:
+        fh = open(filename,"r")
+    except:
+         messagebox.showerror("Error", "File not found")
+    else:
+        root.title(nBase + " - Tkeditor")
+        textPad.delete(1.0,END)
+        textPad.insert(1.0,fh.read())
+        fh.close()
+        update_line_number(load=True)
 
 def save(event=None):
     global filename
@@ -879,3 +885,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
