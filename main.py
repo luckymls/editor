@@ -474,8 +474,9 @@ def save(event=None):
         letter = textPad.get(1.0, 'end')
         f.write(letter)
         f.close()
+        return filename
     except:
-        save_as()
+        return save_as()
 
 def save_as():
     global filename
@@ -503,10 +504,13 @@ def save_as():
                 config.set('recent files', filename+'\n', 1, 1)
     except Exception as e:
         print('Errore in save_as: \n'+str(e))
-    textoutput = textPad.get(1.0, END)
-    fh.write(textoutput)
-    fh.close()
-    root.title(os.path.basename(f) + " - Tkeditor")
+        return False
+    else:
+        textoutput = textPad.get(1.0, END)
+        fh.write(textoutput)
+        fh.close()
+        root.title(os.path.basename(f) + " - Tkeditor")
+        return filename
 
     
 
@@ -533,6 +537,13 @@ def update_info_bar(event=None):
     total = int(textPad.index('end').split('.')[0]) - 1
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
+
+def printSheet():
+    
+    filePath = save()
+    os.startfile(filePath, "print")
+    messagebox.showinfo("Title", 'Printing...')
+
 
 ######################################################################
 '''Icone del menù'''
@@ -590,9 +601,11 @@ filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_a
 autoSave = IntVar()
 autoSave.set(1)
 filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
+
+#Print Function
+
 if not isLinux:
-    def printSheet():
-        print('ToDo')
+    
     filemenu.add_separator()
 
     filemenu.add_command(label="Print", command=printSheet)
