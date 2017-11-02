@@ -871,7 +871,7 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
         closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
 
 
-        def close_select(event):
+        def close_select(event=None):
             a = str(bname.get())
             Bookmark.bm_name = a
             Bookmark.bookmarks[Bookmark.nline] = Bookmark.bm_name
@@ -891,22 +891,23 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
 
 
     def settings(update=False):
-
-            for i in Bookmark.bookmarks.keys():
-                line = i.split('.')[0]
-                Bookmark.b_list.append(line + ':' + Bookmark.bookmarks[i])
-            bm_list.set(Bookmark.b_list)
-            t6 = Toplevel(root)
-            t6.geometry('600x450')
-            t6.focus_set()
-            t6.title('Bookmarks...')
-            t6.transient()
-            bmListBox = Listbox(t6, bg='white', height=350, width=300, listvariable=bm_list)
-            label = Label(t6, text='Choose a bookmark:')
-            label.pack(side=TOP, fill=X)
-            delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')))
-            delButton.pack(side=BOTTOM)
-            bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
+        print(Bookmark.bookmarks, Bookmark.b_list)
+        Bookmark.b_list = []
+        for i in Bookmark.bookmarks.keys():
+            line = i.split('.')[0]
+            Bookmark.b_list.append(line + ':' + Bookmark.bookmarks[i])
+        bm_list.set(Bookmark.b_list)
+        t6 = Toplevel(root)
+        t6.geometry('600x450')
+        t6.focus_set()
+        t6.title('Bookmarks...')
+        t6.transient()
+        bmListBox = Listbox(t6, bg='white', height=350, width=300, listvariable=bm_list)
+        label = Label(t6, text='Choose a bookmark:')
+        label.pack(side=TOP, fill=X)
+        delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')))
+        delButton.pack(side=BOTTOM)
+        bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
 
     def save(filename):
         if config.get('bookmarks') == '':
@@ -938,7 +939,7 @@ bookmarkbar.pack(expand='no', fill=X)
 menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
-cmenu = Menu(textPad, tearoff=0, takefocus=1)
+cmenu = Menu(textPad, tearoff=0)
 for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
     cmd = eval(i)
     '''Aggiunto da poco, mette maiuscola nel menù cut => Cut'''
