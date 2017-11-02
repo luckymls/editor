@@ -804,6 +804,7 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
     bm_name = str()
     nline = str()
     b_list = []
+    lock = bool()
     def draw(delete=False):
 
         bookmarks_keys = Bookmark.bookmarks.keys()
@@ -846,9 +847,12 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
 
 
     def add(line):
+        if Bookmark.lock is True:
+            return
+        Bookmark.lock = True
         Bookmark.nline = line + '.0'
         if not Bookmark.nline in Bookmark.bookmarks:
-            Bookmark.bookmarks[Bookmark.nline] = ''
+            #Bookmark.bookmarks[Bookmark.nline] = ''
             Bookmark.select_name()
 
             textPad.mark_set('bookmark', Bookmark.nline)
@@ -867,8 +871,6 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
         bname = Entry(t5, width=25, takefocus='active')
         bname.grid(row=0, column=1, padx=2, pady=4, sticky='we')
         bname.focus_set()
-        closeb = Button(t5, text='Ok', command=t5.destroy, default='active')
-        closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
 
 
         def close_select(event=None):
@@ -877,8 +879,11 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
             Bookmark.bookmarks[Bookmark.nline] = Bookmark.bm_name
             t5.destroy()
             Bookmark.draw()
+            Bookmark.lock = False
 
-        t5.protocol("WM_DELETE_WINDOW", close_select)
+        closeb = Button(t5, text='Ok', command=close_select, default='active')
+        closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+        t5.protocol("WM_DELETE_WINDOW", t5.destroy)
         t5.bind('<Return>', close_select)
 
     def delete(selection):
