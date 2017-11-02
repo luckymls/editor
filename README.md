@@ -1,4 +1,4 @@
-## Welcome to the TindyEditor wiki!
+## Welcome to TindyEditor!
 
 TindyEditor supports:
 * Windows
