@@ -104,7 +104,7 @@ class config:
 ##################
 
 def popup(event):
-    cmenu.tk_popup(event.x_root, event.y_root, 0)
+    cmenu.tk_popup(event.x_root, event.y_root)
 
 '''Scelta tema'''
 def theme(x=None):
@@ -126,7 +126,7 @@ def theme(x=None):
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
 
-def night_mode(event=None):
+def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
     current_theme = themechoice.get()
     mblack = '#171717'
     black = '#515151'
@@ -139,14 +139,14 @@ def night_mode(event=None):
     grey2 = '#ABB2BF'
     grey3 = '#9DA5B4'
     blue = "#729FCF"
-    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu, bm))
+    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
     if nightmodeln.get():
         nightmodeln.set(0)
         themechoice.set(current_theme)
         theme(1)
         textPad.config(insertbackground="#000000")
 
-        lnlabel.config(bg='antique white', fg='#000000')
+        lnlabel.config(bg='#DDFFDC', fg='#650909')
         infobar.config(fg=black, bg=white)
         scroll_x.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
         scroll_y.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
@@ -588,7 +588,7 @@ on_findicon = PhotoImage(file=completePath+'icons/on_find.gif')
 abouticon = PhotoImage(file=completePath+'icons/about.gif')
 
 '''Menù'''
-menubar = Menu(root)
+menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
 
 '''File menù'''
 filemenu = Menu(menubar, tearoff=0)
@@ -720,7 +720,7 @@ menubar.add_command(label='Exit', command=exit_editor)
 
 
 '''Menù Scorciatoie e numero linea'''
-shortcutbar = Frame(root, height=25)
+shortcutbar = Frame(root, height=25, relief='ridge', bd=1)
 
 
 icons = ['new_fileicon', 'open_fileicon', 'saveicon', 'cuticon', 'copyicon', 'pasteicon', 'undoicon', 'redoicon', 'on_findicon', 'abouticon']
@@ -736,24 +736,24 @@ shortcutbar.pack(expand=NO, fill=X)
 
 '''Info Bar'''
 
-infobar = Label(root, text=f'Line:1 | Column:0')
-infobar.pack(expand=NO, fill=None, side=BOTTOM, anchor='c')
+infobar = Label(root, text=f'Line:1 | Column:0', relief='groove', bd=1)
+infobar.pack(expand=NO, fill=X, side=BOTTOM, anchor='c')
 
 '''Scrollbars drawing'''
-scroll_y = Scrollbar(root)
+scroll_y = Scrollbar(root, bd=1, relief='groove')
 scroll_y.pack(side=RIGHT, fill=Y)
 
-scroll_x = Scrollbar(root, orient=HORIZONTAL)
+scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
 scroll_x.pack(side=BOTTOM, fill=X)
 
 '''Row Bar'''
 
-lnlabel = Text(root,  width=6,  bg = 'antique white')
+lnlabel = Text(root,  width=6,  bg = '#DDFFDC', bd=1, relief='solid', fg='#650909')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
 
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE)
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, relief='flat', bd=1)
 textPad.pack(expand=YES, fill=BOTH)
 
 
@@ -798,7 +798,7 @@ bm_list = Variable(root)
 bm_list.set([])
 
 ''' Bookmark Bar ''' #ctrl b per impostare alla riga corrente, ctrl shift b per aprire pannello, doppio click sulla barra per impostare, doppio click sui segnalibri per configurare, ctrl numero per selezionare un segnalibro, ctrl freccia per andare avanti e indietro (funzione search)
-class Bookmark:
+class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un menu contestuale, utilizzare il winfo_children() e poi fare in modo che il dizionario salvato dal programma venga direttamente dai parametri dei tasti (nome, linea)
 
     bookmarks = {}
     bm_name = str()
@@ -815,7 +815,7 @@ class Bookmark:
                 button = i
                 bm_txt = Bookmark.bookmarks[i].split('.')[0]
                 bm_line = i
-                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line))
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid')
                 index += 1
                 print(button)
                 if index == len(Bookmark.bookmarks) and button:
@@ -828,7 +828,7 @@ class Bookmark:
             for i in bookmarks_keys:
                 bm_txt = Bookmark.bookmarks[i].split('.')[0]
                 bm_line = i
-                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line))
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid')
                 index += 1
                 button.pack(side=LEFT)
 
@@ -927,7 +927,7 @@ class Bookmark:
 
 
 
-bookmarkbar = Frame(shortcutbar, height=25, bd=2, relief='ridge')
+bookmarkbar = Frame(shortcutbar, height=25, bd=0, relief='ridge')
 #canvas = Canvas(bookmarkbar, height=25)
 #canvas.config(scrollregion=canvas.bbox(ALL))
 if Bookmark.bookmarks:
@@ -938,7 +938,7 @@ bookmarkbar.pack(expand='no', fill=X)
 menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
-cmenu = Menu(textPad,tearoff=0)
+cmenu = Menu(textPad, tearoff=0, takefocus=1)
 for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
     cmd = eval(i)
     '''Aggiunto da poco, mette maiuscola nel menù cut => Cut'''
