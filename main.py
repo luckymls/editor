@@ -7,7 +7,7 @@ import os
 import sys
 import time
 import random
-
+import ast
 
 root = Tk()
 root.geometry('900x560')
@@ -66,7 +66,7 @@ class config:
         if overwrite:
             mode = 'a'
 
-        try:          
+        try:
             overWriteFirst = args[3]
         except:
             overWriteFirst = 0
@@ -74,20 +74,19 @@ class config:
         if overWriteFirst and os.path.exists(var_path):
             toRead = str(open(var_path, 'r').read(os.path.getsize(var_path)))
             list1 = toRead.split('\n')
-            
+
             list2 = []
             for element in list1:
                 if len(element) > 3:
                     list2.append(str(element))
             list3 = []
-          
-	  
+
+            list3.append (str(list2[0]))
             list3.append (str(list2[1]))
             list3.append (str(list2[2]))
             list3.append (str(list2[3]))
-            list3.append (str(list2[4]))
             list3.append (str(value))
-            
+
             txt = ''
             for element in list3:
                 txt += str(element)+'\n'
@@ -96,7 +95,7 @@ class config:
             value = txt
             mode = 'w'
 
-        
+
         f = open(var_path, mode)
         f.write(value)
         f.close()
@@ -129,6 +128,7 @@ def theme(x=None):
 
 def night_mode(event=None):
     current_theme = themechoice.get()
+    mblack = '#171717'
     black = '#515151'
     black2 = '#282C34'
     black3 = '#31363F'
@@ -139,7 +139,7 @@ def night_mode(event=None):
     grey2 = '#ABB2BF'
     grey3 = '#9DA5B4'
     blue = "#729FCF"
-    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
+    objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu, bm))
     if nightmodeln.get():
         nightmodeln.set(0)
         themechoice.set(current_theme)
@@ -151,9 +151,12 @@ def night_mode(event=None):
         scroll_x.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
         scroll_y.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
         shortcutbar.config(bg=white)
+        bookmarkbar.config(bg=white)
         root.config(bg=white)
         for i in objects:
             i.config(fg=black, bg=white, activebackground=blue, activeforeground=black)
+        for i in bookmarkbar.winfo_children():
+            i.config(bg=white, fg=black, activebackground=white2, activeforeground=black)
     else:
         nightmodeln.set(1)
         textPad.config(fg=grey2, bg=black2, insertbackground="#5386E9")
@@ -163,8 +166,11 @@ def night_mode(event=None):
         scroll_y.config(bg=black3, activebackground=black3, troughcolor=black2,highlightbackground=black2)
         shortcutbar.config(bg=black3)
         root.config(bg=black3)
+        bookmarkbar.config(bg=black3)
         for i in objects:
             i.config(fg=grey3, bg=black3, activebackground=black4, activeforeground=grey3)
+        for i in bookmarkbar.winfo_children():
+            i.config(bg=black2, fg=grey3, activebackground=mblack, activeforeground=grey3)
 
 def show_info_bar():
     val = showinbar.get()
@@ -176,7 +182,8 @@ def show_info_bar():
         infobar.pack_forget()
 
 
-def update_line_number(load=False, event=None):
+def update_line_number(load=False, event=None, paste=False):
+    global filename
     update_info_bar()
     if showln.get():
         if load == False:
@@ -203,6 +210,16 @@ def update_line_number(load=False, event=None):
             for i in range (2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state= 'disabled')
+            if paste is False:
+                bookmarks_list = config.get('bookmarks').split('\n')
+                for i in bookmarks_list:
+                    if i.split(';')[0] == filename:
+                        Bookmark.bookmarks = ast.literal_eval(i.split(';')[1])
+                        Bookmark.draw(delete=True)
+                        return
+                    else:
+                        Bookmark.bookmarks = {}
+                        Bookmark.draw(True)
 
 def highlight_line(interval=1):
     textPad.tag_remove("active_line", 1.0, "end")
@@ -333,7 +350,7 @@ def goToLine(event=None):
 
 
     pos = gTL.get()+'.0'
-    gTL.set(gTL.get()+'.0')
+
     e = Entry(t4, width=25, textvariable=gTL, takefocus='active')
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     e.focus_set()
@@ -359,6 +376,7 @@ def lineSearch(event=None):
     textPad.tag_config('lineSearch', foreground='white', background='blue')
     textPad.see([pos])
     lnlabel.yview_moveto(textPad.yview()[0])
+    gTL.set('')
 
 ########################################################################
 '''Funzioni preesistenti di tkinter'''
@@ -381,7 +399,7 @@ def copy():
 
 def paste(event=None):
     textPad.event_generate("<<Paste>>")
-    update_line_number(load=True)
+    update_line_number(load=True, paste=True)
 
 
 
@@ -415,7 +433,7 @@ def new_file(event=None):
     filename = None
     root.title("Untitled - TindyEditor")
     textPad.delete(1.0, END)
-    update_line_number()
+    update_line_number(load=True)
 
 
 def open_file(event=None):
@@ -429,29 +447,31 @@ def open_file(event=None):
 
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
-        textPad.delete(1.0,END)
-        fh = open(filename,"r")
-        textPad.insert(1.0,fh.read())
+        textPad.delete(1.0, END)
+        fh = open(filename, "r")
+        textPad.insert(1.0, fh.read())
         fh.close()
     update_line_number(load=True)
 
-def open_recent_file(filename=None):
-
-    nBase = os.path.basename(filename)
+def open_recent_file(file_name=None):
+    global filename
+    nBase = os.path.basename(file_name)
+    filename = file_name
     try:
-        fh = open(filename,"r")
+        fh = open(file_name, "r")
     except:
          messagebox.showerror("Error", "File not found")
     else:
         root.title(nBase + " - Tkeditor")
-        textPad.delete(1.0,END)
-        textPad.insert(1.0,fh.read())
+        textPad.delete(1.0, END)
+        textPad.insert(1.0, fh.read())
         fh.close()
         update_line_number(load=True)
 
 def save(event=None):
     global filename
     try:
+        config.set('bookmarks', Bookmark.save(filename))
         pathAlreadyExists = 0
         checkConf = config.get('recent files')
         if checkConf: checkConf = checkConf.split('\n')
@@ -465,7 +485,7 @@ def save(event=None):
                 config.set('recent files',filename+'\n', 1)
 
             else:
-                
+
                 config.set('recent files', filename+'\n', 1, 1)
 
 
@@ -480,39 +500,39 @@ def save(event=None):
 
 def save_as():
     global filename
-    try:
+    # try:
 
 
-        '''Apro finestra wn per salvare file con nome'''
-        f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
-        fh = open(f, 'w')
-        filename = f
+    '''Apro finestra wn per salvare file con nome'''
+    f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
+    fh = open(f, 'w')
+    filename = f
 
-        pathAlreadyExists = 0
-        checkConf = config.get('recent files')
-        if checkConf: checkConf = checkConf.split('\n')
-        else: checkConf = []
-        for testPath in checkConf:
-            if testPath == filename:
-                pathAlreadyExists = 1
-        if pathAlreadyExists is 0:
-            if len(checkConf) < 5:
+    config.set('bookmarks', Bookmark.save(filename))
+    pathAlreadyExists = 0
+    checkConf = config.get('recent files')
+    if checkConf: checkConf = checkConf.split('\n')
+    else: checkConf = []
+    for testPath in checkConf:
+        if testPath == filename:
+            pathAlreadyExists = 1
+    if pathAlreadyExists is 0:
+        if len(checkConf) < 5:
 
-                config.set('recent files', filename+'\n', 1)
+            config.set('recent files', filename+'\n', 1)
 
-            else:
-                config.set('recent files', filename+'\n', 1, 1)
-    except Exception as e:
-        print('Errore in save_as: \n'+str(e))
-        return False
+        else:
+            config.set('recent files', filename+'\n', 1, 1)
+
+    # except Exception as e:
+    #     print('Errore in save_as: \n'+str(e))
+    #     return False
     else:
         textoutput = textPad.get(1.0, END)
         fh.write(textoutput)
         fh.close()
         root.title(os.path.basename(f) + " - Tkeditor")
         return filename
-
-    
 
 def update_file(event=None):
     update_line_number()
@@ -539,11 +559,10 @@ def update_info_bar(event=None):
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
 def printSheet():
-    
+
     filePath = save()
     os.startfile(filePath, "print")
     messagebox.showinfo("Title", 'Printing...')
-
 
 ######################################################################
 '''Icone del menù'''
@@ -591,7 +610,7 @@ try:
             i += 1
             fileName = os.path.basename(filePaths)[0].upper()+os.path.basename(filePaths)[1:]
             recentFiles.add_command(label=str(i)+'. '+fileName, compound = LEFT, underline = 0, command= lambda x=filePaths:open_recent_file(x))
-            
+
 except Exception as e:
     print('Exception: '+ str(e))
 
@@ -601,11 +620,8 @@ filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_a
 autoSave = IntVar()
 autoSave.set(1)
 filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
+if not isLinux: # Print Function
 
-#Print Function
-
-if not isLinux:
-    
     filemenu.add_separator()
 
     filemenu.add_command(label="Print", command=printSheet)
@@ -701,6 +717,8 @@ root.config(menu=menubar)
 '''Exit menu'''
 menubar.add_command(label='Exit', command=exit_editor)
 
+
+
 '''Menù Scorciatoie e numero linea'''
 shortcutbar = Frame(root, height=25)
 
@@ -730,7 +748,7 @@ scroll_x.pack(side=BOTTOM, fill=X)
 
 '''Row Bar'''
 
-lnlabel = Text(root,  width=4,  bg = 'antique white')
+lnlabel = Text(root,  width=6,  bg = 'antique white')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
@@ -776,68 +794,135 @@ scroll_y.config(command=yscroll)
 textPad.configure(xscrollcommand=scroll_x.set)
 scroll_x.config(command=textPad.xview)
 
+bm_list = Variable(root)
+bm_list.set([])
 
 ''' Bookmark Bar ''' #ctrl b per impostare alla riga corrente, ctrl shift b per aprire pannello, doppio click sulla barra per impostare, doppio click sui segnalibri per configurare, ctrl numero per selezionare un segnalibro, ctrl freccia per andare avanti e indietro (funzione search)
-bookmarks = {}
-bm_name = StringVar()
-def bookmark_go(line):
-    endline = str(int(line.split('.')[0]) + 1) + '.0'
+class Bookmark:
 
-    #print(line, endline)
-    textPad.tag_add('bookmark', line, endline)
-    textPad.tag_config('bookmark', background='yellow')
-    textPad.mark_set('insert', line)
-    textPad.see('insert')
+    bookmarks = {}
+    bm_name = str()
+    nline = str()
+    b_list = []
+    def draw(delete=False):
+
+        bookmarks_keys = Bookmark.bookmarks.keys()
+        index = 0
+        button_list = list()
+        if delete is False:
+            button_list = []
+            for i in bookmarks_keys:
+                button = i
+                bm_txt = Bookmark.bookmarks[i].split('.')[0]
+                bm_line = i
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line))
+                index += 1
+                print(button)
+                if index == len(Bookmark.bookmarks) and button:
+                    button.pack(side=LEFT)
+                    button_list.append(button)
+        else:
+            print(button_list)
+            for i in bookmarkbar.winfo_children():
+                i.destroy()
+            for i in bookmarks_keys:
+                bm_txt = Bookmark.bookmarks[i].split('.')[0]
+                bm_line = i
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line))
+                index += 1
+                button.pack(side=LEFT)
+
+    def go(line):
+        endline = str(int(line.split('.')[0]) + 1) + '.0'
+        textPad.tag_add('bookmark', line, endline)
+        textPad.tag_config('bookmark', background='yellow')
+        textPad.mark_set('insert', line)
+        textPad.see('insert')
+        textPad.bind('<Any-KeyPress>', Bookmark.highlight_stop)
+        textPad.bind('<Button-1>', Bookmark.highlight_stop)
+
     def highlight_stop(event=None):
         textPad.tag_remove('bookmark', '1.0', 'end')
-    textPad.bind('<Any-KeyPress>', highlight_stop)
-    textPad.bind('<Button-1>', highlight_stop)
 
 
-def draw_bookmarks():
-    global bookmarks
-    bookmarks_keys = bookmarks.keys()
-    for i in bookmarks_keys:
-        bm_txt = bookmarks[i].split('.')[0]
-        bm_line = i
-        bookmark = Button(bookmarkbar, text=bm_txt, command=lambda: bookmark_go(bm_line))
-    bookmark.pack(side=LEFT)
-    #bookmark_window = canvas.create_window(10,10, window=bookmark)
+    def add(line):
+        Bookmark.nline = line + '.0'
+        if not Bookmark.nline in Bookmark.bookmarks:
+            Bookmark.bookmarks[Bookmark.nline] = ''
+            Bookmark.select_name()
 
-def select_bookmark_name():
+            textPad.mark_set('bookmark', Bookmark.nline)
+            textPad.mark_gravity('bookmark', direction='left')
 
-    t5 = Toplevel(root)
-    t5.focus_set()
-    t5.title('Bookmark...')
-    t5.geometry('300x65')
-    t5.resizable(width=0,height=0)
-    t5.transient(root)
-    Label(t5,text="Line:").grid(row=0, column=0, pady=4, sticky='e')
+    def select_name():
 
-    bname = Entry(t5, width=25, takefocus='active')
-    bname.grid(row=0, column=1, padx=2, pady=4, sticky='we')
-    bname.focus_set()
-    closeb = Button(t5, text='Ok', command=t5.destroy, default='active')
-    closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
-    def close_select(event):
-        global nline
-        a = str(bname.get())
-        bm_name.set(a)
-        bookmarks[nline] = bm_name.get()
-        draw_bookmarks()
-        t5.destroy()
+        t5 = Toplevel(root)
+        t5.focus_set()
+        t5.title('Bookmark...')
+        t5.geometry('320x65')
+        t5.resizable(width=0,height=0)
+        t5.transient(root)
+        Label(t5,text="Name:").grid(row=0, column=0, pady=4, sticky='e')
 
-    t5.protocol("WM_DELETE_WINDOW", close_select)
-    t5.bind('<Return>', close_select)
-def bookmark_add(line):
-    global bookmarks
-    global nline
-    nline = line + '.0'
-    if not nline in bookmarks:
-        select_bookmark_name()
+        bname = Entry(t5, width=25, takefocus='active')
+        bname.grid(row=0, column=1, padx=2, pady=4, sticky='we')
+        bname.focus_set()
+        closeb = Button(t5, text='Ok', command=t5.destroy, default='active')
+        closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
 
-        textPad.mark_set('bookmark', nline)
-        textPad.mark_gravity('bookmark', direction='left')
+
+        def close_select(event):
+            a = str(bname.get())
+            Bookmark.bm_name = a
+            Bookmark.bookmarks[Bookmark.nline] = Bookmark.bm_name
+            t5.destroy()
+            Bookmark.draw()
+
+        t5.protocol("WM_DELETE_WINDOW", close_select)
+        t5.bind('<Return>', close_select)
+
+    def delete(selection):
+        bookmark_to_del = selection.split(':')[0] + '.0'
+        del Bookmark.bookmarks[bookmark_to_del]
+        print(bookmark_to_del)
+        Bookmark.b_list.pop(Bookmark.b_list.index(selection))
+        bm_list.set(Bookmark.b_list)
+        Bookmark.draw(delete=True)
+
+
+    def settings(update=False):
+
+            for i in Bookmark.bookmarks.keys():
+                line = i.split('.')[0]
+                Bookmark.b_list.append(line + ':' + Bookmark.bookmarks[i])
+            bm_list.set(Bookmark.b_list)
+            t6 = Toplevel(root)
+            t6.geometry('600x450')
+            t6.focus_set()
+            t6.title('Bookmarks...')
+            t6.transient()
+            bmListBox = Listbox(t6, bg='white', height=350, width=300, listvariable=bm_list)
+            label = Label(t6, text='Choose a bookmark:')
+            label.pack(side=TOP, fill=X)
+            delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')))
+            delButton.pack(side=BOTTOM)
+            bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
+
+    def save(filename):
+        if config.get('bookmarks') == '':
+            bookmark_file = filename +';' + str(Bookmark.bookmarks) + '\n'
+            return bookmark_file
+        else:
+            file_list = config.get('bookmarks').split('\n')
+            for i in file_list:
+                if i.split(';')[0] == filename:
+                    file_list.pop(file_list.index[i])
+                    file_list.append(filename +';' + str(Bookmark.bookmarks))
+                    return ('\n').join(file_list)
+                else:
+                    if file_list.index(i) == len(file_list) - 1:
+                        file_list.append(filename +';' + str(Bookmark.bookmarks))
+                        return ('\n').join(file_list)
 
 
 
@@ -845,10 +930,12 @@ def bookmark_add(line):
 bookmarkbar = Frame(shortcutbar, height=25, bd=2, relief='ridge')
 #canvas = Canvas(bookmarkbar, height=25)
 #canvas.config(scrollregion=canvas.bbox(ALL))
-if bookmarks:
-    draw_bookmarks()
+if Bookmark.bookmarks:
+    Bookmark.draw()
 bookmarkbar.pack(expand='no', fill=X)
 #canvas.pack(expand='no', fill=BOTH)
+'''Bookmarks config'''
+menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
 cmenu = Menu(textPad,tearoff=0)
@@ -894,7 +981,8 @@ textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
 textPad.bind_all('<B1-Motion>', select)
 textPad.bind_all('<ButtonRelease-1>', select)
-lnlabel.bind('<Double-Button-1>', lambda event: bookmark_add(lnlabel.index('current').split('.')[0]))
+lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
+root.bind('<Control-b>', lambda event: Bookmark.add(textPad.index('current').split('.')[0]))
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
@@ -907,4 +995,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-
