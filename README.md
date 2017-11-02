@@ -3,8 +3,7 @@
 TindyEditor supports:
 * Windows
 * Linux
-
-_MacOs in development..._
+* _MacOs in development..._
 
 TindyEditor have many functions such as:
 
