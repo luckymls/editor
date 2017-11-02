@@ -1,5 +1,5 @@
-#ISSUE TEMPLATE - HOW TO
+# ISSUE TEMPLATE - HOW TO
 
-*Give a detailed explanation for reproduce the issue
-*Attach screenshots
-*Give the appropriate labels
+* Give a detailed explanation for reproduce the issue
+* Attach screenshots
+* Give the appropriate labels
