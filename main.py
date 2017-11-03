@@ -925,7 +925,7 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
             file_list = config.get('bookmarks').split('\n')
             for i in file_list:
                 if i.split(';')[0] == filename:
-                    file_list.pop(file_list.index[i])
+                    file_list.pop(file_list.index(i))
                     file_list.append(filename +';' + str(Bookmark.bookmarks))
                     return ('\n').join(file_list)
                 else:
