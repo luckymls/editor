@@ -26,6 +26,27 @@ else:
 
 ##################
 
+def getEncoding(filePath=None):
+    encodes = ['utf-8', 'utf-16', 'iso-8859-15', 'cp437']
+    
+    for test in encodes:
+        try:
+            open(filePath, 'r', encoding=test)
+        except:
+            print('Trying '+test+'... \n')
+            pass
+        else:
+            encoding = test
+            break
+
+    if encoding:
+        return encoding
+    else:
+        return 0
+            
+
+    
+##################
 
 '''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
 
@@ -104,6 +125,7 @@ class config:
 ##################
 
 def popup(event):
+    cmenu.config(bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
     cmenu.tk_popup(event.x_root, event.y_root)
 
 '''Scelta tema'''
@@ -126,8 +148,7 @@ def theme(x=None):
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
 
-def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
-    current_theme = themechoice.get()
+class Colors:
     mblack = '#171717'
     black = '#515151'
     black2 = '#282C34'
@@ -139,38 +160,52 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
     grey2 = '#ABB2BF'
     grey3 = '#9DA5B4'
     blue = "#729FCF"
+    pop_bg = white
+    pop_fg = black
+    pop_bg_active = white2
+
+
+def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
+    current_theme = themechoice.get()
+
     objects=((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
     if nightmodeln.get():
         nightmodeln.set(0)
+        Colors.pop_bg = Colors.white
+        Colors.pop_fg = Colors.black
+        Colors.pop_bg_active = Colors.white2
         themechoice.set(current_theme)
         theme(1)
         textPad.config(insertbackground="#000000")
 
         lnlabel.config(bg='#DDFFDC', fg='#650909')
-        infobar.config(fg=black, bg=white)
-        scroll_x.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
-        scroll_y.config(bg=white, activebackground=white, troughcolor=grey,highlightbackground=white2)
-        shortcutbar.config(bg=white)
-        bookmarkbar.config(bg=white)
-        root.config(bg=white)
+        infobar.config(fg=Colors.black, bg=Colors.white)
+        scroll_x.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey,highlightbackground=Colors.white2)
+        scroll_y.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey,highlightbackground=Colors.white2)
+        shortcutbar.config(bg=Colors.white)
+        bookmarkbar.config(bg=Colors.white)
+        root.config(bg=Colors.white)
         for i in objects:
-            i.config(fg=black, bg=white, activebackground=blue, activeforeground=black)
+            i.config(fg=Colors.black, bg=Colors.white, activebackground=Colors.blue, activeforeground=Colors.black)
         for i in bookmarkbar.winfo_children():
-            i.config(bg=white, fg=black, activebackground=white2, activeforeground=black)
+            i.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
     else:
         nightmodeln.set(1)
-        textPad.config(fg=grey2, bg=black2, insertbackground="#5386E9")
-        lnlabel.config(fg=grey2, bg=black2)
-        infobar.config(fg=grey3, bg=black3)
-        scroll_x.config(bg=black3, activebackground=black3, troughcolor=black2,highlightbackground=black2)
-        scroll_y.config(bg=black3, activebackground=black3, troughcolor=black2,highlightbackground=black2)
-        shortcutbar.config(bg=black3)
-        root.config(bg=black3)
-        bookmarkbar.config(bg=black3)
+        Colors.pop_bg = black2
+        Colors.pop_fg = grey
+        Colors.pop_bg_active = mblack
+        textPad.config(fg=Colors.grey2, bg=Colors.black2, insertbackground="#5386E9")
+        lnlabel.config(fg=Colors.grey2, bg=Colors.black2)
+        infobar.config(fg=Colors.grey3, bg=Colors.black3)
+        scroll_x.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2,highlightbackground=Colors.black2)
+        scroll_y.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2,highlightbackground=Colors.black2)
+        shortcutbar.config(bg=Colors.black3)
+        root.config(bg=Colors.black3)
+        bookmarkbar.config(bg=Colors.black3)
         for i in objects:
-            i.config(fg=grey3, bg=black3, activebackground=black4, activeforeground=grey3)
+            i.config(fg=Colors.grey3, bg=Colors.black3, activebackground=Colors.black4, activeforeground=Colors.grey3)
         for i in bookmarkbar.winfo_children():
-            i.config(bg=black2, fg=grey3, activebackground=mblack, activeforeground=grey3)
+            i.config(bg=Colors.black2, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
 
 def show_info_bar():
     val = showinbar.get()
@@ -340,21 +375,21 @@ def goToLine(event=None):
     insertln.set(1)
     global gTL
 
-    t4 = Toplevel(root)
+    t4 = Toplevel(root, bg=Colors.pop_bg)
     t4.focus_set()
     t4.title('Go to...')
     t4.geometry('300x65')
     t4.resizable(width=0,height=0)
     t4.transient(root)
-    Label(t4,text="Line:").grid(row=0, column=0, pady=4, sticky='e')
+    Label(t4,text="Line:").grid(row=0, column=0, pady=4, sticky='e', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
 
 
     pos = gTL.get()+'.0'
 
-    e = Entry(t4, width=25, textvariable=gTL, takefocus='active')
+    e = Entry(t4, width=25, textvariable=gTL, takefocus='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     e.focus_set()
-    b = Button(t4, text='Go!', command=lineSearch, default='active')
+    b = Button(t4, text='Go!', command=lineSearch, default='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
     b.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
 
     def close_goto(event=None):
@@ -409,7 +444,7 @@ def paste(event=None):
 
 def wSetting():
 
-    t3 = Toplevel(root)
+    t3 = Toplevel(root, bg=Colors.pop_bg)
     t3.title('Settings')
     t3.geometry('500x300')
     t3.resizable(width=0,height=0)
@@ -818,7 +853,7 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
                 button = i
                 bm_txt = Bookmark.bookmarks[i].split('.')[0]
                 bm_line = i
-                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid')
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
                 index += 1
                 print(button)
                 if index == len(Bookmark.bookmarks) and button:
@@ -831,7 +866,7 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
             for i in bookmarks_keys:
                 bm_txt = Bookmark.bookmarks[i].split('.')[0]
                 bm_line = i
-                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid')
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
                 index += 1
                 button.pack(side=LEFT)
 
@@ -862,30 +897,33 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
 
     def select_name():
 
-        t5 = Toplevel(root)
+        t5 = Toplevel(root, bg=Colors.pop_bg)
         t5.focus_set()
         t5.title('Bookmark...')
         t5.geometry('320x65')
         t5.resizable(width=0,height=0)
         t5.transient(root)
-        Label(t5,text="Name:").grid(row=0, column=0, pady=4, sticky='e')
+        Label(t5,text="Name:", bg=Colors.pop_bg, fg=Colors.pop_fg).grid(row=0, column=0, pady=4, sticky='e')
 
-        bname = Entry(t5, width=25, takefocus='active')
+        bname = Entry(t5, width=25, takefocus='active', bg=Colors.pop_bg, fg=Colors.pop_fg)
         bname.grid(row=0, column=1, padx=2, pady=4, sticky='we')
         bname.focus_set()
 
 
         def close_select(event=None):
+            if event == "wm_del_window":
+                Bookmark.lock = False
+                return
             a = str(bname.get())
             Bookmark.bm_name = a
             Bookmark.bookmarks[Bookmark.nline] = Bookmark.bm_name
             t5.destroy()
-            Bookmark.draw()
             Bookmark.lock = False
+            Bookmark.draw()
 
         closeb = Button(t5, text='Ok', command=close_select, default='active')
         closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
-        t5.protocol("WM_DELETE_WINDOW", t5.destroy)
+        t5.protocol("WM_DELETE_WINDOW", lambda: close_select("wm_del_window"))
         t5.bind('<Return>', close_select)
 
     def delete(selection):
@@ -904,28 +942,27 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
             line = i.split('.')[0]
             Bookmark.b_list.append(line + ':' + Bookmark.bookmarks[i])
         bm_list.set(Bookmark.b_list)
-        t6 = Toplevel(root)
+        t6 = Toplevel(root, bg=Colors.pop_bg)
         t6.geometry('600x450')
         t6.focus_set()
         t6.title('Bookmarks...')
         t6.transient()
-        bmListBox = Listbox(t6, bg='white', height=350, width=300, listvariable=bm_list)
-        label = Label(t6, text='Choose a bookmark:')
+        bmListBox = Listbox(t6, height=350, width=300, listvariable=bm_list, bg=Colors.pop_bg, fg=Colors.pop_fg)
+        label = Label(t6, text='Choose a bookmark:', bg=Colors.pop_bg, fg=Colors.pop_fg)
         label.pack(side=TOP, fill=X)
-        delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')))
+        delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')), bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
         delButton.pack(side=BOTTOM)
         bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
 
     def save(filename):
-        testBookmark = config.get('bookmarks')
-        if testBookmark is None or len(testBookmark) is 0:
+        if config.get('bookmarks') == '':
             bookmark_file = filename +';' + str(Bookmark.bookmarks) + '\n'
             return bookmark_file
         else:
             file_list = config.get('bookmarks').split('\n')
             for i in file_list:
                 if i.split(';')[0] == filename:
-                    file_list.pop(file_list.index(i))
+                    file_list.pop(file_list.index[i])
                     file_list.append(filename +';' + str(Bookmark.bookmarks))
                     return ('\n').join(file_list)
                 else:
@@ -947,7 +984,7 @@ bookmarkbar.pack(expand='no', fill=X)
 menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
-cmenu = Menu(textPad, tearoff=0)
+cmenu = Menu(textPad, tearoff=0, bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
 for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
     cmd = eval(i)
     '''Aggiunto da poco, mette maiuscola nel menù cut => Cut'''
