@@ -1004,4 +1004,3 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
-
