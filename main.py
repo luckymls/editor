@@ -500,39 +500,41 @@ def save(event=None):
 
 def save_as():
     global filename
-    # try:
+   
 
 
     '''Apro finestra wn per salvare file con nome'''
     f = filedialog.asksaveasfilename(initialfile='Untitled.txt',defaultextension=".txt",filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"),
+    
     fh = open(f, 'w')
     filename = f
 
     config.set('bookmarks', Bookmark.save(filename))
     pathAlreadyExists = 0
     checkConf = config.get('recent files')
-    if checkConf: checkConf = checkConf.split('\n')
-    else: checkConf = []
-    for testPath in checkConf:
-        if testPath == filename:
-            pathAlreadyExists = 1
-    if pathAlreadyExists is 0:
-        if len(checkConf) < 5:
+    try:
+        if len(checkConf) > 0: checkConf = checkConf.split('\n')
+        else: checkConf = []
+        for testPath in checkConf:
+            if testPath == filename:
+                pathAlreadyExists = 1
+        if pathAlreadyExists is 0:
+            if len(checkConf) < 5:
 
-            config.set('recent files', filename+'\n', 1)
+                config.set('recent files', filename+'\n', 1)
 
-        else:
-            config.set('recent files', filename+'\n', 1, 1)
+            else:
+                config.set('recent files', filename+'\n', 1, 1)
 
-    # except Exception as e:
-    #     print('Errore in save_as: \n'+str(e))
-    #     return False
-    else:
-        textoutput = textPad.get(1.0, END)
-        fh.write(textoutput)
-        fh.close()
-        root.title(os.path.basename(f) + " - Tkeditor")
-        return filename
+    except Exception as e:
+        print('Errore in save_as: \n'+str(e))
+        return False
+
+    textoutput = textPad.get(1.0, END)
+    fh.write(textoutput)
+    fh.close()
+    root.title(os.path.basename(f) + " - TindyEditor")
+    return filename
 
 def update_file(event=None):
     update_line_number()
@@ -543,15 +545,15 @@ def update_file(event=None):
 
                 f = 'Unsaved.txt'
                 fh = open(f, 'w')
-                global filename
-                filename = f
+                
                 textoutput = textPad.get(1.0, END)
                 fh.write(textoutput)
                 fh.close()
-                '''Imposto il titolo della finestra principale'''
-                root.title(os.path.basename(f) + " - TindyEditor")
+                
+                
         except:
          pass
+        
 def update_info_bar(event=None):
     line = int(textPad.index('insert').split('.')[0])
     total = int(textPad.index('end').split('.')[0]) - 1
@@ -915,7 +917,8 @@ class Bookmark: # Per poter agire direttamente sui pulsanti, ad esempio con un m
         bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
 
     def save(filename):
-        if config.get('bookmarks') == '':
+        testBookmark = config.get('bookmarks')
+        if testBookmark is None or len(testBookmark) is 0:
             bookmark_file = filename +';' + str(Bookmark.bookmarks) + '\n'
             return bookmark_file
         else:
@@ -1001,3 +1004,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop() #luup#
+
