@@ -34,7 +34,7 @@ def getEncoding(filePath=None):
         try:
             open(filePath, 'r', encoding=test)
         except:
-            print('Trying '+test+'... \n')
+            print('Trying ' + test + '... \n')
             pass
         else:
             encoding = test
@@ -58,7 +58,7 @@ class config:
 
     def get(variabile=None):
 
-        var_path = '.config/'+variabile
+        var_path = '.config/' + variabile
 
         if os.path.exists(var_path):
             return open(var_path).read(os.path.getsize(var_path))
@@ -70,13 +70,13 @@ class config:
         try:
             os.mkdir('.config')
             if isLinux is 0:
-                folderPath = os.getcwd()+'/.config'
-                os.popen('attrib +S +H '+folderPath)
+                folderPath = os.getcwd() + '/.config'
+                os.popen('attrib +S +H ' + folderPath)
         except:
             pass
 
         variabile = args[0]
-        var_path = '.config/'+variabile
+        var_path = '.config/' + variabile
         value = args[1]
         try:
             overwrite = args[2]
@@ -110,7 +110,7 @@ class config:
 
             txt = ''
             for element in list3:
-                txt += str(element)+'\n'
+                txt += str(element) + '\n'
             txt = txt[:-2]
             isOverWriteFirst = 1
             value = txt
@@ -143,7 +143,7 @@ def theme(x=None):
         clrs = clrschms.get(val)  # 000000.FFFFFF
 
         fgc, bgc = clrs.split('.')
-        fgc, bgc = '#'+fgc, '#'+bgc
+        fgc, bgc = '#' + fgc, '#' + bgc
 
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
@@ -181,8 +181,8 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
 
         lnlabel.config(bg='#DDFFDC', fg='#650909')
         infobar.config(fg=Colors.black, bg=Colors.white)
-        scroll_x.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey,highlightbackground=Colors.white2)
-        scroll_y.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey,highlightbackground=Colors.white2)
+        scroll_x.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey, highlightbackground=Colors.white2)
+        scroll_y.config(bg=Colors.white, activebackground=Colors.white, troughcolor=Colors.grey, highlightbackground=Colors.white2)
         shortcutbar.config(bg=Colors.white)
         bookmarkbar.config(bg=Colors.white)
         root.config(bg=Colors.white)
@@ -198,8 +198,8 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         textPad.config(fg=Colors.grey2, bg=Colors.black2, insertbackground="#5386E9")
         lnlabel.config(fg=Colors.grey2, bg=Colors.black2)
         infobar.config(fg=Colors.grey3, bg=Colors.black3)
-        scroll_x.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2,highlightbackground=Colors.black2)
-        scroll_y.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2,highlightbackground=Colors.black2)
+        scroll_x.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2, highlightbackground=Colors.black2)
+        scroll_y.config(bg=Colors.black3, activebackground=Colors.black3, troughcolor=Colors.black2, highlightbackground=Colors.black2)
         shortcutbar.config(bg=Colors.black3)
         root.config(bg=Colors.black3)
         bookmarkbar.config(bg=Colors.black3)
@@ -239,7 +239,7 @@ def update_line_number(load=False, event=None, paste=False):
                 lnlabel.config(state='disabled')
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
-            lnlabel.config(state ='normal')
+            lnlabel.config(state = 'normal')
 
             lines = int(textPad.index('end').split('.')[0])
             lnlabel.delete(2.0, 'end')
@@ -335,9 +335,9 @@ def on_find(event=None):
     v = StringVar()
     e = Entry(t2, width=25, textvariable=v)
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
-    c=IntVar()
+    c = IntVar()
     Checkbutton(t2, text='Ignore Case', variable=c).grid(row=1, column=1, sticky='e', padx=2, pady=2)
-    Button(t2, text='Find All', underline=0, command=lambda: search_for(v.get(), c.get(), textPad, t2, e)).grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+    Button(t2, text='Find All', underline=0, command=lambda: search_for(v.get(), c.get(), textPad, t2, e)).grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
 
     def close_search():
         textPad.tag_remove('match', '1.0', END)
@@ -360,7 +360,7 @@ def search_for(needle, cssnstv, textPad, t2, e):
                     pos = lastpos
                 textPad.tag_config('match', foreground='white', background='blue')
         e.focus_set()
-        t2.title('%d matches found' %count)
+        t2.title('%d matches found' % count)
 
 # Nuova funzione per rimarcare parti di codice, introdotta 26/10/17
 # Qualcosa non mi convince riguardo al ciclo while e tag_config
@@ -381,10 +381,10 @@ def highlight_word(search=None, event=None):
                 if not pos:
                     break
                 lastpos = '%s+%dc' % (pos, len(search))
-                textPad.tag_add('code'+search, pos, lastpos)
+                textPad.tag_add('code' + search, pos, lastpos)
                 count +=1
                 pos = lastpos
-                textPad.tag_config('code'+search, foreground=code[search])
+                textPad.tag_config('code' + search, foreground=code[search])
     else:
         textPad.tag_remove('code', '1.0', END)
 #######################################################################
@@ -406,19 +406,19 @@ def goToLine(event=None):
     t4.transient(root)
     Label(t4, text="Line:").grid(row=0, column=0, pady=4, sticky='e', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
 
-    pos = gTL.get()+'.0'
+    pos = gTL.get() + '.0'
 
     e = Entry(t4, width=25, textvariable=gTL, takefocus='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     e.focus_set()
     b = Button(t4, text='Go!', command=lineSearch, default='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
-    b.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+    b.grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
 
     def close_goto(event=None):
         textPad.tag_remove('lineSearch', 1.0, "end")
 
         t4.destroy()
-    pos = gTL.get()+'.1'
+    pos = gTL.get() + '.1'
     t4.protocol("WM_DELETE_WINDOW", close_goto)
     t4.bind('<Return>', lineSearch)
     e.bind('<FocusOut>', close_goto)
@@ -427,9 +427,9 @@ def goToLine(event=None):
 def lineSearch(event=None):
 
     textPad.tag_remove('lineSearch', 1.0, "end")
-    pos = gTL.get()+'.0'
+    pos = gTL.get() + '.0'
     lastpos = int(gTL.get()) + 1
-    lastpos = str(lastpos)+'.0'
+    lastpos = str(lastpos) + '.0'
     textPad.tag_add('lineSearch', pos, lastpos)
     textPad.tag_config('lineSearch', foreground='white', background='blue')
     textPad.see([pos])
@@ -499,7 +499,7 @@ def new_file(event=None):
 def open_file(event=None):
     global filename
 
-    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents","*.txt")]) #("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
+    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
     if filename == "":
         filename = None
     else:
@@ -547,11 +547,11 @@ def save(event=None):
         if pathAlreadyExists is 0:
             if len(checkConf) < 5:
 
-                config.set('recent files', filename+'\n', 1)
+                config.set('recent files', filename + '\n', 1)
 
             else:
 
-                config.set('recent files', filename+'\n', 1, 1)
+                config.set('recent files', filename + '\n', 1, 1)
 
         f = open(filename, 'w')
         letter = textPad.get(1.0, 'end')
@@ -566,7 +566,7 @@ def save_as():
     global filename
 
     '''Apro finestra wn per salvare file con nome'''
-    f = filedialog.asksaveasfilename(initialfile='Untitled.txt', defaultextension=".txt", filetypes=[("Text Documents","*.txt")])  # ("All Files","*.*"),
+    f = filedialog.asksaveasfilename(initialfile='Untitled.txt', defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"),
 
     fh = open(f, 'w')
     filename = f
@@ -587,13 +587,13 @@ def save_as():
         if pathAlreadyExists is 0:
             if len(checkConf) < 5:
 
-                config.set('recent files', filename+'\n', 1)
+                config.set('recent files', filename + '\n', 1)
 
             else:
-                config.set('recent files', filename+'\n', 1, 1)
+                config.set('recent files', filename + '\n', 1, 1)
 
     except Exception as e:
-        print('Errore in save_as: \n'+str(e))
+        print('Errore in save_as: \n' + str(e))
         return False
 
     textoutput = textPad.get(1.0, END)
@@ -642,7 +642,7 @@ def printSheet():
 '''Spiegazione rapida: label = testo, accelerator= testo per scorciatoia combinazione tasti, compund=posizione, command=comando da richiamare se si spunta/clicca l'opzione'''
 
 if isLinux:
-    completePath = os.getcwd()+'/'
+    completePath = os.getcwd() + '/'
 else:
     completePath = ''
     root.iconbitmap('icons/pypad.ico')
@@ -680,8 +680,8 @@ try:
     for filePaths in recentOpen:
         if len(filePaths) > 3:
             i += 1
-            fileName = os.path.basename(filePaths)[0].upper()+os.path.basename(filePaths)[1:]
-            recentFiles.add_command(label=str(i)+'. '+fileName, compound = LEFT, underline = 0, command= lambda x=filePaths:open_recent_file(x))
+            fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
+            recentFiles.add_command(label=str(i) + '. ' + fileName, compound = LEFT, underline = 0, command= lambda x=filePaths: open_recent_file(x))
 
 except Exception as e:
     print('Exception: ' + str(e))
@@ -692,7 +692,7 @@ filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_a
 autoSave = IntVar()
 autoSave.set(1)
 filemenu.add_checkbutton(label="Save Automatically", variable=autoSave, command=update_file)
-if not isLinux: # Print Function
+if not isLinux:  # Print Function
 
     filemenu.add_separator()
 
@@ -738,7 +738,7 @@ viewmenu.add_separator()
 fullscreenln = IntVar()
 nightmodeln = IntVar()
 viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F9', command=night_mode)
-viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(),accelerator='F11', command=fullscreen)
+viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(), accelerator='F11', command=fullscreen)
 viewmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
@@ -970,7 +970,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
             Bookmark.draw()
 
         closeb = Button(t5, text='Ok', command=close_select, default='active')
-        closeb.grid(row=0, column=2, sticky='e'+'w', padx=2, pady=4)
+        closeb.grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
         t5.protocol("WM_DELETE_WINDOW", lambda: close_select("wm_del_window"))
         t5.bind('<Return>', close_select)
 
@@ -1033,7 +1033,7 @@ cmenu = Menu(textPad, tearoff=0, bg=Colors.pop_bg, fg=Colors.pop_fg, activebackg
 for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
     cmd = eval(i)
     '''Aggiunto da poco, mette maiuscola nel menù cut => Cut'''
-    i = i[0].upper()+i[1:]
+    i = i[0].upper() + i[1:]
 
     cmenu.add_command(label=i, compound=LEFT, command=cmd)
 cmenu.add_separator()
