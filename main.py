@@ -239,7 +239,7 @@ def update_line_number(load=False, event=None, paste=False):
                 lnlabel.config(state='disabled')
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
-            lnlabel.config(state = 'normal')
+            lnlabel.config(state='normal')
 
             lines = int(textPad.index('end').split('.')[0])
             lnlabel.delete(2.0, 'end')
@@ -382,7 +382,7 @@ def highlight_word(search=None, event=None):
                     break
                 lastpos = '%s+%dc' % (pos, len(search))
                 textPad.tag_add('code' + search, pos, lastpos)
-                count +=1
+                count += 1
                 pos = lastpos
                 textPad.tag_config('code' + search, foreground=code[search])
     else:
@@ -648,16 +648,16 @@ else:
     root.iconbitmap('icons/pypad.ico')
 
 
-new_fileicon = PhotoImage(file=completePath+'icons/new_file.gif')
-open_fileicon = PhotoImage(file=completePath+'icons/open_file.gif')
-saveicon = PhotoImage(file=completePath+'icons/save.gif')
-cuticon = PhotoImage(file=completePath+'icons/cut.gif')
-copyicon = PhotoImage(file=completePath+'icons/copy.gif')
-pasteicon = PhotoImage(file=completePath+'icons/paste.gif')
-undoicon = PhotoImage(file=completePath+'icons/undo.gif')
-redoicon = PhotoImage(file=completePath+'icons/redo.gif')
-on_findicon = PhotoImage(file=completePath+'icons/on_find.gif')
-abouticon = PhotoImage(file=completePath+'icons/about.gif')
+new_fileicon = PhotoImage(file=completePath + 'icons/new_file.gif')
+open_fileicon = PhotoImage(file=completePath + 'icons/open_file.gif')
+saveicon = PhotoImage(file=completePath + 'icons/save.gif')
+cuticon = PhotoImage(file=completePath + 'icons/cut.gif')
+copyicon = PhotoImage(file=completePath + 'icons/copy.gif')
+pasteicon = PhotoImage(file=completePath + 'icons/paste.gif')
+undoicon = PhotoImage(file=completePath + 'icons/undo.gif')
+redoicon = PhotoImage(file=completePath + 'icons/redo.gif')
+on_findicon = PhotoImage(file=completePath + 'icons/on_find.gif')
+abouticon = PhotoImage(file=completePath + 'icons/about.gif')
 
 '''Menù'''
 menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
@@ -681,7 +681,7 @@ try:
         if len(filePaths) > 3:
             i += 1
             fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
-            recentFiles.add_command(label=str(i) + '. ' + fileName, compound = LEFT, underline = 0, command= lambda x=filePaths: open_recent_file(x))
+            recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
 
 except Exception as e:
     print('Exception: ' + str(e))
@@ -796,7 +796,7 @@ icons = ['new_fileicon', 'open_fileicon', 'saveicon', 'cuticon', 'copyicon', 'pa
 for i, icon in enumerate(icons):
     tbicon = eval(icon)
     cmd = eval(icon[:-4])
-    toolbar = Button(shortcutbar, image=tbicon,  command=cmd)
+    toolbar = Button(shortcutbar, image=tbicon, command=cmd)
     toolbar.image = tbicon
     toolbar.pack(side=LEFT)
 shortcutbar.pack(expand=NO, fill=X)
@@ -816,7 +816,7 @@ scroll_x.pack(side=BOTTOM, fill=X)
 
 '''Row Bar'''
 
-lnlabel = Text(root,  width=6,  bg ='#DDFFDC', bd=1, relief='solid', fg='#650909')
+lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
@@ -861,7 +861,6 @@ def select(event=None, state='active'):
 textPad.configure(yscrollcommand=scroll_y.set)
 lnlabel.config(yscrollcommand=scroll_y.set)
 scroll_y.config(command=yscroll)
-
 
 
 textPad.configure(xscrollcommand=scroll_x.set)
