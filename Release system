@@ -1,1 +1,6 @@
-To define
+Each time new features are added and tested, or bug are fixed, we should add a point release, starting from 0.1
+For example: 0.11
+The version will depend on the relevance of the changes made, which is something we have to define
+At a certain point, with major functions added and many bug fixes, we could freeze the development of new features for a while,
+then start testing and fixing bug as much as we can and finally release a major release, for example 1.0.
+After that, start again adding point releases. ;)
