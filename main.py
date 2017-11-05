@@ -171,6 +171,7 @@ class Colors:
     pop_fg = black
     pop_bg_active = white2
     pop_bg_list = 'white'
+    active_line_highlight = '#E4FFD5'
 
 
 def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
@@ -183,6 +184,8 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         Colors.pop_fg = Colors.black
         Colors.pop_bg_active = Colors.white2
         Colors.pop_bg_list = 'white'
+        Colors.active_line_highlight = '#E4FFD5'
+
         themechoice.set(current_theme)
         theme(1)
         textPad.config(insertbackground="#000000")
@@ -204,6 +207,7 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         Colors.pop_fg = Colors.grey
         Colors.pop_bg_active = Colors.mblack
         Colors.pop_bg_list = Colors.black2
+        Colors.active_line_highlight = '#082E58'
         textPad.config(fg=Colors.grey2, bg=Colors.black2, insertbackground="#5386E9")
         lnlabel.config(fg=Colors.grey2, bg=Colors.black2)
         infobar.config(fg=Colors.grey3, bg=Colors.black3)
@@ -268,9 +272,14 @@ def update_line_number(load=False, event=None, paste=False):
                         Bookmark.draw(delete=True)
 
 
+selected_text = BooleanVar()
+
+
 def highlight_line(interval=1):
-    textPad.tag_remove("active_line", 1.0, "end")
-    textPad.tag_add("active_line", "insert linestart", "insert lineend+1c")
+    textPad.tag_remove("active_line", 1.0, "end")  # si può sfruttare questo meccanismo per aggiornare in tempo reale la barra mentre si seleziona
+    if selected_text.get() == False:
+        textPad.tag_add("active_line", "insert linestart", "insert lineend+1c")
+        textPad.tag_config("active_line", background=Colors.active_line_highlight)
     textPad.after(interval, toggle_highlight)
 
 
@@ -303,6 +312,7 @@ def anykey(event=None):
     update_info_bar()
     highlight_word()
     update_info_bar()
+    selected_text.set(False)
 ####################
 
 
@@ -850,8 +860,15 @@ def mousewheel(event):
         textPad.yview_moveto(lnlabel.yview()[0])
 
 
-def select(event=None, state='active'):
-
+def select(event=None, state='not_active'):
+    # if selected_text.get() is False:
+    #     selected_text.set(True)
+    # else:
+    #     selected_text.set(False)
+    if state == 'active':
+        selected_text.set(True)
+    elif state == 'not_active':
+        selected_text.set(False)
     if insertln.get() == 1:
         textPad.mark_set('insert', gTL.get() + '.0 lineend')
         textPad.mark_gravity('insert', RIGHT)
@@ -1072,8 +1089,8 @@ textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
-textPad.bind_all('<B1-Motion>', select)
-textPad.bind_all('<ButtonRelease-1>', select)
+textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
+textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
 root.bind('<Control-b>', lambda event: Bookmark.add(textPad.index('current').split('.')[0]))
 root.bind('<KeyPress-F1>', help_box)
