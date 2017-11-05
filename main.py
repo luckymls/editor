@@ -102,11 +102,17 @@ class config:
                     list2.append(str(element))
             list3 = []
 
-            list3.append(str(list2[0]))
-            list3.append(str(list2[1]))
-            list3.append(str(list2[2]))
-            list3.append(str(list2[3]))
-            list3.append(str(value))
+            # list3.append(str(list2[0]))
+            # list3.append(str(list2[1]))
+            # list3.append(str(list2[2]))
+            # list3.append(str(list2[3]))
+            # list3.append(str(value))
+
+            for i in range(len(list2)):  # corretto in questo modo
+                if i > 3:
+                    break
+                list3.append(str(list2[i]))  # Correzione fatta perché dava errore nel caso in cui list2 non avesse gli elementi richiesti (indice 1,2,3 etc)
+            list3.append(str(value))  # Per Luca: controlla se è giusto, non sapevo a cosa servisse la parte append(value), perciò l'ho messa così, vedi tu se è corretto
 
             txt = ''
             for element in list3:
@@ -164,6 +170,7 @@ class Colors:
     pop_bg = white
     pop_fg = black
     pop_bg_active = white2
+    pop_bg_list = 'white'
 
 
 def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
@@ -175,6 +182,7 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         Colors.pop_bg = Colors.white
         Colors.pop_fg = Colors.black
         Colors.pop_bg_active = Colors.white2
+        Colors.pop_bg_list = 'white'
         themechoice.set(current_theme)
         theme(1)
         textPad.config(insertbackground="#000000")
@@ -195,6 +203,7 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         Colors.pop_bg = Colors.black2
         Colors.pop_fg = Colors.grey
         Colors.pop_bg_active = Colors.mblack
+        Colors.pop_bg_list = Colors.black2
         textPad.config(fg=Colors.grey2, bg=Colors.black2, insertbackground="#5386E9")
         lnlabel.config(fg=Colors.grey2, bg=Colors.black2)
         infobar.config(fg=Colors.grey3, bg=Colors.black3)
@@ -404,11 +413,11 @@ def goToLine(event=None):
     t4.geometry('300x65')
     t4.resizable(width=0, height=0)
     t4.transient(root)
-    Label(t4, text="Line:").grid(row=0, column=0, pady=4, sticky='e', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
+    Label(t4, text="Line:", bg=Colors.pop_bg, fg=Colors.pop_fg).grid(row=0, column=0, pady=4, sticky='e')
 
     pos = gTL.get() + '.0'
-
-    e = Entry(t4, width=25, textvariable=gTL, takefocus='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
+    gTL.set('')
+    e = Entry(t4, width=25, textvariable=gTL, takefocus='active', bg=Colors.pop_bg, fg=Colors.pop_fg)
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     e.focus_set()
     b = Button(t4, text='Go!', command=lineSearch, default='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
@@ -434,7 +443,7 @@ def lineSearch(event=None):
     textPad.tag_config('lineSearch', foreground='white', background='blue')
     textPad.see([pos])
     lnlabel.yview_moveto(textPad.yview()[0])
-    gTL.set('')
+
 
 ########################################################################
 
@@ -574,27 +583,23 @@ def save_as():
     config.set('bookmarks', Bookmark.save(filename))
     pathAlreadyExists = 0
     checkConf = config.get('recent files')
-    try:
-        if checkConf:
-            checkConf = checkConf.split('\n')
+
+    if checkConf:
+        checkConf = checkConf.split('\n')
+    else:
+        checkConf = []
+
+    for testPath in checkConf:
+        if testPath == filename:
+            pathAlreadyExists = 1
+
+    if pathAlreadyExists is 0:
+        if len(checkConf) < 5:
+
+            config.set('recent files', filename + '\n', 1)
+
         else:
-            checkConf = []
-
-        for testPath in checkConf:
-            if testPath == filename:
-                pathAlreadyExists = 1
-
-        if pathAlreadyExists is 0:
-            if len(checkConf) < 5:
-
-                config.set('recent files', filename + '\n', 1)
-
-            else:
-                config.set('recent files', filename + '\n', 1, 1)
-
-    except Exception as e:
-        print('Errore in save_as: \n' + str(e))
-        return False
+            config.set('recent files', filename + '\n', 1, 1)
 
     textoutput = textPad.get(1.0, END)
     fh.write(textoutput)
@@ -674,17 +679,13 @@ filemenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Add Recent Files'''
 
-try:
-    recentOpen = config.get('recent files').split('\n')
-    i = 0
-    for filePaths in recentOpen:
-        if len(filePaths) > 3:
-            i += 1
-            fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
-            recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
-
-except Exception as e:
-    print('Exception: ' + str(e))
+recentOpen = config.get('recent files').split('\n')
+i = 0
+for filePaths in recentOpen:
+    if len(filePaths) > 3:
+        i += 1
+        fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
+        recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
 
 filemenu.add_separator()
 filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
@@ -709,7 +710,7 @@ editmenu.add_command(label="Redo", compound=LEFT, image=redoicon, accelerator='C
 editmenu.add_separator()
 editmenu.add_command(label="Cut", compound=LEFT, image=cuticon, accelerator='Ctrl+X', command=cut)
 editmenu.add_command(label="Copy", compound=LEFT, image=copyicon, accelerator='Ctrl+C', command=copy)
-editmenu.add_command(labe="Paste", compound=LEFT, image=pasteicon, accelerator='Ctrl+V', command=paste)
+editmenu.add_command(label="Paste", compound=LEFT, image=pasteicon, accelerator='Ctrl+V', command=paste)
 editmenu.add_separator()
 editmenu.add_command(label="Find", compound=LEFT, image=on_findicon, accelerator='Ctrl+F', command=on_find)
 editmenu.add_separator()
@@ -852,7 +853,8 @@ def mousewheel(event):
 def select(event=None, state='active'):
 
     if insertln.get() == 1:
-        textPad.mark_set('insert', gTL.get() + '.0')
+        textPad.mark_set('insert', gTL.get() + '.0 lineend')
+        textPad.mark_gravity('insert', RIGHT)
         insertln.set(0)
     lnlabel.yview_moveto(textPad.yview()[0])
     update_info_bar()
@@ -907,13 +909,14 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
             Bookmark.draw(delete='recursive drawing')
         else:
             print(Bookmark.bookmarks_to_draw)
-            i = Bookmark.bookmarks_to_draw[0]
-            bm_txt = Bookmark.bookmarks[i]
-            bm_line = i
-            # button = i
-            button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
-            Bookmark.bookmarks_to_draw.pop(0)
-            button.pack(side=LEFT)
+            if Bookmark.bookmarks_to_draw:
+                i = Bookmark.bookmarks_to_draw[0]
+                bm_txt = Bookmark.bookmarks[i]
+                bm_line = i
+                # button = i
+                button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
+                Bookmark.bookmarks_to_draw.pop(0)
+                button.pack(side=LEFT)
             if not len(Bookmark.bookmarks_to_draw) == 0:
                 Bookmark.draw('recursive drawing')
             return
@@ -993,7 +996,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
         t6.focus_set()
         t6.title('Bookmarks...')
         t6.transient()
-        bmListBox = Listbox(t6, height=350, width=300, listvariable=bm_list, bg=Colors.pop_bg, fg=Colors.pop_fg)
+        bmListBox = Listbox(t6, height=350, width=300, listvariable=bm_list, bg=Colors.pop_bg_list, fg=Colors.pop_fg)
         label = Label(t6, text='Choose a bookmark:', bg=Colors.pop_bg, fg=Colors.pop_fg)
         label.pack(side=TOP, fill=X)
         delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')), bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
@@ -1064,7 +1067,7 @@ textPad.bind('<Control-e>', highlight_word)
 textPad.bind('<Control-g>', goToLine)
 textPad.bind('<Control-G>', goToLine)
 # textPad.bind_all('<Control-V>', paste(ctrl_v=True))
-textPad.bind_all('<Control-v>', update_line_number)
+textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
