@@ -175,7 +175,7 @@ class Colors:
 
 
 def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiungere colore globale per fg e bg, che venga preso sul momento dalla funzione draw - Aggiungere nightmode per tutte le finestre secondarie, menu contestuale compreso
-    current_theme = themechoice.get()
+    current_theme = themechoice.get()  # Potrei utilizzare il tag 'sel' per modificare il colore della selezione
 
     objects = ((menubar, filemenu, viewmenu, editmenu, aboutmenu, themesmenu, recentFiles, settingsMenu))
     if nightmodeln.get():
@@ -900,6 +900,8 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
     b_list = []
     lock = bool()
     bookmarks_to_draw = list(bookmarks.keys())
+    slide_current = -1  # Da correggere: se parto andando all'indietro, mi verrà mostrato il penultimo e non l'ultimo bookmark
+    slide = []
 
     def draw(delete=True):
 
@@ -942,7 +944,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
         endline = str(int(line.split('.')[0]) + 1) + '.0'
         textPad.tag_add('bookmark', line, endline)
         textPad.tag_config('bookmark', background='yellow')
-        textPad.mark_set('insert', line)
+        textPad.mark_set('insert', line + ' lineend')
         textPad.see('insert')
         textPad.bind('<Any-KeyPress>', Bookmark.highlight_stop)
         textPad.bind('<Button-1>', Bookmark.highlight_stop)
@@ -1036,6 +1038,25 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
                         file_list.append(filename + ';' + str(Bookmark.bookmarks))
                         return ('\n').join(file_list)
 
+    def slider(event=None):
+        Bookmark.slide = [*Bookmark.bookmarks]
+        index = Bookmark.slide_current
+
+        if event == 'next':
+            index += 1
+            if index == len(Bookmark.slide):
+                index = 0
+            Bookmark.slide_current = index
+            line = Bookmark.slide[index]
+            Bookmark.go(line)
+        else:
+            index -= 1
+            if index < -len(Bookmark.slide):
+                index = (-1)
+            Bookmark.slide_current = index
+            line = Bookmark.slide[index]
+            Bookmark.go(line)
+
 
 bookmarkbar = Frame(shortcutbar, height=25, bd=0, relief='ridge')
 # canvas = Canvas(bookmarkbar, height=25)
@@ -1083,6 +1104,8 @@ textPad.bind('<Control-E>', highlight_word)
 textPad.bind('<Control-e>', highlight_word)
 textPad.bind('<Control-g>', goToLine)
 textPad.bind('<Control-G>', goToLine)
+textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
+textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 # textPad.bind_all('<Control-V>', paste(ctrl_v=True))
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
@@ -1092,7 +1115,7 @@ textPad.bind_all('<Button-1>', select)
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
-root.bind('<Control-b>', lambda event: Bookmark.add(textPad.index('current').split('.')[0]))
+textPad.bind('<Control-b>', lambda event: Bookmark.add(textPad.index('insert').split('.')[0]))
 root.bind('<KeyPress-F1>', help_box)
 root.bind('<KeyPress-F2>', about)
 root.bind('<KeyPress-F9>', night_mode)
