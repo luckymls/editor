@@ -2,5 +2,8 @@ Each time new features are added and tested, or bug are fixed, we should add a p
 For example: 0.11
 The version will depend on the relevance of the changes made, which is something we have to define
 At a certain point, with major functions added and many bug fixes, we could freeze the development of new features for a while,
-then start testing and fixing bug as much as we can and finally release a major release, for example 1.0.
+then start testing and fixing bug as much as we can and finally release a build release, for example 1.0.
 After that, start again adding point releases. ;)
+
+We could establish before the features of a certain build release, and go trough the various steps: alfa, beta, release-candidate
+(this one could preceed the stable build, it is when we stop the development and concentrate on correcting bugs)
