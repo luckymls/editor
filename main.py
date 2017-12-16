@@ -433,6 +433,15 @@ def goToLine(event=None):
     b = Button(t4, text='Go!', command=lineSearch, default='active', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
     b.grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
 
+    # def check_content():
+    #     accepted_characters = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # Da implementare
+    #     if i in accepted_characters:
+    #         return True
+    #     else:
+    #         return False
+    #
+    # e. config(validate='key', validatecommand=check_content)
+
     def close_goto(event=None):
         textPad.tag_remove('lineSearch', 1.0, "end")
 
@@ -517,12 +526,22 @@ def new_file(event=None):
 
 def open_file(event=None):
     global filename
-
     filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
+
     if filename == "":
         filename = None
     else:
-
+        if os.path.isfile(filename + ".backup"):
+            if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
+                if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
+                    root.title(os.path.basename(filename) + " - Tkeditor")
+                    textPad.delete(1.0, END)
+                    fh = open(filename + ".backup", "r")
+                    textPad.insert(1.0, fh.read())
+                    fh.close()
+                    update_line_number(load=True)
+                    return
+                else: pass
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Tkeditor")
         textPad.delete(1.0, END)
@@ -620,12 +639,14 @@ def save_as():
 
 def update_file(event=None):
     update_line_number()
+    global filename
     if autoSave.get():
         try:
             rand = random.randint(1, 3)
             if rand is 3:
 
-                f = 'Unsaved.txt'
+                f = filename + ".backup"  # Successivamente, mettere i file di backup in una cartella backup, creata nel sistema
+                print(filename)
                 fh = open(f, 'w')
 
                 textoutput = textPad.get(1.0, END)
@@ -637,6 +658,7 @@ def update_file(event=None):
 
 
 def update_info_bar(event=None):
+    linecount = IntVar()
     line = int(textPad.index('insert').split('.')[0])
     total = int(textPad.index('end').split('.')[0]) - 1
     column = int(textPad.index('insert').split('.')[1]) + 1
