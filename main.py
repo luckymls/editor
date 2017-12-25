@@ -7,8 +7,11 @@ import os
 import sys
 import time
 import random
-import ast
 import re
+
+
+    
+
 
 root = Tk()
 root.geometry('900x560')
@@ -27,6 +30,29 @@ else:
 
 ##################
 
+#Third-Party Libraries
+
+try:
+    import ast
+except ImportError:
+    
+    if isLinux:
+        try:
+            os.popen('python -m pip install ast')
+            print('Installing Third-Party libraries...')
+        except ImportError:
+            exit()
+    else:
+        try:
+            os.popen('py -m pip install ast')
+            print('Installing Third-Party libraries...')
+        except ImportError:
+            exit()
+        
+    
+
+
+##################
 
 def getEncoding(filePath=None):
     encodes = ['utf-8', 'utf-16', 'iso-8859-15', 'cp437']
