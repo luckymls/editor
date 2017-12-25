@@ -8,6 +8,7 @@ import sys
 import time
 import random
 import ast
+import re
 
 root = Tk()
 root.geometry('900x560')
@@ -441,6 +442,9 @@ def goToLine(event=None):
     #         return False
     #
     # e. config(validate='key', validatecommand=check_content)
+    
+    
+        
 
     def close_goto(event=None):
         textPad.tag_remove('lineSearch', 1.0, "end")
@@ -528,7 +532,7 @@ def open_file(event=None):
     global filename
     filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
 
-    if filename == "":
+    if filename is '':
         filename = None
     else:
         if os.path.isfile(filename + ".backup"):
