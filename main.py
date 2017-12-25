@@ -11,8 +11,6 @@ import re
 
 
     
-
-
 root = Tk()
 root.geometry('900x560')
 root.title('Untitled - TindyEditor')
@@ -32,24 +30,29 @@ else:
 
 #Third-Party Libraries
 
-try:
-    import ast
-except ImportError:
-    
-    if isLinux:
+third_party = []
+
+if len(third_party) != 0:
+    for lib in third_party:
+
         try:
-            os.popen('python -m pip install ast')
-            print('Installing Third-Party libraries...')
+            import lib
         except ImportError:
-            exit()
-    else:
-        try:
-            os.popen('py -m pip install ast')
-            print('Installing Third-Party libraries...')
-        except ImportError:
-            exit()
-        
-    
+
+            if isLinux:
+                try:
+                    os.popen(f'python -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
+            else:
+                try:
+                    os.popen(f'py -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
 
 
 ##################
