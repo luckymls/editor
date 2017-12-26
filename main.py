@@ -7,7 +7,10 @@ import os
 import sys
 import time
 import random
+import re
 import ast
+import pygments
+from pygments import lexers
 
 root = Tk()
 root.geometry('900x560')
@@ -25,7 +28,34 @@ else:
     isLinux = 0
 
 ##################
+#Third-Party Libraries
 
+third_party = []
+
+if len(third_party) != 0:
+    for lib in third_party:
+
+        try:
+            import lib
+        except ImportError:
+
+            if isLinux:
+                try:
+                    os.popen(f'python -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
+            else:
+                try:
+                    os.popen(f'py -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
+
+
+##################
 
 def getEncoding(filePath=None):
     encodes = ['utf-8', 'utf-16', 'iso-8859-15', 'cp437']
@@ -125,6 +155,125 @@ class config:
         f = open(var_path, mode)
         f.write(value)
         f.close()
+
+
+class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
+    colors = {
+            'Token.Text': "#000000",
+            'Token.Keyword': "#3060A6",
+            'Token.Keyword.Constant': "#3060A6",
+            'Token.Keyword.Declaration': "#3060A6",
+            'Token.Keyword.Namespace': "#3060A6",
+            'Token.Keyword.Pseudo': "#3060A6",
+            'Token.Keyword.Reserved': "#3060A6",
+            'Token.Keyword.Type': "#3060A6",
+            'Token.Name': "#000000",
+            'Token.Name.Attribute': "#4E9A06",
+            'Token.Name.Builtin': "#4E9A06",
+            'Token.Name.Builtin.Pseudo': "#4E9A06",
+            'Token.Name.Class': "#4E9A06",
+            'Token.Name.Constant': "#4E9A06",
+            'Token.Name.Decorator': "#4E9A06",
+            'Token.Name.Entity': "#4E9A06",
+            'Token.Name.Exception': "#4E9A06",
+            'Token.Name.Function': "#4E9A06",
+            'Token.Name.Function.Magic': "#4E9A06",
+            'Token.Name.Label': "#4E9A06",
+            'Token.Name.Namespace': "#4E9A06",
+            'Token.Name.Other': "#4E9A06",
+            'Token.Name.Tag': "#4E9A06",
+            'Token.Name.Variable': "#4E9A06",
+            'Token.Name.Variable.Class': "#4E9A06",
+            'Token.Name.Variable.Global': "#4E9A06",
+            'Token.Name.Variable.Instance': "#4E9A06",
+            'Token.Name.Variable.Magic': "#4E9A06",
+            'Token.Literal': "#3CBBDD",
+            'Token.Literal.Date': "#3CBBDD",
+            'Token.Literal.String': "#3CBBDD",
+            'Token.Literal.String.Affix': "#3CBBDD",
+            'Token.Literal.String.Backtick': "#3CBBDD",
+            'Token.Literal.String.Char': "#3CBBDD",
+            'Token.Literal.String.Delimiter': "#3CBBDD",
+            'Token.Literal.String.Doc': "#3CBBDD",
+            'Token.Literal.String.Double': "#3CBBDD",
+            'Token.Literal.String.Escape': "#3CBBDD",
+            'Token.Literal.String.Heredoc': "#3CBBDD",
+            'Token.Literal.String.Interpol': "#3CBBDD",
+            'Token.Literal.String.Other': "#3CBBDD",
+            'Token.Literal.String.Regex': "#3CBBDD",
+            'Token.Literal.String.Single': "#3CBBDD",
+            'Token.Literal.String.Symbol': "#3CBBDD",
+            'Token.Operator': "#C10E18",
+            'Token.Operator.Word': "#C10E18",
+            'Token.Punctuation': "#494141",
+            'Token.Comment': "#AD7FA8",
+            'Token.Comment.Hashbang': "#AD7FA8",
+            'Token.Comment.Multiline': "#AD7FA8",
+            'Token.Comment.Preproc': "#AD7FA8",
+            'Token.Comment.Single': "#AD7FA8",
+            'Token.Comment.Special': "#AD7FA8",
+            'Token.Literal.Number': "#04137A",
+            'Token.Literal.Number.Bin': "#04137A",
+            'Token.Literal.Number.Float': "#04137A",
+            'Token.Literal.Number.Hex': "#04137A",
+            'Token.Literal.Number.Integer': "#04137A",
+            'Token.Literal.Number.Integer.Long': "#04137A",
+            'Token.Literal.Number.Oct': "#04137A",
+            'Token.Declaration': "#F53200",
+    }
+
+    def extract_text(event=None, return_mode=False, open_mode=False):
+        if open_mode is False:
+
+            if return_mode is False:
+                linestart = textPad.index('insert linestart')
+                lineend = textPad.index('insert lineend')
+                text = textPad.get(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
+
+            else:
+                linestart = str(int(textPad.index('insert linestart').split('.')[0]) - 1) + '.' + textPad.index('insert linestart').split('.')[1]
+                lineend = str(int(textPad.index('insert lineend').split('.')[0]) - 1) + '.' + textPad.index('insert lineend-1c').split('.')[1]
+                text = textPad.get(linestart, lineend)
+                print(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
+        else:
+            text = textPad.get('1.0', 'end')
+            for tag in textPad.tag_names():
+                textPad.tag_remove(tag, '1.0', 'end')
+                lines = text.split('\n')
+            for i in range(len(lines)):
+                linestart = f'{str(i + 1)}.0'
+                lineend = f'{str(i + 1)}.{len(lines[i])}'
+                text = textPad.get(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
+        for wordtype in Syntaxhl.colors.keys():
+            textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
+    def analyze_language(text):
+
+        pass
+
+    def find_syntax(text, linestart, lineend):
+        count = 0
+
+        for tag in textPad.tag_names():  # Esiste un modo più veloce?
+            textPad.tag_remove(tag, linestart, lineend)
+        for pair in pygments.lex(text, pygments.lexers.Python3Lexer()):
+            wordtype = str(pair[0])
+            word = pair[1]
+            if word == "\n":
+                return
+            #index = textPad.search(word, linestart, stopindex=lineend)
+            print(word, pair)
+            chars = len(word)
+            count += chars
+            column = int(linestart.split('.')[1])
+            line = int(linestart.split('.')[0])
+            index = f'{line}.{count}'
+            column = int(index.split('.')[1])
+            textPad.tag_add(wordtype, f'{line}.{str(column - chars)}', index)
+
+
 
 
 ##################
@@ -526,7 +675,7 @@ def new_file(event=None):
 
 def open_file(event=None):
     global filename
-    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
+    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt"), ("All Files","*.*")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
 
     if filename == "":
         filename = None
@@ -540,6 +689,7 @@ def open_file(event=None):
                     textPad.insert(1.0, fh.read())
                     fh.close()
                     update_line_number(load=True)
+                    Syntaxhl.extract_text(open_mode=True)
                     return
                 else: pass
         '''Ritorna il nome del file senza estensione'''
@@ -549,9 +699,9 @@ def open_file(event=None):
         textPad.insert(1.0, fh.read())
         fh.close()
     update_line_number(load=True)
+    Syntaxhl.extract_text(open_mode=True)
 
-
-def open_recent_file(file_name=None):
+def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
     global filename
     nBase = os.path.basename(file_name)
     filename = file_name
@@ -560,12 +710,24 @@ def open_recent_file(file_name=None):
     except:
         messagebox.showerror("Error", "File not found")
     else:
+        if os.path.isfile(filename + ".backup"):
+            if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
+                if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
+                    root.title(os.path.basename(filename) + " - Tkeditor")
+                    textPad.delete(1.0, END)
+                    fh = open(filename + ".backup", "r")
+                    textPad.insert(1.0, fh.read())
+                    fh.close()
+                    update_line_number(load=True)
+                    Syntaxhl.extract_text(open_mode=True)
+                    return
+                else: pass
         root.title(nBase + " - Tkeditor")
         textPad.delete(1.0, END)
         textPad.insert(1.0, fh.read())
         fh.close()
         update_line_number(load=True)
-
+        Syntaxhl.extract_text(open_mode=True)
 
 def save(event=None):
     global filename
@@ -635,7 +797,6 @@ def save_as():
     fh.close()
     root.title(os.path.basename(f) + " - TindyEditor")
     return filename
-
 
 def update_file(event=None):
     update_line_number()
@@ -857,7 +1018,7 @@ lnlabel.pack(side=LEFT, fill=Y)
 textPad = Text(root, undo=True, takefocus=True, wrap=NONE, relief='flat', bd=1)
 textPad.pack(expand=YES, fill=BOTH)
 
-
+pygments.lex
 '''Scrollbar function'''
 
 
@@ -1128,6 +1289,8 @@ textPad.bind('<Control-g>', goToLine)
 textPad.bind('<Control-G>', goToLine)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
+textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
+textPad.bind('<KeyRelease-Return>', lambda event: Syntaxhl.extract_text(return_mode=True))
 # textPad.bind_all('<Control-V>', paste(ctrl_v=True))
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
