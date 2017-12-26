@@ -207,6 +207,11 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
             'Token.Operator.Word': "#C10E18",
             'Token.Punctuation': "#494141",
             'Token.Comment': "#AD7FA8",
+            'Token.Comment.Hashbang': "#AD7FA8",
+            'Token.Comment.Multiline': "#AD7FA8",
+            'Token.Comment.Preproc': "#AD7FA8",
+            'Token.Comment.Single': "#AD7FA8",
+            'Token.Comment.Special': "#AD7FA8",
             'Token.Literal.Number': "#04137A",
             'Token.Literal.Number.Bin': "#04137A",
             'Token.Literal.Number.Float': "#04137A",
@@ -217,26 +222,42 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
             'Token.Declaration': "#F53200",
     }
 
-    def extract_text(event=None, return_mode=False):
-        if return_mode is False:
-            linestart = textPad.index('insert linestart')
-            lineend = textPad.index('insert lineend')
-            text = textPad.get(linestart, lineend)
-            Syntaxhl.find_syntax(text, linestart, lineend)
+    def extract_text(event=None, return_mode=False, open_mode=False):
+        if open_mode is False:
+
+            if return_mode is False:
+                linestart = textPad.index('insert linestart')
+                lineend = textPad.index('insert lineend')
+                text = textPad.get(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
+
+            else:
+                linestart = str(int(textPad.index('insert linestart').split('.')[0]) - 1) + '.' + textPad.index('insert linestart').split('.')[1]
+                lineend = str(int(textPad.index('insert lineend').split('.')[0]) - 1) + '.' + textPad.index('insert lineend-1c').split('.')[1]
+                text = textPad.get(linestart, lineend)
+                print(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
         else:
-            linestart = str(int(textPad.index('insert linestart').split('.')[0]) - 1) + '.' + textPad.index('insert linestart').split('.')[1]
-            lineend = str(int(textPad.index('insert lineend').split('.')[0]) - 1) + '.' + textPad.index('insert lineend-1c').split('.')[1]
-            text = textPad.get(linestart, lineend)
-            print(linestart, lineend)
-            Syntaxhl.find_syntax(text, linestart, lineend)
-
-
+            text = textPad.get('1.0', 'end')
+            for tag in textPad.tag_names():
+                textPad.tag_remove(tag, '1.0', 'end')
+                lines = text.split('\n')
+            for i in range(len(lines)):
+                linestart = f'{str(i + 1)}.0'
+                lineend = f'{str(i + 1)}.{len(lines[i])}'
+                text = textPad.get(linestart, lineend)
+                Syntaxhl.find_syntax(text, linestart, lineend)
+        for wordtype in Syntaxhl.colors.keys():
+            textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
     def analyze_language(text):
 
         pass
 
-    def find_syntax(text, linestart, lineend):  # Fare in modo che metta le parole trovate in un dizionario con il token corrispondente, poi eseguire la ricerca sulla linea, senza usare funzioni particolari di ricerca
+    def find_syntax(text, linestart, lineend):
         count = 0
+
+        for tag in textPad.tag_names():  # Esiste un modo più veloce?
+            textPad.tag_remove(tag, linestart, lineend)
         for pair in pygments.lex(text, pygments.lexers.Python3Lexer()):
             wordtype = str(pair[0])
             word = pair[1]
@@ -251,8 +272,6 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
             index = f'{line}.{count}'
             column = int(index.split('.')[1])
             textPad.tag_add(wordtype, f'{line}.{str(column - chars)}', index)
-            textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
-
 
 
 
@@ -656,7 +675,7 @@ def new_file(event=None):
 
 def open_file(event=None):
     global filename
-    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
+    filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt"), ("All Files","*.*")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
 
     if filename == "":
         filename = None
@@ -670,6 +689,7 @@ def open_file(event=None):
                     textPad.insert(1.0, fh.read())
                     fh.close()
                     update_line_number(load=True)
+                    Syntaxhl.extract_text(open_mode=True)
                     return
                 else: pass
         '''Ritorna il nome del file senza estensione'''
@@ -679,7 +699,7 @@ def open_file(event=None):
         textPad.insert(1.0, fh.read())
         fh.close()
     update_line_number(load=True)
-
+    Syntaxhl.extract_text(open_mode=True)
 
 def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
     global filename
@@ -690,6 +710,18 @@ def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
     except:
         messagebox.showerror("Error", "File not found")
     else:
+        if os.path.isfile(filename + ".backup"):
+            if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
+                if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
+                    root.title(os.path.basename(filename) + " - Tkeditor")
+                    textPad.delete(1.0, END)
+                    fh = open(filename + ".backup", "r")
+                    textPad.insert(1.0, fh.read())
+                    fh.close()
+                    update_line_number(load=True)
+                    Syntaxhl.extract_text(open_mode=True)
+                    return
+                else: pass
         root.title(nBase + " - Tkeditor")
         textPad.delete(1.0, END)
         textPad.insert(1.0, fh.read())
@@ -1257,7 +1289,7 @@ textPad.bind('<Control-g>', goToLine)
 textPad.bind('<Control-G>', goToLine)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
-textPad.bind('<KeyRelease-space>', Syntaxhl.extract_text)
+textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', lambda event: Syntaxhl.extract_text(return_mode=True))
 # textPad.bind_all('<Control-V>', paste(ctrl_v=True))
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
