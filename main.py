@@ -19,6 +19,9 @@ root.title('Untitled - TindyEditor')
 root.resizable(width=1, height=1)
 language = StringVar(root)
 language.set('python3')
+fontSize = StringVar(root)
+fontSize.set('Medium')
+
 ##################
 
 '''Checking S.O.'''
@@ -31,13 +34,14 @@ else:
 ##################
 #Third-Party Libraries
 
-third_party = []
+third_party = ['pygments']
 
 if len(third_party) != 0:
     for lib in third_party:
 
         try:
             import lib
+            from lib import *
         except ImportError:
 
             if isLinux:
@@ -133,18 +137,12 @@ class config:
                     list2.append(str(element))
             list3 = []
 
-            # list3.append(str(list2[0]))
-            # list3.append(str(list2[1]))
-            # list3.append(str(list2[2]))
-            # list3.append(str(list2[3]))
-            # list3.append(str(value))
-
-            for i in range(len(list2)):  # corretto in questo modo
+            for i in range(len(list2)):  
                 if i > 3:
                     break
-                list3.append(str(list2[i]))  # Correzione fatta perché dava errore nel caso in cui list2 non avesse gli elementi richiesti (indice 1,2,3 etc)
-            list3.append(str(value))  # Per Luca: controlla se è giusto, non sapevo a cosa servisse la parte append(value), perciò l'ho messa così, vedi tu se è corretto
-
+                list3.append(str(list2[i]))
+                
+            list3.append(str(value))
             txt = ''
             for element in list3:
                 txt += str(element) + '\n'
@@ -237,11 +235,11 @@ class Syntaxhl():
                 linestart = str(int(textPad.index('insert linestart').split('.')[0]) - 1) + '.' + textPad.index('insert linestart').split('.')[1]
                 lineend = str(int(textPad.index('insert lineend').split('.')[0]) - 1) + '.' + textPad.index('insert lineend-1c').split('.')[1]
                 text = textPad.get(linestart, lineend)
-                print(linestart, lineend)
+                
                 Syntaxhl.find_syntax(text, linestart, lineend)
         else:
             text = textPad.get('1.0', 'end')
-#            Syntaxhl.lexer = pygments.lexers.guess_lexer(text)  # Non riconosce molto bene
+#           Syntaxhl.lexer = pygments.lexers.guess_lexer(text)  # Non riconosce molto bene
 
             for tag in textPad.tag_names():
                 textPad.tag_remove(tag, '1.0', 'end')
@@ -253,7 +251,7 @@ class Syntaxhl():
                 Syntaxhl.find_syntax(text, linestart, lineend)
         for wordtype in Syntaxhl.colors.keys():
             textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
-        print(Syntaxhl.lexer)
+        
     def analyze_language(text):
 
         pass
@@ -269,7 +267,7 @@ class Syntaxhl():
             if word == "\n":
                 return
             #index = textPad.search(word, linestart, stopindex=lineend)
-            print(word, pair)
+            
             chars = len(word)
             count += chars
             column = int(linestart.split('.')[1])
@@ -308,6 +306,30 @@ def theme(x=None):
         textPad.config(bg=bgc, fg=fgc)
         config.set('theme', val)
 
+def setFontSize(font=None):
+
+    font = font.lower()
+    
+    if font == 'small':
+        font = 8
+    elif font == 'medium':
+        font = 10
+    elif font == 'large':
+        font = 12
+    
+    lnlabel.config(font = f'Arial {font}')
+    textPad.config(font = f'Arial {font}')
+
+def getFontSize():
+    font = fontSize.get().lower()
+    if font == 'small':
+        font = 8
+    elif font == 'medium':
+        font = 10
+    elif font == 'large':
+        font = 12
+    return font
+    
 
 class Colors:
     mblack = '#171717'
@@ -836,7 +858,7 @@ def on_return_key(event=None):
     Syntaxhl.extract_text(return_mode=True)
 
 def printSheet():
-
+    #Only work on Windows
     filePath = save()
     os.startfile(filePath, "print")
     messagebox.showinfo("Title", 'Printing...')
@@ -880,14 +902,14 @@ themechoice = IntVar()
 filemenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Add Recent Files'''
-
-recentOpen = config.get('recent files').split('\n')
-i = 0
-for filePaths in recentOpen:
-    if len(filePaths) > 3:
-        i += 1
-        fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
-        recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
+if config.get('recent files'):
+    recentOpen = config.get('recent files').split('\n')
+    i = 0
+    for filePaths in recentOpen:
+        if len(filePaths) > 3:
+            i += 1
+            fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
+            recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
 
 filemenu.add_separator()
 filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
@@ -1017,18 +1039,24 @@ scroll_y.pack(side=RIGHT, fill=Y)
 scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
 scroll_x.pack(side=BOTTOM, fill=X)
 
+
 ''' Language Selector'''
+
 selector = OptionMenu(infobar, language, 'python3', 'other')  # Inserire in un menu sotto forma di cascade
-selector.pack(side=RIGHT, fill=Y, expand=NO)
+selector.pack(side=LEFT, fill=Y, expand=NO)
+
+''' Font Size Selector'''
+fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium','Large',command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
 
 '''Row Bar'''
-
-lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font='Helvetica 11 bold')
+rowSize = getFontSize()
+lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font=f'Arial {rowSize}')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
-
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font='Helvetica 11 bold', tabs='1c')  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
+textSize = getFontSize()
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Arial {textSize}', tabs='1c')  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
 textPad.pack(expand=YES, fill=BOTH)
 
 
@@ -1326,4 +1354,4 @@ textPad.tag_configure("active_line", background="ivory2")
 lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
-root.mainloop() #luup#
+root.mainloop()
