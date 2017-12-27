@@ -69,11 +69,11 @@ class config:
                     list2.append(str(element))
             list3 = []
 
-            for i in range(len(list2)):  
+            for i in range(len(list2)):
                 if i > 3:
                     break
                 list3.append(str(list2[i]))
-                
+
             list3.append(str(value))
             txt = ''
             for element in list3:
@@ -86,7 +86,7 @@ class config:
         f = open(var_path, mode)
         f.write(value)
         f.close()
-        
+
 #####################
 
 
@@ -243,7 +243,7 @@ class Syntaxhl():
                 linestart = str(int(textPad.index('insert linestart').split('.')[0]) - 1) + '.' + textPad.index('insert linestart').split('.')[1]
                 lineend = str(int(textPad.index('insert lineend').split('.')[0]) - 1) + '.' + textPad.index('insert lineend-1c').split('.')[1]
                 text = textPad.get(linestart, lineend)
-                
+
                 Syntaxhl.find_syntax(text, linestart, lineend)
         else:
             text = textPad.get('1.0', 'end')
@@ -259,7 +259,7 @@ class Syntaxhl():
                 Syntaxhl.find_syntax(text, linestart, lineend)
         for wordtype in Syntaxhl.colors.keys():
             textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
-        
+
     def analyze_language(text):
 
         pass
@@ -275,7 +275,7 @@ class Syntaxhl():
             if word == "\n":
                 return
             #index = textPad.search(word, linestart, stopindex=lineend)
-            
+
             chars = len(word)
             count += chars
             column = int(linestart.split('.')[1])
@@ -325,21 +325,21 @@ def setFontSize(font=None):
         font = 10
     elif font == 'large':
         font = 12
-    
+
     lnlabel.config(font = f'Arial {font}')
     textPad.config(font = f'Arial {font}')
-    
+
 
 def getFontSize():
     font = fontSize.get().lower()
     if font == 'small':
-        font = 8
+        font = 9
     elif font == 'medium':
-        font = 10
+        font = 11
     elif font == 'large':
-        font = 12
+        font = 13
     return font
-    
+
 
 class Colors:
     mblack = '#171717'
@@ -864,7 +864,7 @@ def update_info_bar(event=None):
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":":
+    if textPad.get('insert-2c') == ":" or textPad.get('insert-1l linestart') == '\t':
         textPad.insert('insert', '\t')
     Syntaxhl.extract_text(return_mode=True)
 
@@ -1057,12 +1057,12 @@ selector = OptionMenu(infobar, language, 'python3', 'other')  # Inserire in un m
 selector.pack(side=LEFT, fill=Y, expand=NO)
 
 ''' Font Size Selector'''
-fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium','Large',command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
 fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
 
 '''Row Bar'''
 rowSize = getFontSize()
-lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font=f'Arial {rowSize}')
+lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font=f'Helvetic {rowSize}')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
@@ -1070,7 +1070,7 @@ textSize = getFontSize()
 tabS = '0.5c'
 if isLinux:
     tabS = '1c'
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Arial {textSize}', tabs=tabS)  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Helvetic {textSize}', tabs=tabS)  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
 textPad.pack(expand=YES, fill=BOTH)
 
 
