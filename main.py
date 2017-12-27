@@ -100,10 +100,8 @@ language.set('python3')
 
 fontSize = StringVar(root)
 
-if config.get('font'): 
-    fontSize.set(config.get('font'))
-else:
-    fontSize.set('Medium')
+if config.get('font'): fontSize.set(config.get('font'))
+else:                  fontSize.set('Medium')
 
 ##################
 
@@ -423,6 +421,7 @@ def show_info_bar():
 def update_line_number(load=False, event=None, paste=False):
     global filename
     update_info_bar()
+    Syntaxhl.extract_text(open_mode=True)
     if showln.get():
         if load is False:
             if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
@@ -1068,7 +1067,10 @@ lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
 textSize = getFontSize()
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Arial {textSize}', tabs='1c')  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
+tabS = '0.5c'
+if isLinux:
+    tabS = '1c'
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Arial {textSize}', tabs=tabS)  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
 textPad.pack(expand=YES, fill=BOTH)
 
 
