@@ -1062,7 +1062,7 @@ fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
 
 '''Row Bar'''
 rowSize = getFontSize()
-lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font=f'Helvetic {rowSize}')
+lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font=f'Helvetica {rowSize}')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
@@ -1070,7 +1070,7 @@ textSize = getFontSize()
 tabS = '0.5c'
 if isLinux:
     tabS = '1c'
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Helvetic {textSize}', tabs=tabS)  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font=f'Helvetica {textSize}', tabs=tabS)  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
 textPad.pack(expand=YES, fill=BOTH)
 
 
