@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.messagebox import *
 from tkinter import filedialog
 from tkinter import messagebox
-
+import tkinter.font
 import os
 import sys
 import time
@@ -17,7 +17,8 @@ root.geometry('900x560')
 root.title('Untitled - TindyEditor')
 
 root.resizable(width=1, height=1)
-
+language = StringVar(root)
+language.set('python3')
 ##################
 
 '''Checking S.O.'''
@@ -157,7 +158,7 @@ class config:
         f.close()
 
 
-class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
+class Syntaxhl():
     colors = {
             'Token.Text': "#000000",
             'Token.Keyword': "#3060A6",
@@ -221,7 +222,8 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
             'Token.Literal.Number.Oct': "#04137A",
             'Token.Declaration': "#F53200",
     }
-
+    lexers = {'python3': pygments.lexers.Python3Lexer()}
+    lexer = lexers[language.get()]
     def extract_text(event=None, return_mode=False, open_mode=False):
         if open_mode is False:
 
@@ -239,6 +241,8 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
                 Syntaxhl.find_syntax(text, linestart, lineend)
         else:
             text = textPad.get('1.0', 'end')
+#            Syntaxhl.lexer = pygments.lexers.guess_lexer(text)  # Non riconosce molto bene
+
             for tag in textPad.tag_names():
                 textPad.tag_remove(tag, '1.0', 'end')
                 lines = text.split('\n')
@@ -249,6 +253,7 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
                 Syntaxhl.find_syntax(text, linestart, lineend)
         for wordtype in Syntaxhl.colors.keys():
             textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
+        print(Syntaxhl.lexer)
     def analyze_language(text):
 
         pass
@@ -258,7 +263,7 @@ class Syntaxhl():  # tag binding dei ":" sul tasto Invio per fare tab
 
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
-        for pair in pygments.lex(text, pygments.lexers.Python3Lexer()):
+        for pair in pygments.lex(text, Syntaxhl.lexer):
             wordtype = str(pair[0])
             word = pair[1]
             if word == "\n":
@@ -825,6 +830,10 @@ def update_info_bar(event=None):
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
+def on_return_key(event=None):
+    if textPad.get('insert-2c') == ":":
+        textPad.insert('insert', '\t')
+    Syntaxhl.extract_text(return_mode=True)
 
 def printSheet():
 
@@ -1008,17 +1017,21 @@ scroll_y.pack(side=RIGHT, fill=Y)
 scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
 scroll_x.pack(side=BOTTOM, fill=X)
 
+''' Language Selector'''
+selector = OptionMenu(infobar, language, 'python3', 'other')  # Inserire in un menu sotto forma di cascade
+selector.pack(side=RIGHT, fill=Y, expand=NO)
+
 '''Row Bar'''
 
-lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909')
+lnlabel = Text(root, width=6, bg='#DDFFDC', bd=1, relief='solid', fg='#650909', spacing3=2, font='Helvetica 11 bold')
 lnlabel.pack(side=LEFT, fill=Y)
 
 '''Text widget'''
 
-textPad = Text(root, undo=True, takefocus=True, wrap=NONE, relief='flat', bd=1)
+textPad = Text(root, undo=True, takefocus=True, wrap=NONE, spacing3=2, relief='flat', bd=1, font='Helvetica 11 bold', tabs='1c')  # Inserire la possibilità di scegliere il tab e l'utilizzo degli spazi e la conversione da uno all'altro
 textPad.pack(expand=YES, fill=BOTH)
 
-pygments.lex
+
 '''Scrollbar function'''
 
 
@@ -1290,13 +1303,14 @@ textPad.bind('<Control-G>', goToLine)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
-textPad.bind('<KeyRelease-Return>', lambda event: Syntaxhl.extract_text(return_mode=True))
+textPad.bind('<KeyRelease-Return>', on_return_key)
 # textPad.bind_all('<Control-V>', paste(ctrl_v=True))
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
+#textPad.bind_all('<colon>', tab_after_colon)   # Usare per fare il tab
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
