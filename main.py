@@ -12,74 +12,6 @@ import ast
 import pygments
 from pygments import lexers
 
-root = Tk()
-root.geometry('900x560')
-root.title('Untitled - TindyEditor')
-
-root.resizable(width=1, height=1)
-language = StringVar(root)
-language.set('python3')
-fontSize = StringVar(root)
-fontSize.set('Medium')
-
-##################
-
-'''Checking S.O.'''
-
-if sys.platform[:5].lower() == 'linux':
-    isLinux = 1
-else:
-    isLinux = 0
-
-##################
-#Third-Party Libraries
-
-third_party = ['pygments']
-
-if len(third_party) != 0:
-    for lib in third_party:
-
-        try:
-            import lib
-            from lib import *
-        except ImportError:
-
-            if isLinux:
-                try:
-                    os.popen(f'python -m pip install {lib}')
-                    print('Installing third-party libraries...')
-                except ImportError:
-                    print('Make sure to turn on connection, retry.')
-                    exit()
-            else:
-                try:
-                    os.popen(f'py -m pip install {lib}')
-                    print('Installing third-party libraries...')
-                except ImportError:
-                    print('Make sure to turn on connection, retry.')
-                    exit()
-
-
-##################
-
-def getEncoding(filePath=None):
-    encodes = ['utf-8', 'utf-16', 'iso-8859-15', 'cp437']
-
-    for test in encodes:
-        try:
-            open(filePath, 'r', encoding=test)
-        except:
-            print('Trying ' + test + '... \n')
-            pass
-        else:
-            encoding = test
-            break
-
-    if encoding:
-        return encoding
-    else:
-        return 0
-
 
 ##################
 
@@ -154,7 +86,85 @@ class config:
         f = open(var_path, mode)
         f.write(value)
         f.close()
+        
+#####################
 
+
+root = Tk()
+root.geometry('900x560')
+root.title('Untitled - TindyEditor')
+root.resizable(width=1, height=1)
+
+language = StringVar(root)
+language.set('python3')
+
+fontSize = StringVar(root)
+
+if config.get('font'): 
+    fontSize.set(config.get('font'))
+else:
+    fontSize.set('Medium')
+
+##################
+
+'''Checking S.O.'''
+
+if sys.platform[:5].lower() == 'linux':
+    isLinux = 1
+else:
+    isLinux = 0
+
+##################
+#Third-Party Libraries
+
+third_party = ['pygments']
+
+if len(third_party) != 0:
+    for lib in third_party:
+
+        try:
+            import lib
+            from lib import *
+        except ImportError:
+
+            if isLinux:
+                try:
+                    os.popen(f'python -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
+            else:
+                try:
+                    os.popen(f'py -m pip install {lib}')
+                    print('Installing third-party libraries...')
+                except ImportError:
+                    print('Make sure to turn on connection, retry.')
+                    exit()
+
+
+##################
+
+def getEncoding(filePath=None):
+    encodes = ['utf-8', 'utf-16', 'iso-8859-15', 'cp437']
+
+    for test in encodes:
+        try:
+            open(filePath, 'r', encoding=test)
+        except:
+            print('Trying ' + test + '... \n')
+            pass
+        else:
+            encoding = test
+            break
+
+    if encoding:
+        return encoding
+    else:
+        return 0
+
+
+####################
 
 class Syntaxhl():
     colors = {
@@ -308,8 +318,9 @@ def theme(x=None):
 
 def setFontSize(font=None):
 
+    config.set('font', str(font))
     font = font.lower()
-    
+
     if font == 'small':
         font = 8
     elif font == 'medium':
@@ -319,6 +330,7 @@ def setFontSize(font=None):
     
     lnlabel.config(font = f'Arial {font}')
     textPad.config(font = f'Arial {font}')
+    
 
 def getFontSize():
     font = fontSize.get().lower()
