@@ -276,10 +276,10 @@ class Syntaxhl():
 
     def find_syntax(text, linestart, lineend):
         count = 0
-        lexer = Syntaxhl.lexers[language.get()]
+        lexer = Syntaxhl.lex[language.get()]
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
-        for pair in pygments.lex(text, Syntaxhl.lexer):
+        for pair in pygments.lexer(text, Syntaxhl.lexer):
             print(language.get())
             wordtype = str(pair[0])
             word = pair[1]
@@ -899,7 +899,7 @@ if not os.path.exists(os.getcwd()+'/icons/') or len(os.listdir(os.getcwd()+'/ico
     from iconDownload import *
     rDownload = downloadIcon()
     
-    if rDownload is 400:
+    if rDownload == 400:
         input('Internet connection trouble. Please enable your internet connection and try again. Press any key to exit')
         exit()
 
