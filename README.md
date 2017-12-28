@@ -1,11 +1,11 @@
-## Welcome to TindyEditor!
+## Welcome to HydrogenEditor!
 
-TindyEditor supports:
+HydrogenEditor supports:
 * Windows
 * Linux
 * _MacOs in development..._
 
-TindyEditor have many functions such as:
+HydrogenEditor have many functions such as:
 
 * Auto Save
 * 7 new Themes
@@ -13,7 +13,10 @@ TindyEditor have many functions such as:
 * Full screen
 * Print function (Windows Only)
 * Go to
+* Search by keywords or regex
 * Show line number
 * Highlight current line
 * Highlight informatic words
 * BookMarks
+* Standard shortcuts
+* Customizable font
