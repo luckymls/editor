@@ -228,7 +228,17 @@ class Syntaxhl():
             'Token.Literal.Number.Oct': "#04137A",
             'Token.Declaration': "#F53200",
     }
-    lexers = {'python3': pygments.lexers.Python3Lexer()}
+    lexers = {'css': pygments.lexers.CssLexer(),
+			'html': pygments.lexers.HtmlLexer(),
+			'javascript': pygments.lexers.JavascriptLexer(),
+			'json': pygments.lexers.JsonLexer(),
+			'python3': pygments.lexers.Python3Lexer(),
+	 		'php': pygments.lexers.PhpLexer(),
+			'mysql': pygments.lexers.MySqlLexer(),
+			'sql': pygments.lexers.SqlLexer(),
+			'XML': pygments.lexers.XmlLexer()
+
+	}
     lexer = lexers[language.get()]
     def extract_text(event=None, return_mode=False, open_mode=False):
         if open_mode is False:
@@ -320,14 +330,14 @@ def setFontSize(font=None):
     font = font.lower()
 
     if font == 'small':
-        font = 8
+        font = 9
     elif font == 'medium':
-        font = 10
+        font = 11
     elif font == 'large':
-        font = 12
+        font = 13
 
-    lnlabel.config(font = f'Arial {font}')
-    textPad.config(font = f'Arial {font}')
+    lnlabel.config(font = f'Helvetica {font}')
+    textPad.config(font = f'Helvetica {font}')
 
 
 def getFontSize():
@@ -421,7 +431,7 @@ def show_info_bar():
 def update_line_number(load=False, event=None, paste=False):
     global filename
     update_info_bar()
-    Syntaxhl.extract_text(open_mode=True)
+
     if showln.get():
         if load is False:
             if int(lnlabel.index('end').split('.')[0]) < int(textPad.index('end').split('.')[0]):
@@ -439,6 +449,7 @@ def update_line_number(load=False, event=None, paste=False):
                 lnlabel.config(state='disabled')
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
+            Syntaxhl.extract_text(open_mode=True)
             lnlabel.config(state='normal')
 
             lines = int(textPad.index('end').split('.')[0])
@@ -1053,7 +1064,7 @@ scroll_x.pack(side=BOTTOM, fill=X)
 
 ''' Language Selector'''
 
-selector = OptionMenu(infobar, language, 'python3', 'other')  # Inserire in un menu sotto forma di cascade
+selector = OptionMenu(infobar, language, 'python3', 'php', 'other')  # Inserire in un menu sotto forma di cascade
 selector.pack(side=LEFT, fill=Y, expand=NO)
 
 ''' Font Size Selector'''
