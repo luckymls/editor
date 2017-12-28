@@ -233,7 +233,7 @@ class Syntaxhl():
 			'javascript': pygments.lexers.JavascriptLexer(),
 			'json': pygments.lexers.JsonLexer(),
 			'python3': pygments.lexers.Python3Lexer(),
-	 		'php': pygments.lexers.PhpLexer(),
+	 		'php': pygments.lexers.PhpLexer(startinline=True),
 			'mysql': pygments.lexers.MySqlLexer(),
 			'sql': pygments.lexers.SqlLexer(),
 			'XML': pygments.lexers.XmlLexer()
