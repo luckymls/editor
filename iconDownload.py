@@ -28,20 +28,26 @@ def downloadIcon():
 
     if not os.path.exists(realPath):
         os.makedirs(realPath)
-        
+    
+    os.popen('attrib +S +H ' + realPath[:-1]) # Hide folder
+    
     toDownload = ['about.png','copy.png', 'cut.png', 'new_file.png', 'on_find.png', 'open_file.gif', 'paste.png', 'pypad.ico', 'redo.png', 'save.png', 'undo.png']
 
     for file in toDownload:
 
-        
-        getPath, headers = urllib.request.urlretrieve(base_url+file)
+        try:
+            getPath, headers = urllib.request.urlretrieve(base_url+file)
+        except:
+            return 400
+            break
+        try:
+            shutil.copy(getPath,realPath)
 
-        shutil.copy(getPath,realPath)
-
-        last = getPath.split('\\')[-1]
-        os.rename(realPath+last, realPath+file)  
-     
+            last = getPath.split('\\')[-1]
+            os.rename(realPath+last, realPath+file)  
+        except:
+            pass
         
 
         print(f'{file} downloaded')
-
+    print('Ready.')
