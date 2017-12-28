@@ -899,16 +899,16 @@ else:
     root.iconbitmap('icons/pypad.ico')
 
 
-new_fileicon = PhotoImage(file=completePath + 'icons/new_file.png')
+new_fileicon = PhotoImage(file=completePath + 'icons/new_file.gif')
 open_fileicon = PhotoImage(file=completePath + 'icons/open_file.gif')
-saveicon = PhotoImage(file=completePath + 'icons/save.png')
-cuticon = PhotoImage(file=completePath + 'icons/cut.png')
-copyicon = PhotoImage(file=completePath + 'icons/copy.png')
-pasteicon = PhotoImage(file=completePath + 'icons/paste.png')
-undoicon = PhotoImage(file=completePath + 'icons/undo.png')
-redoicon = PhotoImage(file=completePath + 'icons/redo.png')
-on_findicon = PhotoImage(file=completePath + 'icons/on_find.png')
-abouticon = PhotoImage(file=completePath + 'icons/about.png')
+saveicon = PhotoImage(file=completePath + 'icons/save.gif')
+cuticon = PhotoImage(file=completePath + 'icons/cut.gif')
+copyicon = PhotoImage(file=completePath + 'icons/copy.gif')
+pasteicon = PhotoImage(file=completePath + 'icons/paste.gif')
+undoicon = PhotoImage(file=completePath + 'icons/undo.gif')
+redoicon = PhotoImage(file=completePath + 'icons/redo.gif')
+on_findicon = PhotoImage(file=completePath + 'icons/on_find.gif')
+abouticon = PhotoImage(file=completePath + 'icons/about.gif')
 
 '''Menù'''
 menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
@@ -1059,12 +1059,12 @@ scroll_y = Scrollbar(root, bd=1, relief='groove')
 scroll_y.pack(side=RIGHT, fill=Y)
 
 scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
-scroll_x.pack(side=BOTTOM, fill=X)
+scroll_x.pack(side=BOTTOM, fill=X)other
 
 
 ''' Language Selector'''
 
-selector = OptionMenu(infobar, language, 'python3', 'php', 'other')  # Inserire in un menu sotto forma di cascade
+selector = OptionMenu(infobar, language, 'css','html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
 selector.pack(side=LEFT, fill=Y, expand=NO)
 
 ''' Font Size Selector'''
