@@ -1059,7 +1059,7 @@ scroll_y = Scrollbar(root, bd=1, relief='groove')
 scroll_y.pack(side=RIGHT, fill=Y)
 
 scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
-scroll_x.pack(side=BOTTOM, fill=X)other
+scroll_x.pack(side=BOTTOM, fill=X)
 
 
 ''' Language Selector'''
