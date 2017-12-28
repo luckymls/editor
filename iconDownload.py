@@ -1,4 +1,3 @@
-
 def downloadIcon():
 
     import urllib.request
@@ -22,7 +21,7 @@ def downloadIcon():
 
     path = __file__.split(__file__.split('/')[-1])[0]
 
-    realPath = path+'icons/'
+    realPath = os.getcwd()+'/icons/'
 
 
 
@@ -35,19 +34,25 @@ def downloadIcon():
 
     for file in toDownload:
 
-        try:
-            getPath, headers = urllib.request.urlretrieve(base_url+file)
-        except:
-            return 400
-            break
-        try:
-            shutil.copy(getPath,realPath)
 
-            last = getPath.split('\\')[-1]
-            os.rename(realPath+last, realPath+file)  
-        except:
-            pass
-        
+        if not os.path.exists(realPath+file):
+            try:
+                getPath, headers = urllib.request.urlretrieve(base_url+file)
+            except:
+                return 400
+                
+            try:
+                shutil.copy(getPath,realPath)
 
-        print(f'{file} downloaded')
+                last = getPath.split('\\')[-1]
+                os.rename(realPath+last, realPath+file)  
+            except:
+                pass
+            
+
+            print(f'{file} downloaded')
+        else:
+            print(f'{file} already downloaded')
+
     print('Ready.')
+
