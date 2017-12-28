@@ -899,16 +899,16 @@ else:
     root.iconbitmap('icons/pypad.ico')
 
 
-new_fileicon = PhotoImage(file=completePath + 'icons/new_file.gif')
+new_fileicon = PhotoImage(file=completePath + 'icons/new_file.png')
 open_fileicon = PhotoImage(file=completePath + 'icons/open_file.gif')
-saveicon = PhotoImage(file=completePath + 'icons/save.gif')
-cuticon = PhotoImage(file=completePath + 'icons/cut.gif')
-copyicon = PhotoImage(file=completePath + 'icons/copy.gif')
-pasteicon = PhotoImage(file=completePath + 'icons/paste.gif')
-undoicon = PhotoImage(file=completePath + 'icons/undo.gif')
-redoicon = PhotoImage(file=completePath + 'icons/redo.gif')
-on_findicon = PhotoImage(file=completePath + 'icons/on_find.gif')
-abouticon = PhotoImage(file=completePath + 'icons/about.gif')
+saveicon = PhotoImage(file=completePath + 'icons/save.png')
+cuticon = PhotoImage(file=completePath + 'icons/cut.png')
+copyicon = PhotoImage(file=completePath + 'icons/copy.png')
+pasteicon = PhotoImage(file=completePath + 'icons/paste.png')
+undoicon = PhotoImage(file=completePath + 'icons/undo.png')
+redoicon = PhotoImage(file=completePath + 'icons/redo.png')
+on_findicon = PhotoImage(file=completePath + 'icons/on_find.png')
+abouticon = PhotoImage(file=completePath + 'icons/about.png')
 
 '''Menù'''
 menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
