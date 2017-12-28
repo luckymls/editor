@@ -96,7 +96,7 @@ root.title('Untitled - TindyEditor')
 root.resizable(width=1, height=1)
 
 language = StringVar(root)
-language.set('php')
+language.set('python3')
 
 fontSize = StringVar(root)
 
@@ -239,7 +239,7 @@ class Syntaxhl():
 			'XML': pygments.lexers.XmlLexer()
 
 	}
-    lexer = lexers[language.get()]
+
     def extract_text(event=None, return_mode=False, open_mode=False):
         if open_mode is False:
 
@@ -276,7 +276,7 @@ class Syntaxhl():
 
     def find_syntax(text, linestart, lineend):
         count = 0
-
+        lexer = Syntaxhl.lexers[language.get()]
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
         for pair in pygments.lex(text, Syntaxhl.lexer):
