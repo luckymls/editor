@@ -96,7 +96,7 @@ root.title('Untitled - TindyEditor')
 root.resizable(width=1, height=1)
 
 language = StringVar(root)
-language.set('python3')
+language.set('php')
 
 fontSize = StringVar(root)
 
@@ -280,6 +280,7 @@ class Syntaxhl():
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
         for pair in pygments.lex(text, Syntaxhl.lexer):
+            print(language.get())
             wordtype = str(pair[0])
             word = pair[1]
             if word == "\n":
@@ -1064,7 +1065,7 @@ scroll_x.pack(side=BOTTOM, fill=X)
 
 ''' Language Selector'''
 
-selector = OptionMenu(infobar, language, 'css','html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
+selector = OptionMenu(infobar, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
 selector.pack(side=LEFT, fill=Y, expand=NO)
 
 ''' Font Size Selector'''
