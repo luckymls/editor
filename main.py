@@ -517,7 +517,7 @@ def anykey(event=None):
 
 def about(event=None):
 
-    showinfo("About", "Developed by @Luckymls & Francesco, penso dovrei scrivere altro forse")
+    showinfo("About", "Developed by @Luckymls & Francesco")
 
 
 def help_box(event=None):
@@ -893,6 +893,19 @@ def printSheet():
 
 '''Spiegazione rapida: label = testo, accelerator= testo per scorciatoia combinazione tasti, compund=posizione, command=comando da richiamare se si spunta/clicca l'opzione'''
 
+
+if not os.path.exists(os.getcwd()+'/icons/') or len(os.listdir(os.getcwd()+'/icons/')) < 11:
+    print('Icons not found, downloading...')
+    from iconDownload import *
+    rDownload = downloadIcon()
+    
+    if rDownload is 400:
+        input('Internet connection trouble. Please enable your internet connection and try again. Press any key to exit')
+        exit()
+
+    
+
+
 if isLinux:
     completePath = os.getcwd() + '/'
 else:
@@ -910,6 +923,7 @@ undoicon = PhotoImage(file=completePath + 'icons/undo.png')
 redoicon = PhotoImage(file=completePath + 'icons/redo.png')
 on_findicon = PhotoImage(file=completePath + 'icons/on_find.png')
 abouticon = PhotoImage(file=completePath + 'icons/about.png')
+
 
 '''Menù'''
 menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
