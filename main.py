@@ -280,7 +280,7 @@ class Syntaxhl():
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
         for pair in pygments.lex(text, lexer):
-            
+           
             wordtype = str(pair[0])
             word = pair[1]
             if word == "\n":
@@ -429,7 +429,7 @@ def show_info_bar():
         infobar.pack_forget()
 
 
-def update_line_number(load=False, event=None, paste=False):
+def update_line_number(load=False, event=None, paste=False, new=False):
     global filename
     update_info_bar()
 
@@ -455,11 +455,12 @@ def update_line_number(load=False, event=None, paste=False):
 
             lines = int(textPad.index('end').split('.')[0])
             lnlabel.delete(2.0, 'end')
-            # print(lines)
+            
             for i in range(2, lines):
                 lnlabel.insert('end', '\n' + str(i))
             lnlabel.config(state='disabled')
-            if paste is False:
+            if paste is False and new is False:
+                
                 bookmarks_list = config.get('bookmarks').split('\n')
                 for i in bookmarks_list:
                     if i.split(';')[0] == filename:
@@ -720,7 +721,7 @@ def new_file(event=None):
     filename = None
     root.title("Untitled - TindyEditor")
     textPad.delete(1.0, END)
-    update_line_number(load=True)
+    update_line_number(load=True, new=True)
 
 
 def open_file(event=None):
