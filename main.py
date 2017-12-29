@@ -112,34 +112,6 @@ if sys.platform[:5].lower() == 'linux':
 else:
     isLinux = 0
 
-##################
-#Third-Party Libraries
-
-third_party = ['pygments']
-
-if len(third_party) != 0:
-    for lib in third_party:
-
-        try:
-            import lib
-            from lib import *
-        except ImportError:
-
-            if isLinux:
-                try:
-                    os.popen(f'python -m pip install {lib}')
-                    print('Installing third-party libraries...')
-                except ImportError:
-                    print('Make sure to turn on connection, retry.')
-                    exit()
-            else:
-                try:
-                    os.popen(f'py -m pip install {lib}')
-                    print('Installing third-party libraries...')
-                except ImportError:
-                    print('Make sure to turn on connection, retry.')
-                    exit()
-
 
 ##################
 
@@ -150,7 +122,6 @@ def getEncoding(filePath=None):
         try:
             open(filePath, 'r', encoding=test)
         except:
-            print('Trying ' + test + '... \n')
             pass
         else:
             encoding = test
@@ -510,7 +481,7 @@ def anykey(event=None):
     update_file()
     update_line_number()
     update_info_bar()
-    highlight_word()
+    
     update_info_bar()
     selected_text.set(False)
 ####################
@@ -581,31 +552,7 @@ def search_for(needle, cssnstv, textPad, t2, e):
         e.focus_set()
         t2.title('%d matches found' % count)
 
-# Nuova funzione per rimarcare parti di codice, introdotta 26/10/17
-# Qualcosa non mi convince riguardo al ciclo while e tag_config
 
-
-def highlight_word(search=None, event=None):
-    if highlight_wordln.get():
-        textPad.tag_remove('code', '1.0', END)
-        pos = '1.0'
-        count = 0
-        code = {'if': 'green', '{': 'red', '}': 'red', 'true': 'orange', 'echo': 'purple', 'print': 'purple'}
-        for search in code:
-            pos = '1.0'
-            count = 0
-            while True:
-
-                pos = textPad.search(search, pos, nocase=True, stopindex=END)
-                if not pos:
-                    break
-                lastpos = '%s+%dc' % (pos, len(search))
-                textPad.tag_add('code' + search, pos, lastpos)
-                count += 1
-                pos = lastpos
-                textPad.tag_config('code' + search, foreground=code[search])
-    else:
-        textPad.tag_remove('code', '1.0', END)
 #######################################################################
 
 
@@ -858,7 +805,7 @@ def update_file(event=None):
             if rand is 3:
 
                 f = filename + ".backup"  # Successivamente, mettere i file di backup in una cartella backup, creata nel sistema
-                print(filename)
+                
                 fh = open(f, 'w')
 
                 textoutput = textPad.get(1.0, END)
@@ -990,9 +937,7 @@ showinbar.set(1)
 viewmenu.add_checkbutton(label="Show Info Bar at Bottom", variable=showinbar, command=show_info_bar)
 hltln = IntVar()
 viewmenu.add_checkbutton(label="Highlight Current Line", variable=hltln, command=toggle_highlight)
-highlight_wordln = IntVar()
-viewmenu.add_checkbutton(label="Highlight Informatic Words", variable=highlight_wordln, command=highlight_word)
-viewmenu.add_separator()
+
 viewmenu.add_command(label='Go to...', accelerator='Ctrl+G', command=goToLine)
 viewmenu.add_separator()
 themesmenu = Menu(viewmenu, tearoff=0)
@@ -1110,7 +1055,7 @@ def yscroll(*args):
 
 
 def mousewheel(event):
-    # lnlabel.yview_moveto(textPad.yview()[0])
+    
     if event.num == 4:
         lnlabel.yview_scroll(-1, 'units')
         textPad.yview_moveto(lnlabel.yview()[0])
@@ -1126,10 +1071,7 @@ def mousewheel(event):
 
 
 def select(event=None, state='not_active'):
-    # if selected_text.get() is False:
-    #     selected_text.set(True)
-    # else:
-    #     selected_text.set(False)
+   
     if state == 'active':
         selected_text.set(True)
     elif state == 'not_active':
@@ -1181,23 +1123,23 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
                 bm_line = i
                 button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
                 index += 1
-                # print(button)
+
                 if index == len(Bookmark.bookmarks) and button:
                     button.pack(side=LEFT)
                     button_list.append(button)
         elif delete is True:
-            print(index)
+            
             for i in bookmarkbar.winfo_children():
                 i.destroy()
             Bookmark.bookmarks_to_draw = list(bookmarks_keys)
             Bookmark.draw(delete='recursive drawing')
         else:
-            print(Bookmark.bookmarks_to_draw)
+            
             if Bookmark.bookmarks_to_draw:
                 i = Bookmark.bookmarks_to_draw[0]
                 bm_txt = Bookmark.bookmarks[i]
                 bm_line = i
-                # button = i
+                
                 button = Button(bookmarkbar, text=bm_txt, command=lambda: Bookmark.go(bm_line), bd=1, relief='solid', bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
                 Bookmark.bookmarks_to_draw.pop(0)
                 button.pack(side=LEFT)
@@ -1223,7 +1165,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
         Bookmark.lock = True
         Bookmark.nline = line + '.0'
         if Bookmark.nline not in Bookmark.bookmarks:
-            # Bookmark.bookmarks[Bookmark.nline] = ''
+            
             Bookmark.select_name()
 
             textPad.mark_set('bookmark', Bookmark.nline)
@@ -1263,13 +1205,13 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
     def delete(selection):
         bookmark_to_del = selection.split(':')[0] + '.0'
         del Bookmark.bookmarks[bookmark_to_del]
-        print(bookmark_to_del)
+        
         Bookmark.b_list.pop(Bookmark.b_list.index(selection))
         bm_list.set(Bookmark.b_list)
         Bookmark.draw(delete=True)
 
     def settings(update=False):
-        print(Bookmark.bookmarks, Bookmark.b_list)
+        
         Bookmark.b_list = []
         for i in Bookmark.bookmarks.keys():
             line = i.split('.')[0]
@@ -1324,12 +1266,12 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
 
 
 bookmarkbar = Frame(shortcutbar, height=25, bd=0, relief='ridge')
-# canvas = Canvas(bookmarkbar, height=25)
-# canvas.config(scrollregion=canvas.bbox(ALL))
+
+
 if Bookmark.bookmarks:
     Bookmark.draw()
 bookmarkbar.pack(expand='no', fill=X)
-# canvas.pack(expand='no', fill=BOTH)
+
 '''Bookmarks config'''
 menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
 
@@ -1365,21 +1307,20 @@ textPad.bind('<Control-A>', select_all)
 textPad.bind('<Control-a>', select_all)
 textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
-textPad.bind('<Control-E>', highlight_word)
-textPad.bind('<Control-e>', highlight_word)
+
 textPad.bind('<Control-g>', goToLine)
 textPad.bind('<Control-G>', goToLine)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', on_return_key)
-# textPad.bind_all('<Control-V>', paste(ctrl_v=True))
+
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
-#textPad.bind_all('<colon>', tab_after_colon)   # Usare per fare il tab
+
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
