@@ -845,7 +845,7 @@ def printSheet():
 if not os.path.exists(os.getcwd()+'/icons/') or len(os.listdir(os.getcwd()+'/icons/')) < 11:
     print('Icons not found, downloading...')
     from iconDownload import *
-    rDownload = downloadIcon()
+    rDownload = downloadIcon(isLinux=isLinux)
     
     if rDownload == 400:
         input('Internet connection trouble. Please enable your internet connection and try again. Press any key to exit')
