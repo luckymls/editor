@@ -279,7 +279,7 @@ class Syntaxhl():
         lexer = Syntaxhl.lexers[language.get()]
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
-        for pair in pygments.lex(text, Syntaxhl.lexer):
+        for pair in pygments.lex(text, lexer):
             print(language.get())
             wordtype = str(pair[0])
             word = pair[1]
