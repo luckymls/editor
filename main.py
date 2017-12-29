@@ -68,13 +68,14 @@ class config:
                 if len(element) > 3:
                     list2.append(str(element))
             list3 = []
-
-            for i in range(len(list2)):
-                if i > 3:
-                    break
-                list3.append(str(list2[i]))
-
+            
+            list3.append(str(list2[1]))		             
+            list3.append(str(list2[2]))		            
+            list3.append(str(list2[3]))		            
+            list3.append(str(list2[4]))		             
             list3.append(str(value))
+            
+
             txt = ''
             for element in list3:
                 txt += str(element) + '\n'
@@ -432,15 +433,19 @@ def update_line_number(load=False, event=None, paste=False, new=False):
             lnlabel.config(state='disabled')
             if paste is False and new is False:
                 
-                bookmarks_list = config.get('bookmarks').split('\n')
-                for i in bookmarks_list:
-                    if i.split(';')[0] == filename:
-                        Bookmark.bookmarks = ast.literal_eval(i.split(';')[1])
-                        Bookmark.draw(delete=True)
-                        return
-                    elif bookmarks_list.index(i) == len(bookmarks_list):
-                        Bookmark.bookmarks = {}
-                        Bookmark.draw(delete=True)
+                try:
+                    bookmarks_list = config.get('bookmarks').split('\n')
+                except:
+                    pass
+                else:
+                    for i in bookmarks_list:
+                        if i.split(';')[0] == filename:
+                            Bookmark.bookmarks = ast.literal_eval(i.split(';')[1])
+                            Bookmark.draw(delete=True)
+                            return
+                        elif bookmarks_list.index(i) == len(bookmarks_list):
+                            Bookmark.bookmarks = {}
+                            Bookmark.draw(delete=True)
 
 
 selected_text = BooleanVar()
@@ -1230,7 +1235,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
         bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
 
     def save(filename):
-        if config.get('bookmarks') == '':
+        if config.get('bookmarks') == None:
             bookmark_file = filename + ';' + str(Bookmark.bookmarks) + '\n'
             return bookmark_file
         else:
@@ -1337,3 +1342,4 @@ lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
 root.mainloop()
+
