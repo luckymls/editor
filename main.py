@@ -836,18 +836,18 @@ def on_return_key(event=None):
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
-       	line = textPad.get('insert-1l linestart', 'insert-1l lineend')
+           line = textPad.get('insert-1l linestart', 'insert-1l lineend')
         for i in range(0, len(line), 4):
-   	   	   	spaces = line[i:i+4]
-   	   	   	if spaces == '    ':
-   	   	   	   	textPad.insert('insert', '    ')
-   	   	   	else:
-   	   	   	   	break
+                     spaces = line[i:i+4]
+                     if spaces == '    ':
+                            textPad.insert('insert', '    ')
+                     else:
+                            break
            
     Syntaxhl.extract_text(return_mode=True)
 
 def dedent():
-   	print(textPad.tag_get('sel'))
+       print(textPad.tag_get('sel'))
 
 def printSheet():
     #Only work on Windows
@@ -1366,12 +1366,3 @@ if len(sys.argv) > 1:
     print(f'"{path}"')
     open_file(file_name=path)
 root.mainloop()
-
-
-
-
-
-
-
-
-
