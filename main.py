@@ -836,12 +836,13 @@ def on_return_key(event=None):
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == '    ':
-        for i in textPad.get('insert-1l linestart', 'insert-1l lineend'):
-            if i == '    ':
-                textPad.insert('insert', '    ')
-            else:
-                break
+        for '    ' in textPad.get('insert-1l linestart', 'insert-1l lineend'):
+           	textPad.insert('insert', '    ')
+           
     Syntaxhl.extract_text(return_mode=True)
+
+def dedent():
+   	print(textPad.tag_get('sel'))
 
 def printSheet():
     #Only work on Windows
@@ -1331,6 +1332,7 @@ textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', on_return_key)
 textPad.bind('<KeyPress-Tab>', lambda event: textPad.insert('insert', '   '))
+textPad.bind_all('<Alt-Tab>', dedent)  # Da fare
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
@@ -1359,7 +1361,6 @@ if len(sys.argv) > 1:
     print(f'"{path}"')
     open_file(file_name=path)
 root.mainloop()
-
 
 
 
