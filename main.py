@@ -831,19 +831,20 @@ def update_info_bar(event=None):
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
+
 def on_return_key(event=None):
     if textPad.get('insert-2c') == ":":
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
-           line = textPad.get('insert-1l linestart', 'insert-1l lineend')
+        line = textPad.get('insert-1l linestart', 'insert-1l lineend')
         for i in range(0, len(line), 4):
-                     spaces = line[i:i+4]
-                     if spaces == '    ':
-                            textPad.insert('insert', '    ')
-                     else:
-                            break
-           
+            spaces = line[i:i+4]
+            if spaces == '    ':
+                textPad.insert('insert', '    ')
+            else:
+                break
+
     Syntaxhl.extract_text(return_mode=True)
 
 def dedent():
