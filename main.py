@@ -676,8 +676,9 @@ def new_file(event=None):
     update_line_number(load=True, new=True)
 
 
-def open_file(event=None):
-    global filename
+def open_file(event=None, file_name=None):
+	global filename
+	filename = file_name
     filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt"), ("All Files","*.*")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
 
     if filename == "":
@@ -877,7 +878,10 @@ redoicon = PhotoImage(file=completePath + 'icons/redo.png')
 on_findicon = PhotoImage(file=completePath + 'icons/on_find.png')
 abouticon = PhotoImage(file=completePath + 'icons/about.png')
 
-
+''' Accept open with parameter '''
+if len(sys.argv) == 2:
+	open_file(file_name=sys.argv[1])
+	
 '''Menù'''
 menubar = Menu(root, relief='ridge', bd=1, activebackground="#729FCF")
 
