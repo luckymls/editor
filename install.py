@@ -36,4 +36,21 @@ if not isLinux and not os.path.exists(path):
 
 elif not os.path.exists(path) and isLinux:
     shutil.copytree(f'{program_dir}', path)
-    # Aggiungere apri con, la copia viene già effettuata e il file viene nascosto anteponendo il punto
+    try:
+        os.system('gksudo ln -s main.py hydrogen')
+        os.system('gksudo chmod +x main.py')
+        os.system('gksudo mv hydrogen /usr/bin/')
+        os.system('gksudo mv hydrogen.desktop /usr/share/applications/hydrogen.desktop')
+    except:
+        try:
+            os.system('gksu ln -s main.py hydrogen')
+            os.system('gksudo chmod +x main.py')
+            os.system('gksudo mv hydrogen /usr/bin/')
+            os.system('gksudo mv hydrogen.desktop /usr/share/applications/hydrogen.desktop') except:
+        except:
+            pass
+	# Aggiungere apri con, la copia viene già effettuata e il file viene nascosto anteponendo il punto
+	# Creare un file .desktop in /usr/share/applications che definisca le estensioni lette dal programma
+	# Creare un link in /usr/bin all'eseguibile
+	
+
