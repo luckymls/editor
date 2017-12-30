@@ -833,7 +833,7 @@ def update_info_bar(event=None):
 
 
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":":
+    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
