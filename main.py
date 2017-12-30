@@ -835,9 +835,14 @@ def on_return_key(event=None):
     if textPad.get('insert-2c') == ":":
 
         textPad.insert('insert', '    ')
-    if textPad.get('insert-1l linestart') == '    ':
-        for '    ' in textPad.get('insert-1l linestart', 'insert-1l lineend'):
-           	textPad.insert('insert', '    ')
+    if textPad.get('insert-1l linestart') == ' ':
+       	line = textPad.get('insert-1l linestart', 'insert-1l lineend')
+        for i in range(0, len(line), 4):
+   	   	   	spaces = line[i:i+4]
+   	   	   	if spaces == '    ':
+   	   	   	   	textPad.insert('insert', '    ')
+   	   	   	else:
+   	   	   	   	break
            
     Syntaxhl.extract_text(return_mode=True)
 
@@ -1331,7 +1336,7 @@ textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', on_return_key)
-textPad.bind('<KeyPress-Tab>', lambda event: textPad.insert('insert', '   '))
+textPad.bind('<KeyPress-Tab>', lambda event: textPad.insert('insert', '    '))
 textPad.bind_all('<Alt-Tab>', dedent)  # Da fare
 textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<Button-4>', mousewheel)
@@ -1361,6 +1366,10 @@ if len(sys.argv) > 1:
     print(f'"{path}"')
     open_file(file_name=path)
 root.mainloop()
+
+
+
+
 
 
 
