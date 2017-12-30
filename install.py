@@ -1,16 +1,18 @@
-from dist_utils.dir_util import copy_tree
+import shutil
 import os
 import sys
-
 
 if sys.platform[:5].lower() == 'linux':
 	isLinux = 1
 else:
-	isLinux = 0
+	isLinux = 0operating_sys = sys.platform
 	
 program_dir = os.getcwd()
 if not isLinux:
-	copy_tree(f'program_dir', 'C:\Program Files (x86)\hydrogen\')
+	if not os.path.exists('C:\Program Files (x86)\hydrogen'):
+		os.makedirs('C:\Program Files (x86)\hydrogen')
+	shutil.copytree(f'{program_dir}', 'C:\Program Files (x86)\hydrogen')
+	os.system(f'pathman /au C:\Program Files (x86)\hydrogen')
 
 else:
 	pass
