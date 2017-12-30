@@ -1359,8 +1359,3 @@ if len(sys.argv) > 1:
 	print(f'"{path}"')
 	open_file(file_name=path)
 root.mainloop() #
-
-
-
-
-
