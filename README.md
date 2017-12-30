@@ -5,6 +5,8 @@ HydrogenEditor supports:
 * Linux
 * _MacOs in development..._
 
+[WebSite](http://hydrogenicon.altervista.org/index.html)
+[WebSiteSource]()
 HydrogenEditor have many functions such as:
 
 * Auto Save
@@ -20,3 +22,5 @@ HydrogenEditor have many functions such as:
 * BookMarks
 * Standard shortcuts
 * Customizable font
+
+
