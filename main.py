@@ -671,7 +671,7 @@ def wSetting():
 def new_file(event=None):
     global filename
     filename = None
-    root.title("Untitled - TindyEditor")
+    root.title("Untitled - Hydrogen")
     textPad.delete(1.0, END)
     update_line_number(load=True, new=True)
 
@@ -679,17 +679,18 @@ def new_file(event=None):
 def open_file(event=None, file_name=None):
     global filename
     print(file_name)
-    filename = str(file_name)
+    filename = file_name
     if filename is None:
         filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt"), ("All Files", "*.*")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
 
     if filename == "":
         filename = None
     else:
+       	filename = str(filename)
         if os.path.isfile(filename + ".backup"):
             if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
                 if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
-                    root.title(os.path.basename(filename) + " - Tkeditor")
+                    root.title(os.path.basename(filename) + " - Hydrogen")
                     textPad.delete(1.0, END)
                     fh = open(filename + ".backup", "r")
                     textPad.insert(1.0, fh.read())
@@ -699,7 +700,7 @@ def open_file(event=None, file_name=None):
                     return
                 else: pass
         '''Ritorna il nome del file senza estensione'''
-        root.title(os.path.basename(filename) + " - Tkeditor")
+        root.title(os.path.basename(filename) + " - Hydrogen")
         textPad.delete(1.0, END)
         fh = open(filename, "r")
         textPad.insert(1.0, fh.read())
@@ -719,7 +720,7 @@ def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
         if os.path.isfile(filename + ".backup"):
             if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
                 if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
-                    root.title(os.path.basename(filename) + " - Tkeditor")
+                    root.title(os.path.basename(filename) + " - Hydrogen")
                     textPad.delete(1.0, END)
                     fh = open(filename + ".backup", "r")
                     textPad.insert(1.0, fh.read())
@@ -728,7 +729,7 @@ def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
                     Syntaxhl.extract_text(open_mode=True)
                     return
                 else: pass
-        root.title(nBase + " - Tkeditor")
+        root.title(nBase + " - Hydrogen")
         textPad.delete(1.0, END)
         textPad.insert(1.0, fh.read())
         fh.close()
@@ -833,7 +834,7 @@ def update_info_bar(event=None):
 
 
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
+    if textPad.get('insert-2c') == ":":
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
@@ -1033,27 +1034,27 @@ for i, icon in enumerate(icons):
 shortcutbar.pack(expand=NO, fill=X)
 
 
-'''Info Bar'''
+''' Language Selector'''
+
+selector = OptionMenu(root, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
+selector.pack(side=BOTTOM, fill=NONE, expand=NO)
+
+''' Font Size Selector'''
+fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
+
+
+'''Info Bar''' 
 
 infobar = Label(root, text=f'Line:1 | Column:0', relief='groove', bd=1)
 infobar.pack(expand=NO, fill=X, side=BOTTOM, anchor='c')
-
-'''Scrollbars drawing'''
+ 
+'''Scrollbars drawing''' 
 scroll_y = Scrollbar(root, bd=1, relief='groove')
 scroll_y.pack(side=RIGHT, fill=Y)
 
 scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
 scroll_x.pack(side=BOTTOM, fill=X)
-
-
-''' Language Selector'''
-
-selector = OptionMenu(infobar, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
-selector.pack(side=LEFT, fill=Y, expand=NO)
-
-''' Font Size Selector'''
-fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
-fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
 
 '''Row Bar'''
 rowSize = getFontSize()
@@ -1344,7 +1345,7 @@ textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
-
+textPad.bind_all('<Control-z>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
