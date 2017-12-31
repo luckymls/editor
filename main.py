@@ -834,7 +834,7 @@ def update_info_bar(event=None):
 
 
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":":
+    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
@@ -1033,27 +1033,30 @@ for i, icon in enumerate(icons):
     toolbar.pack(side=LEFT)
 shortcutbar.pack(expand=NO, fill=X)
 
+''' Bottom Frame '''
+fr = Frame(root)
+fr.pack(side=BOTTOM, fill=X)
 
 ''' Language Selector'''
 
-selector = OptionMenu(root, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
-selector.pack(side=BOTTOM, fill=NONE, expand=NO)
+selector = OptionMenu(fr, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
+selector.pack(side=LEFT, anchor=S)
 
 ''' Font Size Selector'''
-fontSelector = OptionMenu(root, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
-fontSelector.pack(side=BOTTOM, fill=NONE, expand=NO)
+fontSelector = OptionMenu(fr, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector.pack(side=RIGHT, anchor=S)
 
 
 '''Info Bar''' 
 
-infobar = Label(root, text=f'Line:1 | Column:0', relief='groove', bd=1)
-infobar.pack(expand=NO, fill=X, side=BOTTOM, anchor='c')
+infobar = Label(fr, text=f'Line:1 | Column:0', relief='groove', bd=1)
+infobar.pack(fill=X, side=BOTTOM, anchor=S)
  
 '''Scrollbars drawing''' 
 scroll_y = Scrollbar(root, bd=1, relief='groove')
 scroll_y.pack(side=RIGHT, fill=Y)
 
-scroll_x = Scrollbar(root, orient=HORIZONTAL, bd=1, relief='flat')
+scroll_x = Scrollbar(fr, orient=HORIZONTAL, bd=1, relief='flat')
 scroll_x.pack(side=BOTTOM, fill=X)
 
 '''Row Bar'''
@@ -1368,3 +1371,5 @@ if len(sys.argv) > 1:
     print(f'"{path}"')
     open_file(file_name=path)
 root.mainloop()
+
+
