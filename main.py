@@ -686,7 +686,7 @@ def open_file(event=None, file_name=None):
     if filename == "":
         filename = None
     else:
-       	filename = str(filename)
+        filename = str(filename)
         if os.path.isfile(filename + ".backup"):
             if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
                 if askokcancel("Yes", "Backup file has more recent changes, do you want to open the backup file instead?"):
@@ -1367,9 +1367,5 @@ lnlabel.config(state='disable')
 ''' Accept open with parameter '''
 if len(sys.argv) > 1:
     path = ' '.join(sys.argv[1:len(sys.argv)])
-
-    print(f'"{path}"')
     open_file(file_name=path)
 root.mainloop()
-
-
