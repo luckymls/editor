@@ -1040,8 +1040,8 @@ selector = OptionMenu(root, language, 'css', 'html', 'javascript', 'json', 'pyth
 selector.pack(side=BOTTOM, fill=NONE, expand=NO)
 
 ''' Font Size Selector'''
-fontSelector = OptionMenu(infobar, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
-fontSelector.pack(side=RIGHT, fill=Y, expand=NO)
+fontSelector = OptionMenu(root, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector.pack(side=BOTTOM, fill=NONE, expand=NO)
 
 
 '''Info Bar''' 
