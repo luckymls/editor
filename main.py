@@ -393,7 +393,8 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
 def show_line_bar():
     val = showln.get()
     if val:
-        lnlabel.pack(side=LEFT, fill=Y, before=textPad)
+        
+        lnlabel.pack(side=LEFT, fill=Y, before)
     else:
         lnlabel.pack_forget()
 
@@ -857,8 +858,7 @@ def update_info_bar(event=None):
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
-def release_key(event=None):
-    print(event)
+
 def on_return_key(event=None):
     if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
 
@@ -1350,7 +1350,6 @@ theme(1)
 
 
 root.bind('<Any-KeyPress>', anykey)
-root.bind('<Any-KeyRelease>', release_key)
 root.bind('<Control-N>', new_file)
 root.bind('<Control-n>', new_file)
 root.bind('<Control-O>', open_file)
