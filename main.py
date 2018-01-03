@@ -1000,7 +1000,7 @@ editmenu.add_separator()
 editmenu.add_command(label="Find", compound=LEFT, image=on_findicon, accelerator='Ctrl+F', command=on_find)
 editmenu.add_separator()
 editmenu.add_command(label="Select All", compound=LEFT, accelerator='Ctrl+A', underline=7, command=select_all)
-editmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
+editmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 '''View menu'''
 
 viewmenu = Menu(menubar, tearoff=0)
@@ -1023,7 +1023,7 @@ fullscreenln = IntVar()
 nightmodeln = IntVar()
 viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F9', command=night_mode)
 viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(), accelerator='F11', command=fullscreen)
-viewmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
+viewmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
 clrschms = {
@@ -1050,7 +1050,7 @@ else:
 
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command=lambda: theme(1))
-themesmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
+themesmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
 
 '''Settings menu'''
@@ -1058,14 +1058,14 @@ themesmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", ac
 settingsMenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label='Settings', menu=settingsMenu)
 settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
-settingsMenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
+settingsMenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
 aboutmenu.add_command(label="About", compound=LEFT, command=about)
 aboutmenu.add_command(label="Help", command=help_box)
-aboutmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
+aboutmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 root.config(menu=menubar)
 
 '''Exit menu'''
