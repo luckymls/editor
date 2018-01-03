@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+; Modificare il nome dell'eseguibie
+; Suppongo sia necessario spostarlo nel percorso dato da
+; import os
+; path = os.environ['COMMONPROGRAMFILES(X86)']
+; \\'.join(path.split('\\')[:-1]) #Spostare con copytree tutta la cartella
+
+[HKEY_CLASSES_ROOT\*\shell\Open with HydrogenEditor\command]
+@="HydrogenEditor.exe %1"
