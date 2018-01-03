@@ -857,7 +857,8 @@ def update_info_bar(event=None):
     column = int(textPad.index('insert').split('.')[1]) + 1
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
-
+def release_key(event=None):
+    print(event)
 def on_return_key(event=None):
     if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
 
@@ -1349,6 +1350,7 @@ theme(1)
 
 
 root.bind('<Any-KeyPress>', anykey)
+root.bind('<Any-KeyRelease>', key_release)
 root.bind('<Control-N>', new_file)
 root.bind('<Control-n>', new_file)
 root.bind('<Control-O>', open_file)
