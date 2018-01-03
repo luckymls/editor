@@ -390,6 +390,12 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         for i in bookmarkbar.winfo_children():
             i.config(bg=Colors.black2, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
 
+def show_line_bar():
+    val = showln.get()
+    if val:
+        lnlabel.pack(side=LEFT, fill=Y, before=textPad)
+    else:
+        lnlabel.pack_forget()
 
 def show_info_bar():
     val = showinbar.get()
@@ -670,15 +676,16 @@ def wSetting():
 
 def new_file(event=None):
     global filename
+    
     filename = None
     root.title("Untitled - Hydrogen")
     textPad.delete(1.0, END)
     update_line_number(load=True, new=True)
-
+    
 
 def open_file(event=None, file_name=None):
     global filename
-    print(file_name)
+    
     filename = file_name
     if filename is None:
         filename = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Documents", "*.txt"), ("All Files", "*.*")])  # ("All Files","*.*"), Da aggiungere dopo che aggiungiamo i vari tipi di codifica
@@ -716,6 +723,19 @@ def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
         fh = open(file_name, "r")
     except:
         messagebox.showerror("Error", "File not found")
+
+        checkConf = config.get('recent files').split('\n')
+        
+        for file in checkConf:
+            exists = os.path.exists(file)
+            if not exists:
+                checkConf.remove(file)
+        toAdd = ''
+        for file in checkConf:
+            toAdd+= file+'\n'
+        config.set('recent files', toAdd)
+            
+        
     else:
         if os.path.isfile(filename + ".backup"):
             if os.path.getmtime(filename) < os.path.getmtime(filename + ".backup"):
@@ -812,11 +832,16 @@ def update_file(event=None):
         try:
             rand = random.randint(1, 3)
             if rand is 3:
-
-                f = filename + ".backup"  # Successivamente, mettere i file di backup in una cartella backup, creata nel sistema
-
+                baseName = os.path.basename(filename)
+                f = filename.replace('/'+baseName, '')+f'/.{baseName}.backup'
+                
+                
+                
                 fh = open(f, 'w')
-
+                
+                if not isLinux:
+                    os.popen('attrib +S +H ' + f)
+                    
                 textoutput = textPad.get(1.0, END)
                 fh.write(textoutput)
                 fh.close()
@@ -834,7 +859,7 @@ def update_info_bar(event=None):
 
 
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
+    if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
@@ -920,6 +945,7 @@ if config.get('recent files'):
             fileName = os.path.basename(filePaths)[0].upper() + os.path.basename(filePaths)[1:]
             recentFiles.add_command(label=str(i) + '. ' + fileName, compound=LEFT, underline=0, command=lambda x=filePaths: open_recent_file(x))
 
+
 filemenu.add_separator()
 filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, image=saveicon, underline=0, command=save)
 filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S', command=save_as)
@@ -955,7 +981,7 @@ viewmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="View", menu=viewmenu)
 showln = IntVar()
 showln.set(1)
-viewmenu.add_checkbutton(label="Show Line Number", variable=showln)
+viewmenu.add_checkbutton(label="Show Line Number", variable=showln, command=show_line_bar)
 showinbar = IntVar()
 showinbar.set(1)
 viewmenu.add_checkbutton(label="Show Info Bar at Bottom", variable=showinbar, command=show_info_bar)
@@ -1364,8 +1390,10 @@ textPad.tag_configure("active_line", background="ivory2")
 lnlabel.config(state='normal')
 lnlabel.insert('current', '1')
 lnlabel.config(state='disable')
+
 ''' Accept open with parameter '''
 if len(sys.argv) > 1:
     path = ' '.join(sys.argv[1:len(sys.argv)])
     open_file(file_name=path)
+    
 root.mainloop()
