@@ -885,7 +885,7 @@ def on_tab_key(event=None):
     textPad.delete('insert-1c')
     textPad.insert('insert', '    ')    
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
+    if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
