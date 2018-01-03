@@ -98,7 +98,7 @@ root.resizable(width=1, height=1)
 
 language = StringVar(root)
 language.set('python3')
-
+language.trace('w', lambda *args: Syntaxhl.extract_text(open_mode=True))
 fontSize = StringVar(root)
 
 if config.get('font'): fontSize.set(config.get('font'))
@@ -326,7 +326,7 @@ def getFontSize():
 
 class Colors:
     mblack = '#171717'
-    black = '#515151'
+    black = '#171E28' #prima #515151
     black2 = '#282C34'
     black3 = '#31363F'
     black4 = '#444447'
@@ -366,6 +366,11 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         shortcutbar.config(bg=Colors.white)
         bookmarkbar.config(bg=Colors.white)
         root.config(bg=Colors.white)
+		selector.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        selector["menu"].config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        fontSelector.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        fontSelector["menu"].config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        fr.config(bg=Colors.white)
         for i in objects:
             i.config(fg=Colors.black, bg=Colors.white, activebackground=Colors.blue, activeforeground=Colors.black)
         for i in bookmarkbar.winfo_children():
@@ -385,6 +390,11 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         shortcutbar.config(bg=Colors.black3)
         root.config(bg=Colors.black3)
         bookmarkbar.config(bg=Colors.black3)
+		selector.config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        selector["menu"].config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        fontSelector.config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        fontSelector["menu"].config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        fr.config(bg=Colors.black3)
         for i in objects:
             i.config(fg=Colors.grey3, bg=Colors.black3, activebackground=Colors.black4, activeforeground=Colors.grey3)
         for i in bookmarkbar.winfo_children():
@@ -429,7 +439,6 @@ def update_line_number(load=False, event=None, paste=False, new=False):
                 lnlabel.config(state='disabled')
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
-            Syntaxhl.extract_text(open_mode=True)
             lnlabel.config(state='normal')
 
             lines = int(textPad.index('end').split('.')[0])
@@ -528,18 +537,18 @@ def select_all(event=None):
 
 
 def on_find(event=None):
-    t2 = Toplevel(root)
+    t2 = Toplevel(root, bg=Colors.pop_bg)
     t2.title('Find')
-    t2.geometry('300x65+200+250')
+    t2.geometry('350x65+200+250')
     t2.resizable(width=0, height=0)
     t2.transient(root)
-    Label(t2, text="Find All:").grid(row=0, column=0, pady=4, sticky='e')
+    Label(t2, text="Find All:", bg=Colors.pop_bg, fg=Colors.pop_fg).grid(row=0, column=0, pady=4, sticky='e')
     v = StringVar()
-    e = Entry(t2, width=25, textvariable=v)
+    e = Entry(t2, width=25, textvariable=v, bg=Colors.pop_bg, fg=Colors.pop_fg)
     e.grid(row=0, column=1, padx=2, pady=4, sticky='we')
     c = IntVar()
-    Checkbutton(t2, text='Ignore Case', variable=c).grid(row=1, column=1, sticky='e', padx=2, pady=2)
-    Button(t2, text='Find All', underline=0, command=lambda: search_for(v.get(), c.get(), textPad, t2, e)).grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
+    Checkbutton(t2, text='Ignore Case', variable=c, bg=Colors.pop_bg, fg=Colors.pop_fg).grid(row=1, column=1, sticky='e', padx=2, pady=2)
+    Button(t2, text='Find All', underline=0, bg=Colors.pop_bg, fg=Colors.pop_fg, command=lambda: search_for(v.get(), c.get(), textPad, t2, e)).grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
 
     def close_search():
         textPad.tag_remove('match', '1.0', END)
@@ -573,7 +582,6 @@ gTL = StringVar()
 
 
 def goToLine(event=None):
-    insertln.set(1)
     global gTL
 
     t4 = Toplevel(root, bg=Colors.pop_bg)
@@ -631,7 +639,7 @@ def lineSearch(event=None):
 
 def undo():
     textPad.event_generate("<<Undo>>")
-    update_line_number()
+#    update_line_number()
 
 
 def redo():
@@ -648,7 +656,7 @@ def copy():
 
 def paste(event=None):
     textPad.event_generate("<<Paste>>")
-    update_line_number(load=True, paste=True)
+#    update_line_number(load=True, paste=True)
 
 
 ######################################################################
@@ -859,8 +867,25 @@ def update_info_bar(event=None):
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
 
+def on_paste(event=None):
+    textPad.delete('sel.first', 'sel.last')
+    print(event)
+previous_event = StringVar()  
+previous_event.set('Control')
+
+def key_release(event=None):
+    print(event)
+    
+    if previous_event.get()[:-2] == 'Control':
+        if event.keysym.lower() == 'z' or event.keysym.lower() == "v" or event.char == '\x1a' or event.char == '\x16':
+            update_line_number(load=True, paste=True)
+            Syntaxhl.extract_text(open_mode=True)
+    previous_event.set(event.keysym)
+def on_tab_key(event=None):
+    textPad.delete('insert-1c')
+    textPad.insert('insert', '    ')    
 def on_return_key(event=None):
-    if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
+    if textPad.get('insert-2c') == ":" and language.get() == 'python3':
 
         textPad.insert('insert', '    ')
     if textPad.get('insert-1l linestart') == ' ':
@@ -934,7 +959,7 @@ filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, image=op
 recentFiles = Menu(filemenu, tearoff=0)
 filemenu.add_cascade(label="Recent Files", menu=recentFiles)
 themechoice = IntVar()
-filemenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+filemenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Add Recent Files'''
 if config.get('recent files'):
@@ -975,7 +1000,7 @@ editmenu.add_separator()
 editmenu.add_command(label="Find", compound=LEFT, image=on_findicon, accelerator='Ctrl+F', command=on_find)
 editmenu.add_separator()
 editmenu.add_command(label="Select All", compound=LEFT, accelerator='Ctrl+A', underline=7, command=select_all)
-editmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+editmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
 '''View menu'''
 
 viewmenu = Menu(menubar, tearoff=0)
@@ -998,7 +1023,7 @@ fullscreenln = IntVar()
 nightmodeln = IntVar()
 viewmenu.add_checkbutton(label="Night Mode", variable=nightmodeln.get(), accelerator='F9', command=night_mode)
 viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(), accelerator='F11', command=fullscreen)
-viewmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+viewmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
 clrschms = {
@@ -1025,7 +1050,7 @@ else:
 
 for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command=lambda: theme(1))
-themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+themesmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
 
 
 '''Settings menu'''
@@ -1033,14 +1058,14 @@ themesmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
 settingsMenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label='Settings', menu=settingsMenu)
 settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
-settingsMenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+settingsMenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''About menu'''
 aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
 aboutmenu.add_command(label="About", compound=LEFT, command=about)
 aboutmenu.add_command(label="Help", command=help_box)
-aboutmenu.config(activebackground="#729FCF", activeforeground="#FFFFFF")
+aboutmenu.config(bg=Colors.white, fg=Colors.blackactivebackground="#729FCF", activeforeground="#FFFFFF")
 root.config(menu=menubar)
 
 '''Exit menu'''
@@ -1061,17 +1086,20 @@ for i, icon in enumerate(icons):
 shortcutbar.pack(expand=NO, fill=X)
 
 ''' Bottom Frame '''
-fr = Frame(root)
+fr = Frame(root, bg=Colors.white)
 fr.pack(side=BOTTOM, fill=X)
 
 ''' Language Selector'''
 
 selector = OptionMenu(fr, language, 'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML')  # Inserire in un menu sotto forma di cascade
+selector.config(bg=Colors.white, fg=Colors.black)
 selector.pack(side=LEFT, anchor=S)
 
 ''' Font Size Selector'''
 fontSelector = OptionMenu(fr, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
+fontSelector.config(bg=Colors.white, fg=Colors.black)
 fontSelector.pack(side=RIGHT, anchor=S)
+
 
 
 '''Info Bar''' 
@@ -1251,7 +1279,7 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
             Bookmark.lock = False
             Bookmark.draw()
 
-        closeb = Button(t5, text='Ok', command=close_select, default='active')
+        closeb = Button(t5, bg=Colors.pop_bg, fg=Colors.pop_fg, text='Ok', command=close_select, default='active')
         closeb.grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
         t5.protocol("WM_DELETE_WINDOW", lambda: close_select("wm_del_window"))
         t5.bind('<Return>', close_select)
@@ -1350,6 +1378,7 @@ theme(1)
 
 
 root.bind('<Any-KeyPress>', anykey)
+root.bind('<Any-KeyRelease>', key_release)
 root.bind('<Control-N>', new_file)
 root.bind('<Control-n>', new_file)
 root.bind('<Control-O>', open_file)
@@ -1362,20 +1391,20 @@ textPad.bind('<Control-a>', select_all)
 textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
 
-textPad.bind('<Control-g>', goToLine)
-textPad.bind('<Control-G>', goToLine)
+textPad.bind_all('<Control-g>', goToLine)
+textPad.bind_all('<Control-G>', goToLine)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', on_return_key)
-textPad.bind('<KeyPress-Tab>', lambda event: textPad.insert('insert', '    '))
+textPad.bind('<KeyRelease-Tab>', on_tab_key)
 textPad.bind_all('<Alt-Tab>', dedent)  # Da fare
-textPad.bind_all('<Control-v>', lambda event: update_line_number(load=True, paste=True))
+textPad.bind_all('<<Paste>>', on_paste)
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
-textPad.bind_all('<Control-z>', lambda event: update_line_number(load=True, paste=True))
+# textPad.bind_all('<Control-z>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
