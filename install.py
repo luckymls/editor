@@ -31,26 +31,27 @@ else:
 if not isLinux and not os.path.exists(path):
     
     shutil.copytree(f'{program_dir}', path)
+    
     os.popen('attrib +S +H ' + path)
-    # https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058(v=vs.85).aspx Aggiungere questo file
-
+    
+    winPath = os.getcwd()+'\\'+'win.reg'
+    os.popen(f'start {winPath}') #Imposto valore registro
+    
+    pathCommon = os.environ['COMMONPROGRAMFILES(X86)']
+    pathCommon = '\\'.join(path.split('\\')[:-1]) #Spostare con copytree tutta la cartella in (X86)
+    
+    shutil.copytree(f'{program_dir}', pathCommon)
+    
 elif not os.path.exists(path) and isLinux:
     shutil.copytree(f'{program_dir}', path)
     try:
-        os.system('gksudo ln -s main.py hydrogen')
+        os.system('gksudo ln -s main.py hydrogen || gksu ln -s main.py hydrogen')
         os.system('gksudo chmod +x main.py')
         os.system('gksudo mv hydrogen /usr/bin/')
         os.system('gksudo mv hydrogen.desktop /usr/share/applications/hydrogen.desktop')
     except:
-        try:
-            os.system('gksu ln -s main.py hydrogen')
-            os.system('gksudo chmod +x main.py')
-            os.system('gksudo mv hydrogen /usr/bin/')
-            os.system('gksudo mv hydrogen.desktop /usr/share/applications/hydrogen.desktop') except:
-        except:
-            pass
-	# Aggiungere apri con, la copia viene già effettuata e il file viene nascosto anteponendo il punto
+        pass
+	
 	# Creare un file .desktop in /usr/share/applications che definisca le estensioni lette dal programma
 	# Creare un link in /usr/bin all'eseguibile
 	
-
