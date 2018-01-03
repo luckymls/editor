@@ -1350,7 +1350,7 @@ theme(1)
 
 
 root.bind('<Any-KeyPress>', anykey)
-root.bind('<Any-KeyRelease>', key_release)
+root.bind('<Any-KeyRelease>', release_key)
 root.bind('<Control-N>', new_file)
 root.bind('<Control-n>', new_file)
 root.bind('<Control-O>', open_file)
