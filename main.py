@@ -9,9 +9,14 @@ import time
 import random
 import re
 import ast
+import json
 import pygments
 from pygments import lexers
 
+##################
+
+from iconDownload import *
+from themeDownload import *
 
 ##################
 
@@ -99,6 +104,7 @@ root.resizable(width=1, height=1)
 language = StringVar(root)
 language.set('python3')
 language.trace('w', lambda *args: Syntaxhl.extract_text(open_mode=True))
+
 fontSize = StringVar(root)
 
 if config.get('font'): fontSize.set(config.get('font'))
@@ -267,6 +273,17 @@ class Syntaxhl():
             column = int(index.split('.')[1])
             textPad.tag_add(wordtype, f'{line}.{str(column - chars)}', index)
 
+##################
+
+def downloadTheme():
+    global clrschms
+    result = getThemes(clrschms)
+    if result:
+        config.set('themeList', json.dumps(result))
+        
+        
+
+
 
 
 
@@ -281,7 +298,7 @@ def popup(event):
 
 
 def theme(x=None):
-        global bgc, fgc
+        global bgc, fgc, clrschms
 
         if config.get('theme') and x is None:
             val = config.get('theme')
@@ -289,7 +306,7 @@ def theme(x=None):
             val = themechoice.get()
             config.set('theme', val)
 
-        clrs = clrschms.get(val)  # 000000.FFFFFF
+        clrs = clrschms[val]  # 000000.FFFFFF
 
         fgc, bgc = clrs.split('.')
         fgc, bgc = '#' + fgc, '#' + bgc
@@ -366,7 +383,7 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         shortcutbar.config(bg=Colors.white)
         bookmarkbar.config(bg=Colors.white)
         root.config(bg=Colors.white)
-		selector.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        selector.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
         selector["menu"].config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
         fontSelector.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
         fontSelector["menu"].config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
@@ -390,7 +407,7 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         shortcutbar.config(bg=Colors.black3)
         root.config(bg=Colors.black3)
         bookmarkbar.config(bg=Colors.black3)
-		selector.config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        selector.config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
         selector["menu"].config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
         fontSelector.config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
         fontSelector["menu"].config(bg=Colors.black3, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
@@ -404,7 +421,7 @@ def show_line_bar():
     val = showln.get()
     if val:
         
-        lnlabel.pack(side=LEFT, fill=Y, before)
+        lnlabel.pack(side=LEFT, fill=Y, before=textPad)
     else:
         lnlabel.pack_forget()
 
@@ -439,6 +456,7 @@ def update_line_number(load=False, event=None, paste=False, new=False):
                 lnlabel.config(state='disabled')
                 lnlabel.yview_moveto(textPad.yview()[0])
         else:
+            Syntaxhl.extract_text(open_mode=True)
             lnlabel.config(state='normal')
 
             lines = int(textPad.index('end').split('.')[0])
@@ -549,7 +567,6 @@ def on_find(event=None):
     c = IntVar()
     Checkbutton(t2, text='Ignore Case', variable=c, bg=Colors.pop_bg, fg=Colors.pop_fg).grid(row=1, column=1, sticky='e', padx=2, pady=2)
     Button(t2, text='Find All', underline=0, bg=Colors.pop_bg, fg=Colors.pop_fg, command=lambda: search_for(v.get(), c.get(), textPad, t2, e)).grid(row=0, column=2, sticky='e' + 'w', padx=2, pady=4)
-
     def close_search():
         textPad.tag_remove('match', '1.0', END)
         t2.destroy()
@@ -582,6 +599,7 @@ gTL = StringVar()
 
 
 def goToLine(event=None):
+    
     global gTL
 
     t4 = Toplevel(root, bg=Colors.pop_bg)
@@ -639,9 +657,7 @@ def lineSearch(event=None):
 
 def undo():
     textPad.event_generate("<<Undo>>")
-#    update_line_number()
-
-
+    
 def redo():
     textPad.event_generate("<<Redo>>")
 
@@ -656,8 +672,24 @@ def copy():
 
 def paste(event=None):
     textPad.event_generate("<<Paste>>")
-#    update_line_number(load=True, paste=True)
+    
+def on_paste(event=None):
+    textPad.delete('sel.first', 'sel.last')
+    
+previous_event = StringVar()  
+previous_event.set('Control')
 
+def key_release(event=None):
+    
+    
+    if previous_event.get()[:-2] == 'Control':
+        if event.keysym.lower() == 'z' or event.keysym.lower() == "v" or event.char == '\x1a' or event.char == '\x16':
+            update_line_number(load=True, paste=True)
+            Syntaxhl.extract_text(open_mode=True)
+    previous_event.set(event.keysym)
+def on_tab_key(event=None):
+    textPad.delete('insert-1c')
+    textPad.insert('insert', '    ') 
 
 ######################################################################
 
@@ -867,23 +899,6 @@ def update_info_bar(event=None):
     infobar.config(text=f'Line {line}/{total} | Column {column}')
 
 
-def on_paste(event=None):
-    textPad.delete('sel.first', 'sel.last')
-    print(event)
-previous_event = StringVar()  
-previous_event.set('Control')
-
-def key_release(event=None):
-    print(event)
-    
-    if previous_event.get()[:-2] == 'Control':
-        if event.keysym.lower() == 'z' or event.keysym.lower() == "v" or event.char == '\x1a' or event.char == '\x16':
-            update_line_number(load=True, paste=True)
-            Syntaxhl.extract_text(open_mode=True)
-    previous_event.set(event.keysym)
-def on_tab_key(event=None):
-    textPad.delete('insert-1c')
-    textPad.insert('insert', '    ')    
 def on_return_key(event=None):
     if textPad.get('insert-2c') == ":" and (language.get() == 'python3' or language.get() == 'python2'):
 
@@ -918,7 +933,6 @@ def printSheet():
 
 if not os.path.exists(os.getcwd()+'/icons/') or len(os.listdir(os.getcwd()+'/icons/')) < 11:
     print('Icons not found, downloading...')
-    from iconDownload import *
     rDownload = downloadIcon(isLinux=isLinux)
 
     if rDownload == 400:
@@ -1026,15 +1040,31 @@ viewmenu.add_checkbutton(label="Full Screen", variable=fullscreenln.get(), accel
 viewmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
 '''Dizionario con: nome: esadecimale carattere.esadecimale sfondo'''
-clrschms = {
-    '1. Default White': '000000.FFFFFF',
-    '2. Greygarious Grey': '83406A.D1D4D1',
-    '3. Lovely Lavender': '202B4B.E1E1FF',
-    '4. Aquamarine': '5B8340.D1E7E0',
-    '5. Bold Beige': '4B4620.FFF0E1',
-    '6. Cobalt Blue': 'ffffBB.3333aa',
-    '7. Olive Green': 'D1E7E0.5B8340',
-}
+
+####################
+
+
+
+if config.get('themeList'):
+    
+    clrschms = json.loads(config.get('themeList'))
+    downloadTheme()
+else:
+    
+    clrschms = {
+        '1. Default White': '000000.FFFFFF',
+        '2. Greygarious Grey': '83406A.D1D4D1',
+        '3. Lovely Lavender': '202B4B.E1E1FF',
+        '4. Aquamarine': '5B8340.D1E7E0',
+        '5. Bold Beige': '4B4620.FFF0E1',
+        '6. Cobalt Blue': 'ffffBB.3333aa',
+        '7. Olive Green': 'D1E7E0.5B8340',
+    }
+    config.set('themeList', json.dumps(clrschms))
+    
+
+    
+###################
 
 themechoice = StringVar()
 
@@ -1099,7 +1129,6 @@ selector.pack(side=LEFT, anchor=S)
 fontSelector = OptionMenu(fr, fontSize, 'Small', 'Medium', 'Large', command=lambda x=fontSize.get(): setFontSize(x))
 fontSelector.config(bg=Colors.white, fg=Colors.black)
 fontSelector.pack(side=RIGHT, anchor=S)
-
 
 
 '''Info Bar''' 
@@ -1404,7 +1433,6 @@ textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
 textPad.bind_all('<MouseWheel>', mousewheel)
 textPad.bind_all('<Button-1>', select)
-# textPad.bind_all('<Control-z>', lambda event: update_line_number(load=True, paste=True))
 textPad.bind_all('<B1-Motion>', lambda event: select(state='active'))
 textPad.bind_all('<ButtonRelease-1>', lambda event: select(state='ok'))
 lnlabel.bind('<Double-Button-1>', lambda event: Bookmark.add(lnlabel.index('current').split('.')[0]))
