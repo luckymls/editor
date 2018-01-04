@@ -392,6 +392,9 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
             i.config(fg=Colors.black, bg=Colors.white, activebackground=Colors.blue, activeforeground=Colors.black)
         for i in bookmarkbar.winfo_children():
             i.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+        for i in shortcutbar.winfo_children():
+            i.config(bg=Colors.white, fg=Colors.black, activebackground=Colors.white2, activeforeground=Colors.black)
+
     else:
         nightmodeln.set(1)
         Colors.pop_bg = Colors.black2
@@ -415,6 +418,8 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
         for i in objects:
             i.config(fg=Colors.grey3, bg=Colors.black3, activebackground=Colors.black4, activeforeground=Colors.grey3)
         for i in bookmarkbar.winfo_children():
+            i.config(bg=Colors.black2, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
+        for i in shortcutbar.winfo_children():
             i.config(bg=Colors.black2, fg=Colors.grey3, activebackground=Colors.mblack, activeforeground=Colors.grey3)
 
 def show_line_bar():
