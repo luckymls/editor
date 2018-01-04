@@ -955,7 +955,7 @@ else:
 
 
 new_fileicon = PhotoImage(file=completePath + 'icons/new_file.png')
-open_fileicon = PhotoImage(file=completePath + 'icons/open_file.gif')
+open_fileicon = PhotoImage(file=completePath + 'icons/open_file.png')
 saveicon = PhotoImage(file=completePath + 'icons/save.png')
 cuticon = PhotoImage(file=completePath + 'icons/cut.png')
 copyicon = PhotoImage(file=completePath + 'icons/copy.png')
