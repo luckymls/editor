@@ -541,6 +541,9 @@ def help_box(event=None):
     showinfo("Help", "For help email to melis.luca2014@gmail.com", icon='question')
 
 
+def showCredits(event=None):
+    showinfo("Credits", "Credits here")
+
 def exit_editor():
 
     if askokcancel("Quit", "Do you really want to quit?"):
@@ -715,6 +718,7 @@ def wSetting():
     nightMenu = Menu(menuBar, tearoff=0)
     menuBar.add_cascade(label="Help", menu=nightMenu)
     nightMenu.add_command(label="About", compound=LEFT, command=about)
+    nightMenu.add_command(label="Credits", compound=LEFT, command=showCredits)
     menuBar.add_command(label="Close", compound=LEFT, command=t3.destroy)
 
 
@@ -1100,6 +1104,7 @@ aboutmenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=aboutmenu)
 aboutmenu.add_command(label="About", compound=LEFT, command=about)
 aboutmenu.add_command(label="Help", command=help_box)
+aboutmenu.add_command(label="Credits", command=showCredits)
 aboutmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 root.config(menu=menubar)
 
