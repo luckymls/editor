@@ -23,7 +23,7 @@ def getThemes(nowTheme = {}):
         response = urllib.request.urlopen(url).read()
         newTheme = json.loads(response)
 
-        if len(nowTheme) < len(newTheme):
+        if nowTheme !=  newTheme:
 
             return newTheme
         else:
