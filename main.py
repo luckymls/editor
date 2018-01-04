@@ -1425,8 +1425,8 @@ root.bind('<Control-o>', open_file)
 root.bind('<Control-S>', save)
 root.bind('<Control-s>', save)
 root.bind('<Button-1>', update_info_bar)
-textPad.bind('<Control-A>', select_all)
-textPad.bind('<Control-a>', select_all)
+textPad.bind_all('<Control-A>', select_all)
+textPad.bind_all('<Control-a>', select_all)
 textPad.bind('<Control-f>', on_find)
 textPad.bind('<Control-F>', on_find)
 
@@ -1465,3 +1465,7 @@ if len(sys.argv) > 1:
     open_file(file_name=path)
     
 root.mainloop()
+
+
+
+
