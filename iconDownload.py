@@ -29,7 +29,7 @@ def downloadIcon(isLinux=0):
         
     os.popen('attrib +S +H ' + realPath[:-1]) # Hide folder
     
-    toDownload = ['about.png','copy.png', 'cut.png', 'new_file.png', 'on_find.png', 'open_file.gif', 'paste.png', 'pypad.ico', 'redo.png', 'save.png', 'undo.png']
+    toDownload = ['about.png','copy.png', 'cut.png', 'new_file.png', 'on_find.png', 'open_file.png', 'paste.png', 'pypad.ico', 'redo.png', 'save.png', 'undo.png']
 
     for file in toDownload:
 
