@@ -12,7 +12,7 @@ import ast
 import json
 import pygments
 from pygments import lexers
-
+    
 ##################
 
 from iconDownload import *
@@ -22,7 +22,7 @@ from themeDownload import *
 
 '''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
 
-
+       
 class config:
 
     '''Uso: config.get(nome_variabile)
@@ -106,7 +106,7 @@ language.set('python3')
 language.trace('w', lambda *args: Syntaxhl.extract_text(open_mode=True))
 
 fontSize = StringVar(root)
-
+index = ''
 if config.get('font'): fontSize.set(config.get('font'))
 else:                  fontSize.set('Medium')
 
@@ -682,7 +682,7 @@ def paste(event=None):
     textPad.event_generate("<<Paste>>")
     
 def on_paste(event=None):
-    textPad.delete('sel.first', 'sel.last')
+    textPad.delete('sel.first', 'sel.last') #replace?
     
 previous_event = StringVar()  
 previous_event.set('Control')
@@ -695,9 +695,11 @@ def key_release(event=None):
             update_line_number(load=True, paste=True)
             Syntaxhl.extract_text(open_mode=True)
     previous_event.set(event.keysym)
+    
 def on_tab_key(event=None):
-    textPad.delete('insert-1c')
-    textPad.insert('insert', '    ') 
+    textPad.replace('insert-1c', 'insert', '    ')
+#    textPad.delete('insert-1c')
+#    textPad.insert('insert', '    ') 
 
 ######################################################################
 
@@ -923,8 +925,11 @@ def on_return_key(event=None):
 
     Syntaxhl.extract_text(return_mode=True)
 
-def dedent():
-       print(textPad.tag_get('sel'))
+def dedent(event):
+    textPad.delete('insert linestart', 'insert linestart+4c')
+    
+def comment(event):
+    textPad.insert('insert linestart', '#')
 
 def printSheet():
     #Only work on Windows
@@ -1425,19 +1430,21 @@ root.bind('<Control-o>', open_file)
 root.bind('<Control-S>', save)
 root.bind('<Control-s>', save)
 root.bind('<Button-1>', update_info_bar)
-textPad.bind_all('<Control-A>', select_all)
-textPad.bind_all('<Control-a>', select_all)
+textPad.bind_class('<Control-A>', select_all)
+textPad.bind_class('<Control-i>', select_all)
 textPad.bind('<Control-f>', on_find)
-textPad.bind('<Control-F>', on_find)
-
+textPad.bind('<Control-F>', on_find)							
+    
 textPad.bind_all('<Control-g>', goToLine)
 textPad.bind_all('<Control-G>', goToLine)
+textPad.bind('<Control-q>', comment)
 textPad.bind('<Alt-Left>', lambda event: Bookmark.slider('previous'))
 textPad.bind('<Alt-Right>', lambda event: Bookmark.slider('next'))
 textPad.bind('<Any-KeyRelease>', Syntaxhl.extract_text)
 textPad.bind('<KeyRelease-Return>', on_return_key)
 textPad.bind('<KeyRelease-Tab>', on_tab_key)
-textPad.bind_all('<Alt-Tab>', dedent)  # Da fare
+textPad.bind_all('<Control-less>', dedent)
+#textPad.bind_all('<Control-KeyRelease-Tab>', dedent)  # Da fare
 textPad.bind_all('<<Paste>>', on_paste)
 textPad.bind_all('<Button-4>', mousewheel)
 textPad.bind_all('<Button-5>', mousewheel)
@@ -1463,8 +1470,16 @@ lnlabel.config(state='disable')
 if len(sys.argv) > 1:
     path = ' '.join(sys.argv[1:len(sys.argv)])
     open_file(file_name=path)
-    
+print('    ' == '    ')
 root.mainloop()
+
+
+
+
+
+
+
+
 
 
 
