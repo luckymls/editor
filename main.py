@@ -1,99 +1,13 @@
-from tkinter import *
-from tkinter.messagebox import *
-from tkinter import filedialog
-from tkinter import messagebox
-import tkinter.font
-import os
-import sys
-import time
-import random
-import re
-import ast
-import json
-import pygments
-from pygments import lexers
-    
-##################
+from editorLibrary import *
 
-from iconDownload import *
-from themeDownload import *
+''' Note:
 
-##################
+CLASSE CONFIG
+    metodi
+        set(variable, value)
+        get(variable)
+'''
 
-'''Serve per salvare valori da riutilizzare anche dopo la chiusura del programma'''
-
-       
-class config:
-
-    '''Uso: config.get(nome_variabile)
-    config.set(nome_variabile, valore_variabile)'''
-
-    def get(variabile=None):
-
-        var_path = '.config/' + variabile
-
-        if os.path.exists(var_path):
-            return open(var_path).read(os.path.getsize(var_path))
-        else:
-            return None
-
-    def set(*args):
-
-        try:
-            os.mkdir('.config')
-            if isLinux is 0:
-                folderPath = os.getcwd() + '/.config'
-                os.popen('attrib +S +H ' + folderPath)
-        except:
-            pass
-
-        variabile = args[0]
-        var_path = '.config/' + variabile
-        value = args[1]
-        try:
-            overwrite = args[2]
-        except:
-            overwrite = False
-        '''Mode -> w = Sovrascrivo Mode -> a = Sposta puntatore a fine file e scrive'''
-        mode = 'w'
-        if overwrite:
-            mode = 'a'
-
-        try:
-            overWriteFirst = args[3]
-        except:
-            overWriteFirst = 0
-        isOverWriteFirst = 0
-        if overWriteFirst and os.path.exists(var_path):
-            toRead = str(open(var_path, 'r').read(os.path.getsize(var_path)))
-            list1 = toRead.split('\n')
-
-            list2 = []
-            for element in list1:
-                if len(element) > 3:
-                    list2.append(str(element))
-            list3 = []
-
-            list3.append(str(list2[1]))
-            list3.append(str(list2[2]))
-            list3.append(str(list2[3]))
-            list3.append(str(list2[4]))
-            list3.append(str(value))
-
-
-            txt = ''
-            for element in list3:
-                txt += str(element) + '\n'
-            txt = txt[:-2]
-            isOverWriteFirst = 1
-            value = txt
-            mode = 'w'
-
-        f = open(var_path, mode)
-        f.write(value)
-        f.close()
-
-#####################
 
 
 root = Tk()
@@ -107,10 +21,12 @@ language.trace('w', lambda *args: Syntaxhl.extract_text(open_mode=True))
 
 fontSize = StringVar(root)
 index = ''
-if config.get('font'): fontSize.set(config.get('font'))
-else:                  fontSize.set('Medium')
+if config.get('font'):
+    fontSize.set(config.get('font'))
+else:
+    fontSize.set('Medium')
 
-##################
+# -------------------
 
 '''Checking S.O.'''
 
@@ -206,16 +122,18 @@ class Syntaxhl():
             'Token.Literal.Number.Oct': "#04137A",
             'Token.Declaration': "#F53200",
     }
-    lexers = {'css': pygments.lexers.CssLexer(),
+    
+    lexers = {
+    'css': pygments.lexers.CssLexer(),
     'html': pygments.lexers.HtmlLexer(),
     'javascript': pygments.lexers.JavascriptLexer(),
     'json': pygments.lexers.JsonLexer(),
     'python3': pygments.lexers.Python3Lexer(),
-            'php': pygments.lexers.PhpLexer(startinline=True),
+    'php': pygments.lexers.PhpLexer(startinline=True),
     'mysql': pygments.lexers.MySqlLexer(),
     'sql': pygments.lexers.SqlLexer(),
     'XML': pygments.lexers.XmlLexer()
-
+    
     }
 
     def extract_text(event=None, return_mode=False, open_mode=False):
@@ -246,7 +164,7 @@ class Syntaxhl():
                 text = textPad.get(linestart, lineend)
                 Syntaxhl.find_syntax(text, linestart, lineend)
         for wordtype in Syntaxhl.colors.keys():
-            textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype])
+            textPad.tag_config(wordtype, foreground=Syntaxhl.colors[wordtype]) # Imposta il colore del testo
 
     def analyze_language(text):
 
@@ -254,7 +172,7 @@ class Syntaxhl():
 
     def find_syntax(text, linestart, lineend):
         count = 0
-        lexer = Syntaxhl.lexers[language.get()]
+        lexer = Syntaxhl.lexers[language.get()] # Language.get() contiene i linguaggi
         for tag in textPad.tag_names():  # Esiste un modo più veloce?
             textPad.tag_remove(tag, linestart, lineend)
         for pair in pygments.lex(text, lexer):
@@ -280,13 +198,7 @@ def downloadTheme():
     result = getThemes(clrschms)
     if result:
         config.set('themeList', json.dumps(result))
-        
-        
-
-
-
-
-
+   
 ##################
 
 def popup(event):
@@ -342,6 +254,7 @@ def getFontSize():
 
 
 class Colors:
+    
     mblack = '#171717'
     black = '#171E28' #prima #515151
     black2 = '#282C34'
@@ -424,11 +337,12 @@ def night_mode(event=None):  # Bug: creazione dei bookmark in nightmode: aggiung
 
 def show_line_bar():
     val = showln.get()
+    
     if val:
-        
         lnlabel.pack(side=LEFT, fill=Y, before=textPad)
     else:
         lnlabel.pack_forget()
+
 
 def show_info_bar():
     val = showinbar.get()
@@ -515,8 +429,6 @@ def fullscreen(event=None):
     else:
         state = 1
         fullscreenln.set(1)
-    # screen_w = root.winfo_screenwidth()
-    # screen_h = root.winfo_screenheight()
 
     root.attributes('-fullscreen', state)
 
@@ -525,9 +437,9 @@ def anykey(event=None):
     update_file()
     update_line_number()
     update_info_bar()
-
     update_info_bar()
     selected_text.set(False)
+    
 ####################
 
 
@@ -542,7 +454,7 @@ def help_box(event=None):
 
 
 def showCredits(event=None):
-    showinfo("Credits", "Credits here")
+    showinfo("Credits", "Created by Luca Melis and Francesco Tatti.");
 
 def exit_editor():
 
@@ -689,12 +601,12 @@ previous_event.set('Control')
 
 def key_release(event=None):
     
-    
     if previous_event.get()[:-2] == 'Control':
         if event.keysym.lower() == 'z' or event.keysym.lower() == "v" or event.char == '\x1a' or event.char == '\x16':
             update_line_number(load=True, paste=True)
             Syntaxhl.extract_text(open_mode=True)
     previous_event.set(event.keysym)
+
     
 def on_tab_key(event=None):
     textPad.replace('insert-1c', 'insert', '    ')
@@ -757,7 +669,8 @@ def open_file(event=None, file_name=None):
                     update_line_number(load=True)
                     Syntaxhl.extract_text(open_mode=True)
                     return
-                else: pass
+                else:
+                    pass
         '''Ritorna il nome del file senza estensione'''
         root.title(os.path.basename(filename) + " - Hydrogen")
         textPad.delete(1.0, END)
@@ -808,7 +721,9 @@ def open_recent_file(file_name=None):  # Aggiungere funzione backup anche qui
         update_line_number(load=True)
         Syntaxhl.extract_text(open_mode=True)
 
+
 def save(event=None):
+    
     global filename
     try:
         config.set('bookmarks', Bookmark.save(filename))
@@ -842,6 +757,7 @@ def save(event=None):
 
 
 def save_as():
+    
     global filename
 
     '''Apro finestra wn per salvare file con nome'''
@@ -1096,7 +1012,6 @@ for k in sorted(clrschms):
     themesmenu.add_radiobutton(label=k, variable=themechoice, command=lambda: theme(1))
 themesmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
-
 '''Settings menu'''
 
 settingsMenu = Menu(menubar, tearoff=0)
@@ -1104,18 +1019,45 @@ menubar.add_cascade(label='Settings', menu=settingsMenu)
 settingsMenu.add_command(label='Settings', compound=LEFT, command=wSetting)
 settingsMenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
 
-'''About menu'''
-aboutmenu = Menu(menubar, tearoff=0)
-menubar.add_cascade(label="Help", menu=aboutmenu)
-aboutmenu.add_command(label="About", compound=LEFT, command=about)
-aboutmenu.add_command(label="Help", command=help_box)
-aboutmenu.add_command(label="Credits", command=showCredits)
-aboutmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
-root.config(menu=menubar)
+''' Language menu '''
 
-'''Exit menu'''
-menubar.add_command(label='Exit', command=exit_editor)
+languageMenu = Menu(menubar, tearoff=0)
+languageMenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")                    
+menubar.add_cascade(label='Language', menu=languageMenu)
 
+languageIndex_C_Menu = Menu(languageMenu, tearoff=0)
+languageIndex_H_Menu = Menu(languageMenu, tearoff=0)
+languageIndex_J_Menu = Menu(languageMenu, tearoff=0)
+languageIndex_P_Menu = Menu(languageMenu, tearoff=0)
+languageIndex_S_Menu = Menu(languageMenu, tearoff=0)
+languageIndex_X_Menu = Menu(languageMenu, tearoff=0)
+
+languageIndex_C_Menu.add_radiobutton(label='C')
+languageIndex_C_Menu.add_radiobutton(label='C#')
+languageIndex_C_Menu.add_radiobutton(label='C++')
+languageIndex_C_Menu.add_radiobutton(label='Css')
+
+languageIndex_H_Menu.add_radiobutton(label='Html')
+
+languageIndex_J_Menu.add_radiobutton(label='Javascript')
+languageIndex_J_Menu.add_radiobutton(label='Json')
+
+languageIndex_P_Menu.add_radiobutton(label='PHP')
+languageIndex_P_Menu.add_radiobutton(label='Python3')
+
+languageIndex_S_Menu.add_radiobutton(label='Sql')
+
+languageIndex_X_Menu.add_radiobutton(label='XML')
+
+
+languageMenu.add_cascade(label='C', menu=languageIndex_C_Menu)
+languageMenu.add_cascade(label='H', menu=languageIndex_H_Menu)
+languageMenu.add_cascade(label='J', menu=languageIndex_J_Menu)
+languageMenu.add_cascade(label='P', menu=languageIndex_P_Menu)
+languageMenu.add_cascade(label='S', menu=languageIndex_S_Menu)
+languageMenu.add_cascade(label='X', menu=languageIndex_X_Menu)
+
+#'css', 'html', 'javascript', 'json', 'python3', 'php', 'sql', 'XML'
 
 '''Menù Scorciatoie e numero linea'''
 shortcutbar = Frame(root, height=25, relief='ridge', bd=1)
@@ -1237,10 +1179,12 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
     slide = []
 
     def draw(delete=True):
-
+        
+        
         bookmarks_keys = Bookmark.bookmarks.keys()
         index = 0
         button_list = list()
+
         if delete is False:
             button_list = []
             for i in bookmarks_keys:
@@ -1329,12 +1273,22 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
         t5.bind('<Return>', close_select)
 
     def delete(selection):
+        global delButton, t6 # bottone per eliminare bookmark e finestra bookmark
         bookmark_to_del = selection.split(':')[0] + '.0'
         del Bookmark.bookmarks[bookmark_to_del]
 
         Bookmark.b_list.pop(Bookmark.b_list.index(selection))
         bm_list.set(Bookmark.b_list)
         Bookmark.draw(delete=True)
+        # new
+        
+        if len(Bookmark.bookmarks) == 0:
+            delButton.config(state="disabled")
+            t6.after(600, t6.destroy) # chiude la finestra dopo 0.6 secondi
+        else:
+            delButton.config(state="active")
+        
+            
 
     def settings(update=False):
 
@@ -1343,15 +1297,22 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
             line = i.split('.')[0]
             Bookmark.b_list.append(line + ':' + Bookmark.bookmarks[i])
         bm_list.set(Bookmark.b_list)
+        global t6
         t6 = Toplevel(root, bg=Colors.pop_bg)
         t6.geometry('600x450')
         t6.focus_set()
-        t6.title('Bookmarks...')
+        t6.title('Bookmarks')
         t6.transient()
         bmListBox = Listbox(t6, height=350, width=300, listvariable=bm_list, bg=Colors.pop_bg_list, fg=Colors.pop_fg)
         label = Label(t6, text='Choose a bookmark:', bg=Colors.pop_bg, fg=Colors.pop_fg)
         label.pack(side=TOP, fill=X)
+        global delButton
         delButton = Button(t6, text='Delete bookmark', command=lambda: Bookmark.delete(bmListBox.get('active')), bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
+        #new
+        if len(Bookmark.bookmarks) == 0:
+            delButton.config(state="disabled")
+        else:
+            delButton.config(state="active") 
         delButton.pack(side=BOTTOM)
         bmListBox.pack(fill=NONE, expand=NO, side=LEFT)
 
@@ -1393,13 +1354,13 @@ class Bookmark:  # Per poter agire direttamente sui pulsanti, ad esempio con un 
 
 bookmarkbar = Frame(shortcutbar, height=25, bd=0, relief='ridge')
 
-
 if Bookmark.bookmarks:
     Bookmark.draw()
+
 bookmarkbar.pack(expand='no', fill=X)
 
 '''Bookmarks config'''
-menubar.add_command(label="Bookmarks...", command=Bookmark.settings)
+menubar.add_command(label="Bookmarks", command=Bookmark.settings)
 
 '''Context Menu (Quando faccio click destro sulla casella di testo)'''
 cmenu = Menu(textPad, tearoff=0, bg=Colors.pop_bg, fg=Colors.pop_fg, activebackground=Colors.pop_bg_active)
@@ -1412,6 +1373,24 @@ for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
 cmenu.add_separator()
 cmenu.add_command(label='Select All', underline=7, command=select_all)
 textPad.bind("<Button-3>", popup)
+
+
+'''About menu'''
+aboutmenu = Menu(menubar, tearoff=0)
+menubar.add_cascade(label="Help", menu=aboutmenu)
+aboutmenu.add_command(label="About", compound=LEFT, command=about)
+aboutmenu.add_command(label="Help", command=help_box)
+aboutmenu.add_command(label="Credits", command=showCredits)
+aboutmenu.config(bg=Colors.white, fg=Colors.black, activebackground="#729FCF", activeforeground="#FFFFFF")
+root.config(menu=menubar)
+
+'''Exit menu'''
+menubar.add_command(label='Exit', command=exit_editor)
+
+
+
+
+
 
 
 '''Imposto tema'''
@@ -1472,6 +1451,8 @@ if len(sys.argv) > 1:
     open_file(file_name=path)
 print('    ' == '    ')
 root.mainloop()
+
+
 
 
 
